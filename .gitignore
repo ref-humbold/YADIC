@@ -1,0 +1,11 @@
+# Java output folders and files
+bin
+docs
+junit_results
+junit_reports
+
+# IntelliJ project folders and files
+*.iml
+.idea
+out
+gen
