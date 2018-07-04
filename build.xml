@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project name="DI-Container" basedir="." default="all">
   <property name="vendor" value="Rafał Kaleta" />
-  <property name="version" value="2.2" />
+  <property name="major.version" value="2" />
+  <property name="minor.version" value="2" />
   <property name="src.dir" value="src" />
   <property name="test.dir" value="test" />
   <property name="build.dir" value="bin" />
@@ -49,10 +50,10 @@
       <manifest>
         <attribute name="Built-By" value="${vendor}" />
         <attribute name="Specification-Title" value="Dependency Injection Container" />
-        <attribute name="Specification-Version" value="${version}" />
+        <attribute name="Specification-Version" value="${major.version}" />
         <attribute name="Specification-Vendor" value="${vendor}" />
         <attribute name="Implementation-Title" value="ref_humbold.di_container" />
-        <attribute name="Implementation-Verion" value="${version}.${build.number}" />
+        <attribute name="Implementation-Verion" value="${major.version}.${minor.version}-b${build.number}" />
         <attribute name="Implementation-Vendor" value="${vendor}" />
       </manifest>
     </jar>
