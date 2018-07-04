@@ -1,5 +1,8 @@
 package ref_humbold.di_container;
 
+import ref_humbold.di_container.exception.DIException;
+import ref_humbold.di_container.exception.EmptyContainerProviderException;
+
 public final class DIServiceLocator
 {
     private static DIContainerProvider containerProvider = null;
@@ -14,6 +17,7 @@ public final class DIServiceLocator
         return containerProvider != null;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getObject(Class<T> cls)
         throws DIException
     {

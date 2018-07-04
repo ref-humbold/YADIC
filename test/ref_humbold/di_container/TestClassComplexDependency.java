@@ -1,5 +1,8 @@
 package ref_humbold.di_container;
 
+import ref_humbold.di_container.annotation.DependencyConstructor;
+import ref_humbold.di_container.annotation.DependencyMethod;
+
 class TestClassComplexDependency
     implements TestInterfaceComplexDependency
 {

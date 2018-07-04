@@ -1,5 +1,7 @@
 package ref_humbold.di_container;
 
+import ref_humbold.di_container.annotation.DependencyMethod;
+
 class TestClassWithDoubleDependencySetter
     implements TestInterfaceDoubleDependencySetter
 {

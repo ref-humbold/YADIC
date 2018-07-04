@@ -5,6 +5,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import ref_humbold.di_container.exception.*;
+
 public class DIContainerTest
 {
     private DIContainer testObject;

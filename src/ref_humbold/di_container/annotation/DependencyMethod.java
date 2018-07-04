@@ -1,4 +1,4 @@
-package ref_humbold.di_container;
+package ref_humbold.di_container.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

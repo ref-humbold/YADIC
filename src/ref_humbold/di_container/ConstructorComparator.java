@@ -3,6 +3,8 @@ package ref_humbold.di_container;
 import java.lang.reflect.Constructor;
 import java.util.Comparator;
 
+import ref_humbold.di_container.annotation.DependencyConstructor;
+
 final class ConstructorComparator
     implements Comparator<Constructor<?>>
 {
@@ -21,6 +23,6 @@ final class ConstructorComparator
         int ctorParams0 = ctor0.getParameterCount();
         int ctorParams1 = ctor1.getParameterCount();
 
-        return -Integer.compare(ctorParams0 , ctorParams1);
+        return Integer.compare(ctorParams1, ctorParams0);
     }
 }

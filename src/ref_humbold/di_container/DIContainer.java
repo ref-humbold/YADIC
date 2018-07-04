@@ -10,6 +10,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import ref_humbold.di_container.annotation.DependencyConstructor;
+import ref_humbold.di_container.annotation.DependencyMethod;
+import ref_humbold.di_container.exception.*;
+
 public final class DIContainer
 {
     private Map<Class<?>, Object> instances = new HashMap<>();
@@ -85,29 +89,37 @@ public final class DIContainer
     private Class<?> changeToReferenceType(Class<?> cls)
     {
         if(cls == byte.class)
-            cls = Byte.class;
-        else if(cls == short.class)
-            cls = Short.class;
-        else if(cls == int.class)
-            cls = Integer.class;
-        else if(cls == long.class)
-            cls = Long.class;
-        else if(cls == float.class)
-            cls = Float.class;
-        else if(cls == double.class)
-            cls = Double.class;
-        else if(cls == boolean.class)
-            cls = Boolean.class;
-        else if(cls == char.class)
-            cls = Character.class;
+            return Byte.class;
+
+        if(cls == short.class)
+            return Short.class;
+
+        if(cls == int.class)
+            return Integer.class;
+
+        if(cls == long.class)
+            return Long.class;
+
+        if(cls == float.class)
+            return Float.class;
+
+        if(cls == double.class)
+            return Double.class;
+
+        if(cls == boolean.class)
+            return Boolean.class;
+
+        if(cls == char.class)
+            return Character.class;
 
         return cls;
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T resolveType(Class<T> cls, ArrayDeque<Class<?>> resolved)
         throws DIException
     {
-        T object = null;
+        T object;
 
         if(instances.containsKey(changeToReferenceType(cls))
             && instances.get(changeToReferenceType(cls)) != null)
@@ -199,7 +211,6 @@ public final class DIContainer
 
     private <T> T createInstance(Constructor<? extends T> ctor, ArrayDeque<Class<?>> resolved)
     {
-        T instance = null;
         ArrayList<Object> params = new ArrayList<>();
 
         for(Class<?> cls : ctor.getParameterTypes())
@@ -235,16 +246,17 @@ public final class DIContainer
 
         try
         {
-            instance = ctor.newInstance(params.toArray());
+            return ctor.newInstance(params.toArray());
         }
         catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
         {
             lastException = new DIException(e.getMessage(), e);
         }
 
-        return instance;
+        return null;
     }
 
+    @SuppressWarnings("unchecked")
     private <T> Class<? extends T> findRegisteredConcreteClass(Class<T> cls)
         throws AbstractTypeException
     {
@@ -266,6 +278,7 @@ public final class DIContainer
         return mappedClass;
     }
 
+    @SuppressWarnings("unchecked")
     private <T> Constructor<? extends T>[] getConstructors(Class<? extends T> cls)
         throws NoSuitableConstructorException
     {

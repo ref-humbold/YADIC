@@ -1,4 +1,4 @@
-package ref_humbold.di_container;
+package ref_humbold.di_container.exception;
 
 public class DIException
     extends Exception

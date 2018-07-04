@@ -1,6 +1,6 @@
 package ref_humbold.di_container;
 
-import ref_humbold.di_container.DependencyConstructor;
+import ref_humbold.di_container.annotation.DependencyConstructor;
 
 class TestClassWithAnnotatedDefaultConstructorOnly
 {
