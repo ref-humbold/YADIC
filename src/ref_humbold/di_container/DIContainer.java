@@ -14,7 +14,6 @@ public final class DIContainer
 {
     private Map<Class<?>, Object> instances = new HashMap<>();
     private Map<Class<?>, Class<?>> classes = new HashMap<>();
-    private DIException lastException = null;
 
     public DIContainer()
     {
@@ -53,7 +52,8 @@ public final class DIContainer
     public <T> void registerInstance(Class<T> cls, T instance)
     {
         if(instance == null)
-            throw new NullInstanceException("Given instance is null.");
+            throw new NullInstanceException(
+                "Given instance of type " + cls.getSimpleName() + "is null.");
 
         instances.put(changeToReferenceType(cls), instance);
     }
@@ -61,8 +61,6 @@ public final class DIContainer
     public <T> T resolve(Class<T> cls)
         throws DIException
     {
-        lastException = null;
-
         return resolveType(cls, new ArrayDeque<>());
     }
 
@@ -145,10 +143,18 @@ public final class DIContainer
                     "Only one constructor can be annotated as dependency.");
 
         T object = null;
+        DIException lastException = null;
 
         for(Constructor<? extends T> ctor : constructors)
         {
-            object = createInstance(ctor, resolved);
+            try
+            {
+                object = createInstance(ctor, resolved);
+            }
+            catch(DIException e)
+            {
+                lastException = e;
+            }
 
             if(object != null || ctor.isAnnotationPresent(DependencyConstructor.class))
                 break;
@@ -158,7 +164,9 @@ public final class DIContainer
         {
             resolved.removeFirst();
 
-            throw lastException;
+            throw lastException != null ? lastException : new NoInstanceCreatedException(
+                "No instance produced for " + cls.getSimpleName()
+                    + ", though all possibilities have been checked.");
         }
 
         if(instances.containsKey(changeToReferenceType(cls)))
@@ -207,38 +215,20 @@ public final class DIContainer
     }
 
     private <T> T createInstance(Constructor<? extends T> ctor, ArrayDeque<Class<?>> resolved)
+        throws DIException
     {
         ArrayList<Object> params = new ArrayList<>();
 
         for(Class<?> cls : ctor.getParameterTypes())
         {
             if(resolved.contains(cls))
-            {
-                lastException = new CircularDependenciesException(
-                    "Dependencies resolving detected a cycle.");
-
-                return null;
-            }
+                throw new CircularDependenciesException("Dependencies resolving detected a cycle.");
 
             if(!instances.containsKey(changeToReferenceType(cls)) && !classes.containsKey(
                 changeToReferenceType(cls)))
-            {
-                lastException = new MissingDependenciesException(
-                    "No dependency found when resolving.");
+                throw new MissingDependenciesException("No dependency found when resolving.");
 
-                return null;
-            }
-
-            try
-            {
-                params.add(resolveType(changeToReferenceType(cls), resolved));
-            }
-            catch(DIException e)
-            {
-                lastException = e;
-
-                return null;
-            }
+            params.add(resolveType(changeToReferenceType(cls), resolved));
         }
 
         try
@@ -247,10 +237,8 @@ public final class DIContainer
         }
         catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
         {
-            lastException = new DIException(e.getMessage(), e);
+            throw new DIException(e.getMessage(), e);
         }
-
-        return null;
     }
 
     @SuppressWarnings("unchecked")
