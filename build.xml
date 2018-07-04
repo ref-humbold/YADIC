@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project name="DI-Container" basedir="." default="all">
   <property name="vendor" value="Rafał Kaleta" />
-  <property name="version" value="2.0" />
+  <property name="version" value="2.1" />
   <property name="src.dir" value="src" />
   <property name="test.dir" value="test" />
   <property name="build.dir" value="bin" />

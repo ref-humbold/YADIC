@@ -9,9 +9,4 @@ public class AbstractTypeException
     {
         super(s);
     }
-
-    public AbstractTypeException(String s, Throwable t)
-    {
-        super(s, t);
-    }
 }

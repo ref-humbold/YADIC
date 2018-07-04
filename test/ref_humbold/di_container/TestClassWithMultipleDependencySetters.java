@@ -1,6 +1,6 @@
 package ref_humbold.di_container;
 
-import ref_humbold.di_container.annotation.DependencyMethod;
+import ref_humbold.di_container.annotation.DependencySetter;
 
 class TestClassWithMultipleDependencySetters
     implements TestInterfaceMultipleDependencySetters
@@ -25,14 +25,14 @@ class TestClassWithMultipleDependencySetters
     }
 
     @Override
-    @DependencyMethod
+    @DependencySetter
     public void setBasicObject(TestInterfaceBasic basicObject)
     {
         this.basicObject = basicObject;
     }
 
     @Override
-    @DependencyMethod
+    @DependencySetter
     public void setStringObject(TestInterfaceWithString stringObject)
     {
         this.stringObject = stringObject;

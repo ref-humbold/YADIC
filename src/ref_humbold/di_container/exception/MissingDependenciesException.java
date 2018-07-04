@@ -9,9 +9,4 @@ public class MissingDependenciesException
     {
         super(s);
     }
-
-    public MissingDependenciesException(String s, Throwable t)
-    {
-        super(s, t);
-    }
 }

@@ -9,9 +9,4 @@ public class EmptyContainerProviderException
     {
         super(s);
     }
-
-    public EmptyContainerProviderException(String s, Throwable t)
-    {
-        super(s, t);
-    }
 }

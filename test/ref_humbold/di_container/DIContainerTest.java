@@ -13,14 +13,12 @@ public class DIContainerTest
 
     @Before
     public void setUp()
-        throws Exception
     {
         testObject = new DIContainer();
     }
 
     @After
     public void tearDown()
-        throws Exception
     {
         testObject = null;
     }
@@ -423,8 +421,7 @@ public class DIContainerTest
     @Test
     public void testRegisterInstanceWhenSameConcreteClass()
     {
-        TestClassWithDefaultAndParameterConstructor obj =
-            new TestClassWithDefaultAndParameterConstructor();
+        TestClassWithDefaultAndParameterConstructor obj = new TestClassWithDefaultAndParameterConstructor();
 
         testObject.registerInstance(TestClassWithDefaultAndParameterConstructor.class, obj);
 
@@ -443,14 +440,12 @@ public class DIContainerTest
         Assert.assertNotNull(cls);
         Assert.assertSame(obj, cls);
         Assert.assertEquals(obj.getText(), cls.getText());
-        Assert.assertTrue(cls instanceof TestClassWithDefaultAndParameterConstructor);
     }
 
     @Test
     public void testRegisterInstanceWhenDerivedConcreteClass()
     {
-        TestClassInheritsFromClassWithParameterConstructorOnly obj =
-            new TestClassInheritsFromClassWithParameterConstructorOnly();
+        TestClassInheritsFromClassWithParameterConstructorOnly obj = new TestClassInheritsFromClassWithParameterConstructorOnly();
 
         testObject.registerInstance(TestClassWithParameterConstructorOnly.class, obj);
 
@@ -495,7 +490,6 @@ public class DIContainerTest
         }
 
         Assert.assertNotNull(cls);
-        Assert.assertTrue(cls instanceof TestClassWithDefaultConstructorOnly);
     }
 
     @Test
@@ -514,7 +508,6 @@ public class DIContainerTest
         }
 
         Assert.assertNotNull(cls);
-        Assert.assertTrue(cls instanceof TestClassInheritsFromClassWithParameterConstructorOnly);
     }
 
     @Test
@@ -533,7 +526,6 @@ public class DIContainerTest
         }
 
         Assert.assertNotNull(cls);
-        Assert.assertTrue(cls instanceof TestClassInheritsFromAbstractClass);
     }
 
     @Test(expected = MissingDependenciesException.class)
@@ -565,13 +557,12 @@ public class DIContainerTest
 
         Assert.assertNotNull(cls);
         Assert.assertEquals(number, cls.getNumber());
-        Assert.assertTrue(cls instanceof TestClassWithParameterConstructorOnly);
     }
 
     @Test
     public void testResolveWhenClassHasParameterConstructorWithRegisteredReferenceParameter()
     {
-        Integer number = new Integer(10);
+        Integer number = 10;
 
         testObject.registerInstance(Integer.class, number);
 
@@ -588,7 +579,6 @@ public class DIContainerTest
         }
 
         Assert.assertNotNull(cls);
-        Assert.assertTrue(cls instanceof TestClassWithParameterConstructorOnly);
     }
 
     @Test
@@ -606,7 +596,6 @@ public class DIContainerTest
         }
 
         Assert.assertNotNull(cls);
-        Assert.assertTrue(cls instanceof TestClassWithDefaultAndParameterConstructor);
     }
 
     @Test(expected = AbstractTypeException.class)
@@ -888,18 +877,25 @@ public class DIContainerTest
         Assert.assertTrue(cls instanceof TestClassCircularDependency);
     }
 
-    @Test(expected = IncorrectDependencyMethodException.class)
-    public void testResolveWhenDependencyMethodHasReturnType()
+    @Test(expected = IncorrectDependencySetterException.class)
+    public void testResolveWhenDependencySetterHasReturnType()
         throws DIException
     {
-        testObject.resolve(TestClassWithIncorrectDependencyMethod1.class);
+        testObject.resolve(TestClassWithIncorrectDependencySetter1.class);
     }
 
-    @Test(expected = IncorrectDependencyMethodException.class)
-    public void testResolveWhenDependencyMethodHasNoParameters()
+    @Test(expected = IncorrectDependencySetterException.class)
+    public void testResolveWhenDependencySetterHasNoParameters()
         throws DIException
     {
-        testObject.resolve(TestClassWithIncorrectDependencyMethod2.class);
+        testObject.resolve(TestClassWithIncorrectDependencySetter2.class);
+    }
+
+    @Test(expected = IncorrectDependencySetterException.class)
+    public void testResolveWhenDependencySetterNameDoesNotStartWithSet()
+        throws DIException
+    {
+        testObject.resolve(TestClassWithIncorrectDependencySetter3.class);
     }
 
     @Test
@@ -1104,7 +1100,6 @@ public class DIContainerTest
         Assert.assertNotNull(cls.getStringObject());
         Assert.assertNotNull(cls.getStringObject().getString());
         Assert.assertEquals(string, cls.getStringObject().getString());
-        Assert.assertTrue(cls instanceof TestClassWithDoubleDependencySetter);
     }
 
     @Test
@@ -1135,7 +1130,6 @@ public class DIContainerTest
         Assert.assertNotNull(cls.getStringObject());
         Assert.assertNotNull(cls.getStringObject().getString());
         Assert.assertEquals(string, cls.getStringObject().getString());
-        Assert.assertTrue(cls instanceof TestClassWithMultipleDependencySetters);
     }
 
     @Test
@@ -1173,6 +1167,5 @@ public class DIContainerTest
         Assert.assertNotNull(cls.getFirstObject().getObject());
         Assert.assertNotNull(cls.getSecondObject().getString());
         Assert.assertEquals(string, cls.getSecondObject().getString());
-        Assert.assertTrue(cls instanceof TestClassComplexDependency);
     }
 }

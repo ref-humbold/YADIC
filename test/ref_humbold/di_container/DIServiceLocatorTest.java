@@ -16,7 +16,6 @@ public class DIServiceLocatorTest
 
     @Before
     public void setUp()
-        throws Exception
     {
         container = new DIContainer();
         provider = new TestProvider(container);
@@ -24,7 +23,6 @@ public class DIServiceLocatorTest
 
     @After
     public void tearDown()
-        throws Exception
     {
         container = null;
         provider = null;

@@ -9,9 +9,4 @@ public class CircularDependenciesException
     {
         super(s);
     }
-
-    public CircularDependenciesException(String s, Throwable t)
-    {
-        super(s, t);
-    }
 }

@@ -4,14 +4,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import ref_humbold.di_container.annotation.DependencyConstructor;
-import ref_humbold.di_container.annotation.DependencyMethod;
+import ref_humbold.di_container.annotation.DependencySetter;
 import ref_humbold.di_container.exception.*;
 
 public final class DIContainer
@@ -81,9 +77,10 @@ public final class DIContainer
         return cls.isInterface() || Modifier.isAbstract(cls.getModifiers());
     }
 
-    private boolean isCorrectAnnotatedMethod(Method method)
+    private boolean isCorrectAnnotatedSetter(Method setter)
     {
-        return method.getReturnType() == void.class && method.getParameterCount() > 0;
+        return setter.getReturnType() == void.class && setter.getName().startsWith("set")
+            && setter.getParameterCount() > 0;
     }
 
     private Class<?> changeToReferenceType(Class<?> cls)
@@ -193,20 +190,20 @@ public final class DIContainer
     private <T> void buildUpObject(T obj, ArrayDeque<Class<?>> resolved)
         throws DIException
     {
-        ArrayList<Method> methods = new ArrayList<>();
+        ArrayList<Method> setters = new ArrayList<>();
 
         for(Method m : obj.getClass().getMethods())
-            if(m.isAnnotationPresent(DependencyMethod.class))
+            if(m.isAnnotationPresent(DependencySetter.class))
             {
-                if(!isCorrectAnnotatedMethod(m))
-                    throw new IncorrectDependencyMethodException(
+                if(!isCorrectAnnotatedSetter(m))
+                    throw new IncorrectDependencySetterException(
                         "Dependency method must have at least one argument and void return type.");
 
-                methods.add(m);
+                setters.add(m);
             }
 
-        for(Method m : methods)
-            resolveMethod(obj, m, resolved);
+        for(Method s : setters)
+            resolveMethod(obj, s, resolved);
     }
 
     private <T> T createInstance(Constructor<? extends T> ctor, ArrayDeque<Class<?>> resolved)
@@ -217,8 +214,8 @@ public final class DIContainer
         {
             if(resolved.contains(cls))
             {
-                lastException =
-                    new CircularDependenciesException("Dependencies resolving detected a cycle.");
+                lastException = new CircularDependenciesException(
+                    "Dependencies resolving detected a cycle.");
 
                 return null;
             }
@@ -226,8 +223,8 @@ public final class DIContainer
             if(!instances.containsKey(changeToReferenceType(cls)) && !classes.containsKey(
                 changeToReferenceType(cls)))
             {
-                lastException =
-                    new MissingDependenciesException("No dependency found when resolving.");
+                lastException = new MissingDependenciesException(
+                    "No dependency found when resolving.");
 
                 return null;
             }

@@ -1,7 +1,7 @@
 package ref_humbold.di_container;
 
 import ref_humbold.di_container.annotation.DependencyConstructor;
-import ref_humbold.di_container.annotation.DependencyMethod;
+import ref_humbold.di_container.annotation.DependencySetter;
 
 class TestClassComplexDependency
     implements TestInterfaceComplexDependency
@@ -37,7 +37,7 @@ class TestClassComplexDependency
     }
 
     @Override
-    @DependencyMethod
+    @DependencySetter
     public void setBasicObject(TestInterfaceBasic basicObject)
     {
         this.basicObject = basicObject;

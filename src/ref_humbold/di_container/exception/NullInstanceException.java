@@ -9,9 +9,4 @@ public class NullInstanceException
     {
         super(s);
     }
-
-    public NullInstanceException(String s, Throwable t)
-    {
-        super(s, t);
-    }
 }

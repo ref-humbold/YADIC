@@ -9,9 +9,4 @@ public class MultipleAnnotatedConstructorsException
     {
         super(s);
     }
-
-    public MultipleAnnotatedConstructorsException(String s, Throwable t)
-    {
-        super(s, t);
-    }
 }
