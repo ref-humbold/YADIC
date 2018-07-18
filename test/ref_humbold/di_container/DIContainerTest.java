@@ -23,6 +23,8 @@ public class DIContainerTest
         testObject = null;
     }
 
+    // region register (single class)
+
     @Test
     public void testRegisterWhenSingleClass()
     {
@@ -60,7 +62,8 @@ public class DIContainerTest
     {
         try
         {
-            testObject.registerType(TestClassWithDefaultConstructorOnly.class, true);
+            testObject.registerType(TestClassWithDefaultConstructorOnly.class,
+                                    ConstructionPolicy.SINGLETON);
         }
         catch(DIException e)
         {
@@ -92,7 +95,8 @@ public class DIContainerTest
     {
         try
         {
-            testObject.registerType(TestClassWithDefaultConstructorOnly.class, true);
+            testObject.registerType(TestClassWithDefaultConstructorOnly.class,
+                                    ConstructionPolicy.SINGLETON);
         }
         catch(DIException e)
         {
@@ -120,7 +124,8 @@ public class DIContainerTest
 
         try
         {
-            testObject.registerType(TestClassWithDefaultConstructorOnly.class, false);
+            testObject.registerType(TestClassWithDefaultConstructorOnly.class,
+                                    ConstructionPolicy.CONSTRUCT);
         }
         catch(DIException e)
         {
@@ -161,6 +166,9 @@ public class DIContainerTest
         testObject.registerType(TestClassAbstract.class);
     }
 
+    // endregion
+    // region register (inheritance)
+
     @Test
     public void testRegisterWhenInheritanceFromInterface()
     {
@@ -192,7 +200,7 @@ public class DIContainerTest
     public void testRegisterWhenInheritanceFromInterfaceAsSingleton()
     {
         testObject.registerType(TestInterfaceBasic.class, TestClassWithDefaultConstructorOnly.class,
-                                true);
+                                ConstructionPolicy.SINGLETON);
 
         TestInterfaceBasic cls1 = null;
         TestInterfaceBasic cls2 = null;
@@ -219,7 +227,7 @@ public class DIContainerTest
     public void testRegisterWhenInheritanceFromInterfaceChangesSingleton()
     {
         testObject.registerType(TestInterfaceBasic.class, TestClassWithDefaultConstructorOnly.class,
-                                true);
+                                ConstructionPolicy.SINGLETON);
 
         TestInterfaceBasic cls11 = null;
         TestInterfaceBasic cls12 = null;
@@ -242,7 +250,7 @@ public class DIContainerTest
         Assert.assertTrue(cls12 instanceof TestClassWithDefaultConstructorOnly);
 
         testObject.registerType(TestInterfaceBasic.class, TestClassWithDefaultConstructorOnly.class,
-                                false);
+                                ConstructionPolicy.CONSTRUCT);
 
         TestInterfaceBasic cls21 = null;
         TestInterfaceBasic cls22 = null;
@@ -370,6 +378,9 @@ public class DIContainerTest
         Assert.assertTrue(cls instanceof TestClassInheritsFromAbstractClass);
     }
 
+    // endregion
+    // region registerInstance
+
     @Test
     public void testRegisterInstanceWhenInterface()
     {
@@ -473,6 +484,9 @@ public class DIContainerTest
     {
         testObject.registerInstance(TestClassWithDefaultAndParameterConstructor.class, null);
     }
+
+    // endregion
+    //region resolve (class)
 
     @Test
     public void testResolveWhenClassHasDefaultConstructorOnly()
@@ -614,6 +628,9 @@ public class DIContainerTest
         testObject.resolve(TestClassAbstract.class);
     }
 
+    // endregion
+    // region resolve (constructors)
+
     @Test(expected = MultipleAnnotatedConstructorsException.class)
     public void testResolveWhenMultipleAnnotatedConstructors()
         throws DIException
@@ -637,6 +654,9 @@ public class DIContainerTest
     {
         testObject.resolve(TestClassWithNoDeclaredConstructors.class);
     }
+
+    // endregion
+    // region resolve (dependencies)
 
     @Test
     public void testResolveDependenciesWithRegisteredInstance()
@@ -808,7 +828,7 @@ public class DIContainerTest
     public void testResolveDiamondDependenciesWithSingleton()
     {
         testObject.registerType(TestInterfaceBasic.class, TestClassWithDefaultConstructorOnly.class,
-                                true);
+                                ConstructionPolicy.SINGLETON);
         testObject.registerType(TestInterfaceDiamond1.class, TestClassDiamond1.class);
         testObject.registerType(TestInterfaceDiamond2.class, TestClassDiamond2.class);
         testObject.registerType(TestInterfaceDiamondBase.class, TestClassDiamondBase.class);
@@ -876,6 +896,9 @@ public class DIContainerTest
         Assert.assertEquals(string, cls.getNonCircularObject().getString());
         Assert.assertTrue(cls instanceof TestClassCircularDependency);
     }
+
+    // endregion
+    // region resolve (annotations)
 
     @Test(expected = IncorrectDependencySetterException.class)
     public void testResolveWhenDependencySetterHasReturnType()
@@ -1050,6 +1073,9 @@ public class DIContainerTest
         Assert.assertTrue(cls instanceof TestClassWithMultipleDependencySetters);
     }
 
+    // endregion
+    // region buildUp
+
     @Test
     public void testBuildUpWhenDependencySetterOnly()
     {
@@ -1168,4 +1194,6 @@ public class DIContainerTest
         Assert.assertNotNull(cls.getSecondObject().getString());
         Assert.assertEquals(string, cls.getSecondObject().getString());
     }
+
+    // endregion
 }

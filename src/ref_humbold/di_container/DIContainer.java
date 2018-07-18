@@ -12,58 +12,97 @@ import ref_humbold.di_container.exception.*;
 
 public final class DIContainer
 {
-    private Map<Class<?>, Object> instances = new HashMap<>();
+    private Map<Class<?>, Optional<Object>> instances = new HashMap<>();
     private Map<Class<?>, Class<?>> classes = new HashMap<>();
 
     public DIContainer()
     {
     }
 
+    /**
+     * Register concrete type class in the container.
+     * @param cls type class
+     * @throws AbstractTypeException if type is an abstract class or an interface
+     */
     public <T> void registerType(Class<T> cls)
         throws AbstractTypeException
     {
-        registerType(cls, false);
+        registerType(cls, ConstructionPolicy.CONSTRUCT);
     }
 
-    public <T> void registerType(Class<T> cls, boolean isSingleton)
+    /**
+     * Register concrete type class in the container with singleton specification.
+     * @param cls type class
+     * @param policy construction policy of instances
+     * @throws AbstractTypeException if type is an abstract class or an interface
+     */
+    public <T> void registerType(Class<T> cls, ConstructionPolicy policy)
         throws AbstractTypeException
     {
         if(isAbstractType(cls))
             throw new AbstractTypeException("Type " + cls.getSimpleName() + " is abstract.");
 
-        registerType(cls, cls, isSingleton);
+        registerType(cls, cls, policy);
     }
 
+    /**
+     * Register type class for its supertype.
+     * @param supercls supertype class
+     * @param cls type class
+     */
     public <T> void registerType(Class<T> supercls, Class<? extends T> cls)
     {
-        registerType(supercls, cls, false);
+        registerType(supercls, cls, ConstructionPolicy.CONSTRUCT);
     }
 
-    public <T> void registerType(Class<T> supercls, Class<? extends T> cls, boolean isSingleton)
+    /**
+     * Register type class for its supertype.
+     * @param supercls supertype class
+     * @param cls type class
+     * @param policy construction policy of instances
+     */
+    public <T> void registerType(Class<T> supercls, Class<? extends T> cls,
+                                 ConstructionPolicy policy)
     {
         classes.put(changeToReferenceType(supercls), changeToReferenceType(cls));
 
-        if(isSingleton)
-            instances.put(changeToReferenceType(supercls), null);
+        if(policy == ConstructionPolicy.SINGLETON)
+            instances.put(changeToReferenceType(supercls), Optional.empty());
         else if(instances.containsKey(changeToReferenceType(supercls)))
             instances.remove(changeToReferenceType(supercls));
     }
 
+    /**
+     * Register concrete instance of its type.
+     * @param cls type class
+     * @param instance concrete instance
+     */
     public <T> void registerInstance(Class<T> cls, T instance)
     {
         if(instance == null)
             throw new NullInstanceException(
                 "Given instance of type " + cls.getSimpleName() + "is null.");
 
-        instances.put(changeToReferenceType(cls), instance);
+        instances.put(changeToReferenceType(cls), Optional.of(instance));
     }
 
+    /**
+     * Resolve all depencencies of given type using {@link DependencyConstructor} and {@link DependencySetter}.
+     * @param cls type class
+     * @return new instance
+     * @throws DIException if type cannot be resolved
+     */
     public <T> T resolve(Class<T> cls)
         throws DIException
     {
         return resolveType(cls, new ArrayDeque<>());
     }
 
+    /**
+     * Inject all dependencies to given object using {@link DependencySetter}.
+     * @param obj instance object
+     * @throws DIException if instance cannot be built up
+     */
     public <T> void buildUp(T obj)
         throws DIException
     {
@@ -116,9 +155,9 @@ public final class DIContainer
     {
         T object;
 
-        if(instances.containsKey(changeToReferenceType(cls))
-            && instances.get(changeToReferenceType(cls)) != null)
-            object = (T)instances.get(changeToReferenceType(cls));
+        if(instances.containsKey(changeToReferenceType(cls)) && instances.get(
+            changeToReferenceType(cls)).isPresent())
+            object = (T)instances.get(changeToReferenceType(cls)).get();
         else
             object = resolveConstructor(cls, resolved);
 
@@ -160,19 +199,15 @@ public final class DIContainer
                 break;
         }
 
-        if(object == null)
-        {
-            resolved.removeFirst();
+        resolved.removeFirst();
 
+        if(object == null)
             throw lastException != null ? lastException : new NoInstanceCreatedException(
                 "No instance produced for " + cls.getSimpleName()
                     + ", though all possibilities have been checked.");
-        }
 
         if(instances.containsKey(changeToReferenceType(cls)))
-            instances.put(changeToReferenceType(cls), object);
-
-        resolved.removeFirst();
+            instances.put(changeToReferenceType(cls), Optional.of(object));
 
         return object;
     }
