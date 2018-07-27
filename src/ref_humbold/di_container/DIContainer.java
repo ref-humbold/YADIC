@@ -22,37 +22,40 @@ public final class DIContainer
     /**
      * Register concrete type class in the container.
      * @param cls type class
+     * @return {@code this} for method chaining
      * @throws AbstractTypeException if type is an abstract class or an interface
      */
-    public <T> void registerType(Class<T> cls)
+    public <T> DIContainer registerType(Class<T> cls)
         throws AbstractTypeException
     {
-        registerType(cls, ConstructionPolicy.CONSTRUCT);
+        return registerType(cls, ConstructionPolicy.CONSTRUCT);
     }
 
     /**
      * Register concrete type class in the container with singleton specification.
      * @param cls type class
      * @param policy construction policy of instances
+     * @return {@code this} for method chaining
      * @throws AbstractTypeException if type is an abstract class or an interface
      */
-    public <T> void registerType(Class<T> cls, ConstructionPolicy policy)
+    public <T> DIContainer registerType(Class<T> cls, ConstructionPolicy policy)
         throws AbstractTypeException
     {
         if(isAbstractType(cls))
             throw new AbstractTypeException("Type " + cls.getSimpleName() + " is abstract.");
 
-        registerType(cls, cls, policy);
+        return registerType(cls, cls, policy);
     }
 
     /**
      * Register type class for its supertype.
      * @param supercls supertype class
      * @param cls type class
+     * @return {@code this} for method chaining
      */
-    public <T> void registerType(Class<T> supercls, Class<? extends T> cls)
+    public <T> DIContainer registerType(Class<T> supercls, Class<? extends T> cls)
     {
-        registerType(supercls, cls, ConstructionPolicy.CONSTRUCT);
+        return registerType(supercls, cls, ConstructionPolicy.CONSTRUCT);
     }
 
     /**
@@ -60,9 +63,10 @@ public final class DIContainer
      * @param supercls supertype class
      * @param cls type class
      * @param policy construction policy of instances
+     * @return {@code this} for method chaining
      */
-    public <T> void registerType(Class<T> supercls, Class<? extends T> cls,
-                                 ConstructionPolicy policy)
+    public <T> DIContainer registerType(Class<T> supercls, Class<? extends T> cls,
+                                        ConstructionPolicy policy)
     {
         classes.put(changeToReferenceType(supercls), changeToReferenceType(cls));
 
@@ -70,6 +74,8 @@ public final class DIContainer
             instances.put(changeToReferenceType(supercls), Optional.empty());
         else if(instances.containsKey(changeToReferenceType(supercls)))
             instances.remove(changeToReferenceType(supercls));
+
+        return this;
     }
 
     /**
@@ -77,13 +83,15 @@ public final class DIContainer
      * @param cls type class
      * @param instance concrete instance
      */
-    public <T> void registerInstance(Class<T> cls, T instance)
+    public <T> DIContainer registerInstance(Class<T> cls, T instance)
     {
         if(instance == null)
             throw new NullInstanceException(
                 "Given instance of type " + cls.getSimpleName() + "is null.");
 
         instances.put(changeToReferenceType(cls), Optional.of(instance));
+
+        return this;
     }
 
     /**
@@ -103,10 +111,12 @@ public final class DIContainer
      * @param obj instance object
      * @throws DIException if instance cannot be built up
      */
-    public <T> void buildUp(T obj)
+    public <T> DIContainer buildUp(T obj)
         throws DIException
     {
         buildUpObject(obj, new ArrayDeque<>());
+
+        return this;
     }
 
     private boolean isAbstractType(Class<?> cls)
