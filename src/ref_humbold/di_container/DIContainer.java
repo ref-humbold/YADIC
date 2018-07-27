@@ -129,7 +129,6 @@ public final class DIContainer
             && method.getParameterCount() == 1;
     }
 
-    @SuppressWarnings("unchecked")
     private <T> T resolveType(Class<T> type, Stack<Class<?>> resolved)
         throws DIException
     {
@@ -251,7 +250,6 @@ public final class DIContainer
         }
     }
 
-    @SuppressWarnings("unchecked")
     private <T> Class<? extends T> findRegisteredConcreteClass(Class<T> type)
         throws AbstractTypeException
     {
