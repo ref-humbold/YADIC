@@ -652,17 +652,6 @@ public class DIContainerTest
         testObject.resolve(TestClassWithPrivateConstructorOnly.class);
     }
 
-    @Test
-    public void testResolveWhenNoDeclaredConstructors()
-        throws DIException
-
-    {
-        TestClassWithNoDeclaredConstructors result = testObject.resolve(
-            TestClassWithNoDeclaredConstructors.class);
-
-        Assert.assertNotNull(result);
-    }
-
     // endregion
     // region resolve (dependencies)
 
