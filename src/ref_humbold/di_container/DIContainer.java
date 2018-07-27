@@ -4,7 +4,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Stack;
 
 import ref_humbold.di_container.annotation.DependencyConstructor;
 import ref_humbold.di_container.annotation.DependencySetter;
@@ -12,8 +14,7 @@ import ref_humbold.di_container.exception.*;
 
 public final class DIContainer
 {
-    private Map<Class<?>, Optional<Object>> instances = new HashMap<>();
-    private Map<Class<?>, Class<?>> classes = new HashMap<>();
+    private TypesContainer typesContainer = new TypesContainer();
 
     public DIContainer()
     {
@@ -21,89 +22,87 @@ public final class DIContainer
 
     /**
      * Register concrete type class in the container.
-     * @param cls type class
+     * @param type type class
      * @return {@code this} for method chaining
      * @throws AbstractTypeException if type is an abstract class or an interface
      */
-    public <T> DIContainer registerType(Class<T> cls)
+    public <T> DIContainer registerType(Class<T> type)
         throws AbstractTypeException
     {
-        return registerType(cls, ConstructionPolicy.CONSTRUCT);
+        return registerType(type, ConstructionPolicy.CONSTRUCT);
     }
 
     /**
      * Register concrete type class in the container with singleton specification.
-     * @param cls type class
+     * @param type type class
      * @param policy construction policy of instances
      * @return {@code this} for method chaining
      * @throws AbstractTypeException if type is an abstract class or an interface
      */
-    public <T> DIContainer registerType(Class<T> cls, ConstructionPolicy policy)
+    public <T> DIContainer registerType(Class<T> type, ConstructionPolicy policy)
         throws AbstractTypeException
     {
-        if(isAbstractType(cls))
-            throw new AbstractTypeException("Type " + cls.getSimpleName() + " is abstract.");
+        if(isAbstractType(type))
+            throw new AbstractTypeException("Type " + type.getSimpleName() + " is abstract.");
 
-        return registerType(cls, cls, policy);
+        return registerType(type, type, policy);
     }
 
     /**
-     * Register type class for its supertype.
-     * @param supercls supertype class
-     * @param cls type class
+     * Register subtype class for its supertype.
+     * @param supertype supertype class
+     * @param subtype subtype class
      * @return {@code this} for method chaining
      */
-    public <T> DIContainer registerType(Class<T> supercls, Class<? extends T> cls)
+    public <T> DIContainer registerType(Class<T> supertype, Class<? extends T> subtype)
     {
-        return registerType(supercls, cls, ConstructionPolicy.CONSTRUCT);
+        return registerType(supertype, subtype, ConstructionPolicy.CONSTRUCT);
     }
 
     /**
-     * Register type class for its supertype.
-     * @param supercls supertype class
-     * @param cls type class
+     * Register subtype class for its supertype.
+     * @param supertype supertype class
+     * @param subtype subtype class
      * @param policy construction policy of instances
      * @return {@code this} for method chaining
      */
-    public <T> DIContainer registerType(Class<T> supercls, Class<? extends T> cls,
+    public <T> DIContainer registerType(Class<T> supertype, Class<? extends T> subtype,
                                         ConstructionPolicy policy)
     {
-        classes.put(toReferenceType(supercls), toReferenceType(cls));
-
         if(policy == ConstructionPolicy.SINGLETON)
-            instances.put(toReferenceType(supercls), Optional.empty());
-        else if(instances.containsKey(toReferenceType(supercls)))
-            instances.remove(toReferenceType(supercls));
+            typesContainer.addSingletonSubtype(supertype, subtype);
+        else
+            typesContainer.addSubtype(supertype, subtype);
 
         return this;
     }
 
     /**
      * Register concrete instance of its type.
-     * @param cls type class
+     * @param type type class
      * @param instance concrete instance
      */
-    public <T> DIContainer registerInstance(Class<T> cls, T instance)
+    public <T> DIContainer registerInstance(Class<T> type, T instance)
     {
         if(instance == null)
             throw new NullInstanceException(
-                "Given instance of type " + cls.getSimpleName() + "is null.");
+                "Given instance of type " + type.getSimpleName() + "is null.");
 
-        instances.put(toReferenceType(cls), Optional.of(instance));
+        typesContainer.addInstance(type, instance);
 
         return this;
     }
 
     /**
      * Resolve all depencencies of given type using {@link DependencyConstructor} and {@link DependencySetter}.
-     * @param cls type class
+     * @param type type class
      * @return new instance
      * @throws DIException if type cannot be resolved
      */
-    public <T> T resolve(Class<T> cls)
+    public <T> T resolve(Class<T> type)
         throws DIException
     {
-        return resolveType(cls, new Stack<>());
+        return resolveType(type, new Stack<>());
     }
 
     /**
@@ -119,9 +118,9 @@ public final class DIContainer
         return this;
     }
 
-    private boolean isAbstractType(Class<?> cls)
+    private boolean isAbstractType(Class<?> type)
     {
-        return cls.isInterface() || Modifier.isAbstract(cls.getModifiers());
+        return type.isInterface() || Modifier.isAbstract(type.getModifiers());
     }
 
     private boolean isSetter(Method method)
@@ -130,58 +129,26 @@ public final class DIContainer
             && method.getParameterCount() == 1;
     }
 
-    private Class<?> toReferenceType(Class<?> cls)
-    {
-        if(cls == byte.class)
-            return Byte.class;
-
-        if(cls == short.class)
-            return Short.class;
-
-        if(cls == int.class)
-            return Integer.class;
-
-        if(cls == long.class)
-            return Long.class;
-
-        if(cls == float.class)
-            return Float.class;
-
-        if(cls == double.class)
-            return Double.class;
-
-        if(cls == boolean.class)
-            return Boolean.class;
-
-        if(cls == char.class)
-            return Character.class;
-
-        return cls;
-    }
-
     @SuppressWarnings("unchecked")
-    private <T> T resolveType(Class<T> cls, Stack<Class<?>> resolved)
+    private <T> T resolveType(Class<T> type, Stack<Class<?>> resolved)
         throws DIException
     {
-        T object;
+        T object = typesContainer.getInstance(type);
 
-        if(instances.containsKey(toReferenceType(cls)) && instances.get(toReferenceType(cls))
-                                                                   .isPresent())
-            object = (T)instances.get(toReferenceType(cls)).get();
-        else
-            object = resolveConstructor(cls, resolved);
+        if(object == null)
+            object = resolveConstructor(type, resolved);
 
         buildUpObject(object, resolved);
 
         return object;
     }
 
-    private <T> T resolveConstructor(Class<T> cls, Stack<Class<?>> resolved)
+    private <T> T resolveConstructor(Class<T> type, Stack<Class<?>> resolved)
         throws DIException
     {
-        resolved.push(cls);
+        resolved.push(type);
 
-        Class<? extends T> mappedClass = findRegisteredConcreteClass(cls);
+        Class<? extends T> mappedClass = findRegisteredConcreteClass(type);
         Constructor<? extends T>[] constructors = getConstructors(mappedClass);
 
         Arrays.sort(constructors, new ConstructorComparator());
@@ -213,11 +180,10 @@ public final class DIContainer
 
         if(object == null)
             throw lastException != null ? lastException : new NoInstanceCreatedException(
-                "No instance produced for " + cls.getSimpleName()
+                "No instance produced for " + type.getSimpleName()
                     + ", though all possibilities have been checked.");
 
-        if(instances.containsKey(toReferenceType(cls)))
-            instances.put(toReferenceType(cls), Optional.of(object));
+        typesContainer.updateInstance(type, object);
 
         return object;
     }
@@ -264,16 +230,15 @@ public final class DIContainer
     {
         ArrayList<Object> params = new ArrayList<>();
 
-        for(Class<?> cls : ctor.getParameterTypes())
+        for(Class<?> type : ctor.getParameterTypes())
         {
-            if(resolved.contains(cls))
+            if(resolved.contains(type))
                 throw new CircularDependenciesException("Dependencies resolving detected a cycle.");
 
-            if(!instances.containsKey(toReferenceType(cls)) && !classes.containsKey(
-                toReferenceType(cls)))
+            if(!typesContainer.containsType(type))
                 throw new MissingDependenciesException("No dependency found when resolving.");
 
-            params.add(resolveType(toReferenceType(cls), resolved));
+            params.add(resolveType(type, resolved));
         }
 
         try
@@ -287,45 +252,45 @@ public final class DIContainer
     }
 
     @SuppressWarnings("unchecked")
-    private <T> Class<? extends T> findRegisteredConcreteClass(Class<T> cls)
+    private <T> Class<? extends T> findRegisteredConcreteClass(Class<T> type)
         throws AbstractTypeException
     {
-        Class<? extends T> mappedClass = cls;
+        Class<? extends T> mappedClass = type;
 
         do
         {
-            if(!classes.containsKey(toReferenceType(mappedClass)))
+            if(!typesContainer.containsSubtype(mappedClass))
                 if(isAbstractType(mappedClass))
                     throw new AbstractTypeException(
                         "Type " + mappedClass.getSimpleName() + " is abstract.");
                 else
-                    classes.put(toReferenceType(mappedClass), toReferenceType(mappedClass));
+                    typesContainer.addSubtype(mappedClass);
 
-            mappedClass = (Class<? extends T>)classes.get(toReferenceType(mappedClass));
+            mappedClass = typesContainer.getSubtype(mappedClass);
         } while(isAbstractType(mappedClass));
 
         return mappedClass;
     }
 
     @SuppressWarnings("unchecked")
-    private <T> Constructor<? extends T>[] getConstructors(Class<? extends T> cls)
+    private <T> Constructor<? extends T>[] getConstructors(Class<? extends T> type)
         throws NoSuitableConstructorException
     {
         Constructor<?>[] constructors;
 
         try
         {
-            constructors = cls.getConstructors();
+            constructors = type.getConstructors();
         }
         catch(SecurityException e)
         {
             throw new NoSuitableConstructorException(
-                "No dependency constructor found for class " + cls.getSimpleName(), e);
+                "No dependency constructor found for class " + type.getSimpleName(), e);
         }
 
         if(constructors == null || constructors.length == 0)
             throw new NoSuitableConstructorException(
-                "No dependency constructor found for class " + cls.getSimpleName());
+                "No dependency constructor found for class " + type.getSimpleName());
 
         return (Constructor<? extends T>[])constructors;
     }
