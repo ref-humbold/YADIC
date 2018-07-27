@@ -5,6 +5,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import ref_humbold.di_container.auxiliary.basics.TestClassComplexDependency;
+import ref_humbold.di_container.auxiliary.basics.TestInterfaceComplexDependency;
+import ref_humbold.di_container.auxiliary.basics.TestProvider;
+import ref_humbold.di_container.auxiliary.diamonds.TestInterfaceDiamondBase;
 import ref_humbold.di_container.exception.DIException;
 import ref_humbold.di_container.exception.EmptyContainerProviderException;
 import ref_humbold.di_container.exception.MissingDependenciesException;

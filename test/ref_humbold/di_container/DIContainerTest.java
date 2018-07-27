@@ -5,6 +5,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import ref_humbold.di_container.auxiliary.basics.*;
+import ref_humbold.di_container.auxiliary.circulars.*;
+import ref_humbold.di_container.auxiliary.constructors.*;
+import ref_humbold.di_container.auxiliary.diamonds.*;
+import ref_humbold.di_container.auxiliary.setters.*;
 import ref_humbold.di_container.exception.*;
 
 public class DIContainerTest
