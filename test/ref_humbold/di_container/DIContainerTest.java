@@ -652,12 +652,15 @@ public class DIContainerTest
         testObject.resolve(TestClassWithPrivateConstructorOnly.class);
     }
 
-    @Test(expected = NoSuitableConstructorException.class)
+    @Test
     public void testResolveWhenNoDeclaredConstructors()
         throws DIException
 
     {
-        testObject.resolve(TestClassWithNoDeclaredConstructors.class);
+        TestClassWithNoDeclaredConstructors result = testObject.resolve(
+            TestClassWithNoDeclaredConstructors.class);
+
+        Assert.assertNotNull(result);
     }
 
     // endregion
@@ -1006,36 +1009,16 @@ public class DIContainerTest
         Assert.assertTrue(cls instanceof TestClassComplexDependency);
     }
 
-    @Test
+    @Test(expected = IncorrectDependencySetterException.class)
     public void testResolveWhenDoubleDependencySetter()
+        throws DIException
     {
         String string = "string";
 
         testObject.registerType(TestInterfaceDoubleDependencySetter.class,
-                                TestClassWithDoubleDependencySetter.class)
-                  .registerType(TestInterfaceBasic.class, TestClassWithDefaultConstructorOnly.class)
-                  .registerType(TestInterfaceWithString.class, TestClassWithString.class);
+                                TestClassWithDoubleDependencySetter.class);
 
-        testObject.registerInstance(String.class, string);
-
-        TestInterfaceDoubleDependencySetter cls = null;
-
-        try
-        {
-            cls = testObject.resolve(TestInterfaceDoubleDependencySetter.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
-        }
-
-        Assert.assertNotNull(cls);
-        Assert.assertNotNull(cls.getBasicObject());
-        Assert.assertNotNull(cls.getStringObject());
-        Assert.assertNotNull(cls.getStringObject().getString());
-        Assert.assertEquals(string, cls.getStringObject().getString());
-        Assert.assertTrue(cls instanceof TestClassWithDoubleDependencySetter);
+        testObject.resolve(TestInterfaceDoubleDependencySetter.class);
     }
 
     @Test
@@ -1095,33 +1078,13 @@ public class DIContainerTest
         Assert.assertNotNull(cls.getBasicObject());
     }
 
-    @Test
+    @Test(expected = IncorrectDependencySetterException.class)
     public void testBuildUpWhenDoubleDependencySetter()
+        throws DIException
     {
-        String string = "string";
-
-        testObject.registerType(TestInterfaceBasic.class, TestClassWithDefaultConstructorOnly.class)
-                  .registerType(TestInterfaceWithString.class, TestClassWithString.class);
-
-        testObject.registerInstance(String.class, string);
-
         TestInterfaceDoubleDependencySetter cls = new TestClassWithDoubleDependencySetter();
 
-        try
-        {
-            testObject.buildUp(cls);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
-        }
-
-        Assert.assertNotNull(cls);
-        Assert.assertNotNull(cls.getBasicObject());
-        Assert.assertNotNull(cls.getStringObject());
-        Assert.assertNotNull(cls.getStringObject().getString());
-        Assert.assertEquals(string, cls.getStringObject().getString());
+        testObject.buildUp(cls);
     }
 
     @Test

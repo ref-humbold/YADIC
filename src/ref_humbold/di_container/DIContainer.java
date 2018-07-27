@@ -68,12 +68,12 @@ public final class DIContainer
     public <T> DIContainer registerType(Class<T> supercls, Class<? extends T> cls,
                                         ConstructionPolicy policy)
     {
-        classes.put(changeToReferenceType(supercls), changeToReferenceType(cls));
+        classes.put(toReferenceType(supercls), toReferenceType(cls));
 
         if(policy == ConstructionPolicy.SINGLETON)
-            instances.put(changeToReferenceType(supercls), Optional.empty());
-        else if(instances.containsKey(changeToReferenceType(supercls)))
-            instances.remove(changeToReferenceType(supercls));
+            instances.put(toReferenceType(supercls), Optional.empty());
+        else if(instances.containsKey(toReferenceType(supercls)))
+            instances.remove(toReferenceType(supercls));
 
         return this;
     }
@@ -89,7 +89,7 @@ public final class DIContainer
             throw new NullInstanceException(
                 "Given instance of type " + cls.getSimpleName() + "is null.");
 
-        instances.put(changeToReferenceType(cls), Optional.of(instance));
+        instances.put(toReferenceType(cls), Optional.of(instance));
 
         return this;
     }
@@ -103,7 +103,7 @@ public final class DIContainer
     public <T> T resolve(Class<T> cls)
         throws DIException
     {
-        return resolveType(cls, new ArrayDeque<>());
+        return resolveType(cls, new Stack<>());
     }
 
     /**
@@ -114,7 +114,7 @@ public final class DIContainer
     public <T> DIContainer buildUp(T obj)
         throws DIException
     {
-        buildUpObject(obj, new ArrayDeque<>());
+        buildUpObject(obj, new Stack<>());
 
         return this;
     }
@@ -124,13 +124,13 @@ public final class DIContainer
         return cls.isInterface() || Modifier.isAbstract(cls.getModifiers());
     }
 
-    private boolean isCorrectAnnotatedSetter(Method setter)
+    private boolean isSetter(Method method)
     {
-        return setter.getReturnType() == void.class && setter.getName().startsWith("set")
-            && setter.getParameterCount() > 0;
+        return method.getReturnType() == void.class && method.getName().startsWith("set")
+            && method.getParameterCount() == 1;
     }
 
-    private Class<?> changeToReferenceType(Class<?> cls)
+    private Class<?> toReferenceType(Class<?> cls)
     {
         if(cls == byte.class)
             return Byte.class;
@@ -160,14 +160,14 @@ public final class DIContainer
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T resolveType(Class<T> cls, ArrayDeque<Class<?>> resolved)
+    private <T> T resolveType(Class<T> cls, Stack<Class<?>> resolved)
         throws DIException
     {
         T object;
 
-        if(instances.containsKey(changeToReferenceType(cls)) && instances.get(
-            changeToReferenceType(cls)).isPresent())
-            object = (T)instances.get(changeToReferenceType(cls)).get();
+        if(instances.containsKey(toReferenceType(cls)) && instances.get(toReferenceType(cls))
+                                                                   .isPresent())
+            object = (T)instances.get(toReferenceType(cls)).get();
         else
             object = resolveConstructor(cls, resolved);
 
@@ -176,10 +176,10 @@ public final class DIContainer
         return object;
     }
 
-    private <T> T resolveConstructor(Class<T> cls, ArrayDeque<Class<?>> resolved)
+    private <T> T resolveConstructor(Class<T> cls, Stack<Class<?>> resolved)
         throws DIException
     {
-        resolved.addFirst(cls);
+        resolved.push(cls);
 
         Class<? extends T> mappedClass = findRegisteredConcreteClass(cls);
         Constructor<? extends T>[] constructors = getConstructors(mappedClass);
@@ -209,30 +209,30 @@ public final class DIContainer
                 break;
         }
 
-        resolved.removeFirst();
+        resolved.pop();
 
         if(object == null)
             throw lastException != null ? lastException : new NoInstanceCreatedException(
                 "No instance produced for " + cls.getSimpleName()
                     + ", though all possibilities have been checked.");
 
-        if(instances.containsKey(changeToReferenceType(cls)))
-            instances.put(changeToReferenceType(cls), Optional.of(object));
+        if(instances.containsKey(toReferenceType(cls)))
+            instances.put(toReferenceType(cls), Optional.of(object));
 
         return object;
     }
 
-    private <T> void resolveMethod(T object, Method method, ArrayDeque<Class<?>> resolved)
+    private <T> void resolveSetter(T object, Method setter, Stack<Class<?>> resolved)
         throws DIException
     {
         ArrayList<Object> paramObjects = new ArrayList<>();
 
-        for(Class<?> p : method.getParameterTypes())
+        for(Class<?> p : setter.getParameterTypes())
             paramObjects.add(resolveType(p, resolved));
 
         try
         {
-            method.invoke(object, paramObjects.toArray());
+            setter.invoke(object, paramObjects.toArray());
         }
         catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
         {
@@ -240,7 +240,7 @@ public final class DIContainer
         }
     }
 
-    private <T> void buildUpObject(T obj, ArrayDeque<Class<?>> resolved)
+    private <T> void buildUpObject(T obj, Stack<Class<?>> resolved)
         throws DIException
     {
         ArrayList<Method> setters = new ArrayList<>();
@@ -248,18 +248,18 @@ public final class DIContainer
         for(Method m : obj.getClass().getMethods())
             if(m.isAnnotationPresent(DependencySetter.class))
             {
-                if(!isCorrectAnnotatedSetter(m))
+                if(!isSetter(m))
                     throw new IncorrectDependencySetterException(
-                        "Dependency method must have at least one argument and void return type.");
+                        "Dependency method must have exactly one argument and void return type.");
 
                 setters.add(m);
             }
 
-        for(Method s : setters)
-            resolveMethod(obj, s, resolved);
+        for(Method setter : setters)
+            resolveSetter(obj, setter, resolved);
     }
 
-    private <T> T createInstance(Constructor<? extends T> ctor, ArrayDeque<Class<?>> resolved)
+    private <T> T createInstance(Constructor<? extends T> ctor, Stack<Class<?>> resolved)
         throws DIException
     {
         ArrayList<Object> params = new ArrayList<>();
@@ -269,11 +269,11 @@ public final class DIContainer
             if(resolved.contains(cls))
                 throw new CircularDependenciesException("Dependencies resolving detected a cycle.");
 
-            if(!instances.containsKey(changeToReferenceType(cls)) && !classes.containsKey(
-                changeToReferenceType(cls)))
+            if(!instances.containsKey(toReferenceType(cls)) && !classes.containsKey(
+                toReferenceType(cls)))
                 throw new MissingDependenciesException("No dependency found when resolving.");
 
-            params.add(resolveType(changeToReferenceType(cls), resolved));
+            params.add(resolveType(toReferenceType(cls), resolved));
         }
 
         try
@@ -294,15 +294,14 @@ public final class DIContainer
 
         do
         {
-            if(!classes.containsKey(changeToReferenceType(mappedClass)))
+            if(!classes.containsKey(toReferenceType(mappedClass)))
                 if(isAbstractType(mappedClass))
                     throw new AbstractTypeException(
                         "Type " + mappedClass.getSimpleName() + " is abstract.");
                 else
-                    classes.put(changeToReferenceType(mappedClass),
-                                changeToReferenceType(mappedClass));
+                    classes.put(toReferenceType(mappedClass), toReferenceType(mappedClass));
 
-            mappedClass = (Class<? extends T>)classes.get(changeToReferenceType(mappedClass));
+            mappedClass = (Class<? extends T>)classes.get(toReferenceType(mappedClass));
         } while(isAbstractType(mappedClass));
 
         return mappedClass;
