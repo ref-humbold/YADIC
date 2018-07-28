@@ -3,7 +3,7 @@ package ref_humbold.di_container;
 import java.lang.reflect.Constructor;
 import java.util.Comparator;
 
-import ref_humbold.di_container.annotation.DependencyConstructor;
+import ref_humbold.di_container.annotation.Dependency;
 
 final class ConstructorComparator
     implements Comparator<Constructor<?>>
@@ -11,8 +11,8 @@ final class ConstructorComparator
     @Override
     public int compare(Constructor<?> ctor0, Constructor<?> ctor1)
     {
-        boolean ctorAnnotated0 = ctor0.isAnnotationPresent(DependencyConstructor.class);
-        boolean ctorAnnotated1 = ctor1.isAnnotationPresent(DependencyConstructor.class);
+        boolean ctorAnnotated0 = ctor0.isAnnotationPresent(Dependency.class);
+        boolean ctorAnnotated1 = ctor1.isAnnotationPresent(Dependency.class);
 
         if(ctorAnnotated0 && !ctorAnnotated1)
             return -1;

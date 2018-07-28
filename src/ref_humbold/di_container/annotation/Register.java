@@ -5,8 +5,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
+import ref_humbold.di_container.ConstructionPolicy;
+
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DependencySetter
+@Target(ElementType.TYPE)
+public @interface Register
 {
+    Class<?> value();
+
+    ConstructionPolicy policy() default ConstructionPolicy.CONSTRUCT;
 }

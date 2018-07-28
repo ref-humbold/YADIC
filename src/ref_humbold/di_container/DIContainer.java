@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
 
-import ref_humbold.di_container.annotation.DependencyConstructor;
-import ref_humbold.di_container.annotation.DependencySetter;
+import ref_humbold.di_container.annotation.Dependency;
 import ref_humbold.di_container.exception.*;
 
 public final class DIContainer
@@ -94,7 +93,7 @@ public final class DIContainer
     }
 
     /**
-     * Resolve all depencencies of given type using {@link DependencyConstructor} and {@link DependencySetter}.
+     * Resolve all depencencies and construct a new instance of given type using {@link Dependency}.
      * @param type type class
      * @return new instance
      * @throws DIException if type cannot be resolved
@@ -106,7 +105,7 @@ public final class DIContainer
     }
 
     /**
-     * Inject all dependencies to given object using {@link DependencySetter}.
+     * Resolve and inject all dependencies to given object using {@link Dependency} on setters.
      * @param obj instance object
      * @throws DIException if instance cannot be built up
      */
@@ -153,7 +152,7 @@ public final class DIContainer
         Arrays.sort(constructors, new ConstructorComparator());
 
         if(constructors.length > 1)
-            if(constructors[1].isAnnotationPresent(DependencyConstructor.class))
+            if(constructors[1].isAnnotationPresent(Dependency.class))
                 throw new MultipleAnnotatedConstructorsException(
                     "Only one constructor can be annotated as dependency.");
 
@@ -171,7 +170,7 @@ public final class DIContainer
                 lastException = e;
             }
 
-            if(object != null || ctor.isAnnotationPresent(DependencyConstructor.class))
+            if(object != null || ctor.isAnnotationPresent(Dependency.class))
                 break;
         }
 
@@ -211,7 +210,7 @@ public final class DIContainer
         ArrayList<Method> setters = new ArrayList<>();
 
         for(Method m : obj.getClass().getMethods())
-            if(m.isAnnotationPresent(DependencySetter.class))
+            if(m.isAnnotationPresent(Dependency.class))
             {
                 if(!isSetter(m))
                     throw new IncorrectDependencySetterException(
@@ -251,7 +250,7 @@ public final class DIContainer
     }
 
     private <T> Class<? extends T> findRegisteredConcreteClass(Class<T> type)
-        throws AbstractTypeException
+        throws MissingDependenciesException
     {
         Class<? extends T> mappedClass = type;
 
@@ -259,8 +258,9 @@ public final class DIContainer
         {
             if(!typesContainer.containsSubtype(mappedClass))
                 if(isAbstractType(mappedClass))
-                    throw new AbstractTypeException(
-                        "Type " + mappedClass.getSimpleName() + " is abstract.");
+                    throw new MissingDependenciesException(
+                        String.format("Abstract type %s has no registered subclass.",
+                                      mappedClass.getSimpleName()));
                 else
                     typesContainer.addSubtype(mappedClass);
 
