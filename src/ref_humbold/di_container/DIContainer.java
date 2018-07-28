@@ -3,7 +3,6 @@ package ref_humbold.di_container;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
@@ -41,7 +40,7 @@ public final class DIContainer
     public <T> DIContainer registerType(Class<T> type, ConstructionPolicy policy)
         throws AbstractTypeException
     {
-        if(isAbstractType(type))
+        if(TypesContainer.isAbstractType(type))
             throw new AbstractTypeException("Type " + type.getSimpleName() + " is abstract.");
 
         return registerType(type, type, policy);
@@ -115,11 +114,6 @@ public final class DIContainer
         buildUpObject(obj, new Stack<>());
 
         return this;
-    }
-
-    private boolean isAbstractType(Class<?> type)
-    {
-        return type.isInterface() || Modifier.isAbstract(type.getModifiers());
     }
 
     private boolean isSetter(Method method)
@@ -214,7 +208,7 @@ public final class DIContainer
             {
                 if(!isSetter(m))
                     throw new IncorrectDependencySetterException(
-                        "Dependency method must have exactly one argument and void return type.");
+                        "Dependency method must have exactly one argument, void return type and name starting with \'set\'.");
 
                 setters.add(m);
             }
@@ -250,24 +244,26 @@ public final class DIContainer
     }
 
     private <T> Class<? extends T> findRegisteredConcreteClass(Class<T> type)
-        throws MissingDependenciesException
+        throws DIException
     {
-        Class<? extends T> mappedClass = type;
+        Class<? extends T> subtype = type;
 
         do
         {
-            if(!typesContainer.containsSubtype(mappedClass))
-                if(isAbstractType(mappedClass))
+            if(!typesContainer.containsSubtype(subtype))
+            {
+                if(TypesContainer.isAbstractType(subtype))
                     throw new MissingDependenciesException(
-                        String.format("Abstract type %s has no registered subclass.",
-                                      mappedClass.getSimpleName()));
-                else
-                    typesContainer.addSubtype(mappedClass);
+                        String.format("Abstract type %s has no registered concrete subclass.",
+                                      subtype.getSimpleName()));
 
-            mappedClass = typesContainer.getSubtype(mappedClass);
-        } while(isAbstractType(mappedClass));
+                typesContainer.addSubtype(subtype);
+            }
 
-        return mappedClass;
+            subtype = typesContainer.getSubtype(subtype);
+        } while(TypesContainer.isAbstractType(subtype));
+
+        return subtype;
     }
 
     @SuppressWarnings("unchecked")

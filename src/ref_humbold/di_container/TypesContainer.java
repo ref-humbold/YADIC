@@ -1,8 +1,16 @@
 package ref_humbold.di_container;
 
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+
+import ref_humbold.di_container.annotation.Register;
+import ref_humbold.di_container.annotation.SelfRegister;
+import ref_humbold.di_container.exception.AbstractTypeException;
+import ref_humbold.di_container.exception.DIException;
+import ref_humbold.di_container.exception.NotDerivedTypeException;
 
 final class TypesContainer
 {
@@ -13,9 +21,42 @@ final class TypesContainer
     {
     }
 
+    public static boolean isAbstractType(Class<?> type)
+    {
+        return type.isInterface() || Modifier.isAbstract(type.getModifiers());
+    }
+
     @SuppressWarnings("unchecked")
     public <T> Class<? extends T> getSubtype(Class<T> type)
+        throws DIException
     {
+        if(type.isAnnotationPresent(Register.class))
+        {
+            Class<?> subtype = type.getAnnotation(Register.class).value();
+
+            if(!type.isAssignableFrom(subtype))
+                throw new NotDerivedTypeException(
+                    String.format("Type registered in @Register is not derived type of %s",
+                                  type.getSimpleName()));
+
+            if(TypesContainer.isAbstractType(type) && Objects.equals(type, subtype))
+                throw new AbstractTypeException(
+                    String.format("Type registered in @Register in %s is abstract.",
+                                  type.getSimpleName()));
+
+            return (Class<? extends T>)subtype;
+        }
+
+        if(type.isAnnotationPresent(SelfRegister.class))
+        {
+            if(TypesContainer.isAbstractType(type))
+                throw new AbstractTypeException(
+                    String.format("Abstract type %s is annotated with @SelfRegister.",
+                                  type.getSimpleName()));
+
+            return type;
+        }
+
         return (Class<? extends T>)subtypes.get(toRefType(type));
     }
 
@@ -43,7 +84,7 @@ final class TypesContainer
 
     public boolean containsSubtype(Class<?> type)
     {
-        return subtypes.containsKey(toRefType(type));
+        return isAnnotatedType(type) || subtypes.containsKey(toRefType(type));
     }
 
     public boolean containsType(Class<?> type)
@@ -53,7 +94,7 @@ final class TypesContainer
 
     public <T> boolean updateInstance(Class<T> type, T instance)
     {
-        if(!instances.containsKey(toRefType(type)))
+        if(!instances.containsKey(toRefType(type)) && !isSingletonAnnotated(type))
             return false;
 
         addInstance(type, instance);
@@ -64,6 +105,20 @@ final class TypesContainer
     public <T> T getInstance(Class<?> type)
     {
         return containsRealInstance(type) ? (T)instances.get(toRefType(type)).get() : null;
+    }
+
+    private boolean isAnnotatedType(Class<?> type)
+    {
+        return type.isAnnotationPresent(Register.class) || type.isAnnotationPresent(
+            SelfRegister.class);
+    }
+
+    private boolean isSingletonAnnotated(Class<?> type)
+    {
+        return type.isAnnotationPresent(Register.class)
+            && type.getAnnotation(Register.class).policy() == ConstructionPolicy.SINGLETON
+            || type.isAnnotationPresent(SelfRegister.class)
+            && type.getAnnotation(SelfRegister.class).policy() == ConstructionPolicy.SINGLETON;
     }
 
     private boolean containsInstance(Class<?> type)

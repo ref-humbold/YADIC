@@ -1,8 +1,8 @@
 package ref_humbold.di_container.auxiliary.register;
 
-import ref_humbold.di_container.annotation.Register;
+import ref_humbold.di_container.annotation.SelfRegister;
 
-@Register(ClassRegisterSelf1.class)
+@SelfRegister()
 public class ClassRegisterSelf1
 {
 }
