@@ -5,10 +5,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ref_humbold.di_container.auxiliary.basics.TestClassComplexDependency;
-import ref_humbold.di_container.auxiliary.basics.TestInterfaceComplexDependency;
-import ref_humbold.di_container.auxiliary.basics.TestProvider;
-import ref_humbold.di_container.auxiliary.diamonds.TestInterfaceDiamondBase;
+import ref_humbold.di_container.auxiliary.basics.ClassBasicsComplexDependency;
+import ref_humbold.di_container.auxiliary.basics.InterfaceBasicsComplexDependency;
+import ref_humbold.di_container.auxiliary.diamonds.InterfaceDiamondsBottom;
 import ref_humbold.di_container.exception.DIException;
 import ref_humbold.di_container.exception.EmptyContainerProviderException;
 import ref_humbold.di_container.exception.MissingDependenciesException;
@@ -16,13 +15,13 @@ import ref_humbold.di_container.exception.MissingDependenciesException;
 public class DIServiceLocatorTest
 {
     private DIContainer container;
-    private TestProvider provider;
+    private CustomProvider provider;
 
     @Before
     public void setUp()
     {
         container = new DIContainer();
-        provider = new TestProvider(container);
+        provider = new CustomProvider(container);
     }
 
     @After
@@ -57,11 +56,11 @@ public class DIServiceLocatorTest
     {
         DIServiceLocator.setContainerProvider(provider);
 
-        TestInterfaceComplexDependency cls = null;
+        InterfaceBasicsComplexDependency cls = null;
 
         try
         {
-            cls = DIServiceLocator.getObject(TestInterfaceComplexDependency.class);
+            cls = DIServiceLocator.getObject(InterfaceBasicsComplexDependency.class);
         }
         catch(DIException e)
         {
@@ -76,7 +75,7 @@ public class DIServiceLocatorTest
         Assert.assertNotNull(cls.getFirstObject().getObject());
         Assert.assertNotNull(cls.getSecondObject().getString());
         Assert.assertEquals("string", cls.getSecondObject().getString());
-        Assert.assertTrue(cls instanceof TestClassComplexDependency);
+        Assert.assertTrue(cls instanceof ClassBasicsComplexDependency);
     }
 
     @Test(expected = MissingDependenciesException.class)
@@ -85,7 +84,7 @@ public class DIServiceLocatorTest
     {
         DIServiceLocator.setContainerProvider(provider);
 
-        DIServiceLocator.getObject(TestInterfaceDiamondBase.class);
+        DIServiceLocator.getObject(InterfaceDiamondsBottom.class);
     }
 
     @Test(expected = EmptyContainerProviderException.class)
@@ -94,7 +93,7 @@ public class DIServiceLocatorTest
     {
         DIServiceLocator.setContainerProvider(null);
 
-        DIServiceLocator.getObject(TestInterfaceComplexDependency.class);
+        DIServiceLocator.getObject(InterfaceBasicsComplexDependency.class);
     }
 
     @Test
