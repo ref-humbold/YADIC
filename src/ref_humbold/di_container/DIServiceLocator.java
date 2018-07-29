@@ -9,24 +9,32 @@ public final class DIServiceLocator
 
     public static void setContainerProvider(DIContainerProvider provider)
     {
-        containerProvider = provider;
+        DIServiceLocator.containerProvider = provider;
     }
 
     public static boolean isProviderPresent()
     {
-        return containerProvider != null;
+        return DIServiceLocator.containerProvider != null;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getObject(Class<T> cls)
+    public static <T> T resolve(Class<T> type)
         throws DIException
     {
-        if(containerProvider == null)
+        if(DIServiceLocator.containerProvider == null)
             throw new EmptyContainerProviderException("Container provider is empty.");
 
-        if(cls == DIContainer.class)
-            return (T)containerProvider.getContainer();
+        return type == DIContainer.class ? (T)DIServiceLocator.containerProvider.getContainer()
+                                         : DIServiceLocator.containerProvider.getContainer()
+                                                                             .resolve(type);
+    }
 
-        return containerProvider.getContainer().resolve(cls);
+    public static <T> T buildUp(T instance)
+        throws DIException
+    {
+        if(DIServiceLocator.containerProvider == null)
+            throw new EmptyContainerProviderException("Container provider is empty.");
+
+        return DIServiceLocator.containerProvider.getContainer().buildUp(instance);
     }
 }
