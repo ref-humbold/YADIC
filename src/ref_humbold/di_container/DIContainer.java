@@ -105,15 +105,16 @@ public final class DIContainer
 
     /**
      * Resolve and inject all dependencies to given object using {@link Dependency} on setters.
-     * @param obj instance object
+     * @param instance instance object
+     * @return resolved instance
      * @throws DIException if instance cannot be built up
      */
-    public <T> DIContainer buildUp(T obj)
+    public <T> T buildUp(T instance)
         throws DIException
     {
-        buildUpObject(obj, new Stack<>());
+        buildUpObject(instance, new Stack<>());
 
-        return this;
+        return instance;
     }
 
     private boolean isSetter(Method method)

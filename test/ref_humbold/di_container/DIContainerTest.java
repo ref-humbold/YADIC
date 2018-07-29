@@ -1034,11 +1034,13 @@ public class DIContainerTest
     @Test
     public void testResolveWhenAnnotatedInterface()
     {
-        InterfaceRegister result = null;
+        InterfaceRegister result1 = null;
+        InterfaceRegister result2 = null;
 
         try
         {
-            result = testObject.resolve(InterfaceRegister.class);
+            result1 = testObject.resolve(InterfaceRegister.class);
+            result2 = testObject.resolve(InterfaceRegister.class);
         }
         catch(DIException e)
         {
@@ -1047,18 +1049,23 @@ public class DIContainerTest
                 String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
         }
 
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result instanceof ClassRegisterInterface);
+        Assert.assertNotNull(result1);
+        Assert.assertNotNull(result2);
+        Assert.assertTrue(result1 instanceof ClassRegisterInterface);
+        Assert.assertTrue(result2 instanceof ClassRegisterInterface);
+        Assert.assertNotSame(result1, result2);
     }
 
     @Test
     public void testResolveWhenAnnotatedAbstractClass()
     {
-        ClassRegisterAbstract result = null;
+        ClassRegisterAbstract result1 = null;
+        ClassRegisterAbstract result2 = null;
 
         try
         {
-            result = testObject.resolve(ClassRegisterAbstract.class);
+            result1 = testObject.resolve(ClassRegisterAbstract.class);
+            result2 = testObject.resolve(ClassRegisterAbstract.class);
         }
         catch(DIException e)
         {
@@ -1067,18 +1074,23 @@ public class DIContainerTest
                 String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
         }
 
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result instanceof ClassRegisterBase);
+        Assert.assertNotNull(result1);
+        Assert.assertNotNull(result2);
+        Assert.assertTrue(result2 instanceof ClassRegisterBase);
+        Assert.assertTrue(result1 instanceof ClassRegisterBase);
+        Assert.assertNotSame(result1, result2);
     }
 
     @Test
     public void testResolveWhenAnnotatedConcreteClass()
     {
-        ClassRegisterBase result = null;
+        ClassRegisterBase result1 = null;
+        ClassRegisterBase result2 = null;
 
         try
         {
-            result = testObject.resolve(ClassRegisterBase.class);
+            result1 = testObject.resolve(ClassRegisterBase.class);
+            result2 = testObject.resolve(ClassRegisterBase.class);
         }
         catch(DIException e)
         {
@@ -1087,8 +1099,11 @@ public class DIContainerTest
                 String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
         }
 
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result instanceof ClassRegisterDerived);
+        Assert.assertNotNull(result1);
+        Assert.assertNotNull(result2);
+        Assert.assertTrue(result1 instanceof ClassRegisterDerived);
+        Assert.assertTrue(result2 instanceof ClassRegisterDerived);
+        Assert.assertNotSame(result1, result2);
     }
 
     @Test
@@ -1193,6 +1208,102 @@ public class DIContainerTest
         testObject.resolve(ClassRegisterAbstractIncorrect.class);
     }
 
+    @Test
+    public void testResolveWhenAnnotatedInterfaceSingleton()
+    {
+        InterfaceRegisterSingleton result1 = null;
+        InterfaceRegisterSingleton result2 = null;
+
+        try
+        {
+            result1 = testObject.resolve(InterfaceRegisterSingleton.class);
+            result2 = testObject.resolve(InterfaceRegisterSingleton.class);
+        }
+        catch(DIException e)
+        {
+            e.printStackTrace();
+            Assert.fail(
+                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+        }
+
+        Assert.assertNotNull(result1);
+        Assert.assertNotNull(result2);
+        Assert.assertTrue(result1 instanceof ClassRegisterSingletonBase);
+        Assert.assertTrue(result2 instanceof ClassRegisterSingletonBase);
+        Assert.assertSame(result1, result2);
+    }
+
+    @Test
+    public void testResolveWhenAnnotatedConcreteClassSingleton()
+    {
+        ClassRegisterSingletonBase result1 = null;
+        ClassRegisterSingletonBase result2 = null;
+
+        try
+        {
+            result1 = testObject.resolve(ClassRegisterSingletonBase.class);
+            result2 = testObject.resolve(ClassRegisterSingletonBase.class);
+        }
+        catch(DIException e)
+        {
+            e.printStackTrace();
+            Assert.fail(
+                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+        }
+
+        Assert.assertNotNull(result1);
+        Assert.assertNotNull(result2);
+        Assert.assertTrue(result1 instanceof ClassRegisterSingletonDerived);
+        Assert.assertTrue(result2 instanceof ClassRegisterSingletonDerived);
+        Assert.assertSame(result1, result2);
+    }
+
+    @Test
+    public void testResolveWhenSelfAnnotatedConcreteClassSingleton()
+    {
+        ClassRegisterSelfSingleton1 result1 = null;
+        ClassRegisterSelfSingleton1 result2 = null;
+
+        try
+        {
+            result1 = testObject.resolve(ClassRegisterSelfSingleton1.class);
+            result2 = testObject.resolve(ClassRegisterSelfSingleton1.class);
+        }
+        catch(DIException e)
+        {
+            e.printStackTrace();
+            Assert.fail(
+                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+        }
+
+        Assert.assertNotNull(result1);
+        Assert.assertNotNull(result2);
+        Assert.assertSame(result1, result2);
+    }
+
+    @Test
+    public void testResolveWhenAnnotatedConcreteClassAsItselfSingleton()
+    {
+        ClassRegisterSelfSingleton2 result1 = null;
+        ClassRegisterSelfSingleton2 result2 = null;
+
+        try
+        {
+            result1 = testObject.resolve(ClassRegisterSelfSingleton2.class);
+            result2 = testObject.resolve(ClassRegisterSelfSingleton2.class);
+        }
+        catch(DIException e)
+        {
+            e.printStackTrace();
+            Assert.fail(
+                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+        }
+
+        Assert.assertNotNull(result1);
+        Assert.assertNotNull(result2);
+        Assert.assertSame(result1, result2);
+    }
+
     // endregion
     // region buildUp
 
@@ -1201,11 +1312,12 @@ public class DIContainerTest
     {
         testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class);
 
-        InterfaceSetters result = new ClassSettersSingle();
+        InterfaceSetters instance = new ClassSettersSingle();
+        InterfaceSetters result = null;
 
         try
         {
-            testObject.buildUp(result);
+            result = testObject.buildUp(instance);
         }
         catch(DIException e)
         {
@@ -1214,16 +1326,19 @@ public class DIContainerTest
         }
 
         Assert.assertNotNull(result);
+        Assert.assertNotNull(instance);
         Assert.assertNotNull(result.getBasicObject());
+        Assert.assertNotNull(instance.getBasicObject());
+        Assert.assertSame(instance, result);
     }
 
     @Test(expected = IncorrectDependencySetterException.class)
     public void testBuildUpWhenDoubleDependencySetter()
         throws DIException
     {
-        InterfaceSettersDouble result = new ClassSettersDouble();
+        InterfaceSettersDouble instance = new ClassSettersDouble();
 
-        testObject.buildUp(result);
+        testObject.buildUp(instance);
     }
 
     @Test
@@ -1235,11 +1350,12 @@ public class DIContainerTest
                   .registerType(InterfaceBasicsStringGetter.class, ClassBasicsStringGetter.class)
                   .registerInstance(String.class, string);
 
+        InterfaceSettersMultiple instance = new ClassSettersMultiple();
         InterfaceSettersMultiple result = new ClassSettersMultiple();
 
         try
         {
-            testObject.buildUp(result);
+            result = testObject.buildUp(instance);
         }
         catch(DIException e)
         {
@@ -1248,10 +1364,16 @@ public class DIContainerTest
         }
 
         Assert.assertNotNull(result);
+        Assert.assertNotNull(instance);
         Assert.assertNotNull(result.getBasicObject());
+        Assert.assertNotNull(instance.getBasicObject());
         Assert.assertNotNull(result.getStringObject());
+        Assert.assertNotNull(instance.getStringObject());
         Assert.assertNotNull(result.getStringObject().getString());
+        Assert.assertNotNull(instance.getStringObject().getString());
         Assert.assertEquals(string, result.getStringObject().getString());
+        Assert.assertEquals(string, instance.getStringObject().getString());
+        Assert.assertSame(instance, result);
     }
 
     @Test
@@ -1265,6 +1387,7 @@ public class DIContainerTest
                   .registerType(InterfaceBasicsStringGetter.class, ClassBasicsStringGetter.class)
                   .registerInstance(String.class, string);
 
+        InterfaceBasicsComplexDependency instance = null;
         InterfaceBasicsComplexDependency result = null;
 
         try
@@ -1273,8 +1396,8 @@ public class DIContainerTest
             InterfaceBasicsStringGetter withString = testObject.resolve(
                 InterfaceBasicsStringGetter.class);
 
-            result = new ClassBasicsComplexDependency(diamond1, withString);
-            testObject.buildUp(result);
+            instance = new ClassBasicsComplexDependency(diamond1, withString);
+            result = testObject.buildUp(instance);
         }
         catch(DIException e)
         {
@@ -1283,12 +1406,20 @@ public class DIContainerTest
         }
 
         Assert.assertNotNull(result);
+        Assert.assertNotNull(instance);
         Assert.assertNotNull(result.getBasicObject());
+        Assert.assertNotNull(instance.getBasicObject());
         Assert.assertNotNull(result.getFirstObject());
+        Assert.assertNotNull(instance.getFirstObject());
         Assert.assertNotNull(result.getSecondObject());
+        Assert.assertNotNull(instance.getSecondObject());
         Assert.assertNotNull(result.getFirstObject().getObject());
+        Assert.assertNotNull(instance.getFirstObject().getObject());
         Assert.assertNotNull(result.getSecondObject().getString());
+        Assert.assertNotNull(instance.getSecondObject().getString());
         Assert.assertEquals(string, result.getSecondObject().getString());
+        Assert.assertEquals(string, instance.getSecondObject().getString());
+        Assert.assertSame(instance, result);
     }
 
     // endregion
