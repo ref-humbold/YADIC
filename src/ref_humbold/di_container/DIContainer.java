@@ -41,7 +41,9 @@ public final class DIContainer
         throws AbstractTypeException
     {
         if(TypesContainer.isAbstractType(type))
-            throw new AbstractTypeException("Type " + type.getSimpleName() + " is abstract.");
+            throw new AbstractTypeException(
+                String.format("Type %s is abstract, so it cannot be self registered.",
+                              type.getSimpleName()));
 
         return registerType(type, type, policy);
     }
@@ -79,12 +81,13 @@ public final class DIContainer
      * Register concrete instance of its type.
      * @param type type class
      * @param instance concrete instance
+     * @return {@code this} for method chaining
      */
     public <T> DIContainer registerInstance(Class<T> type, T instance)
     {
         if(instance == null)
             throw new NullInstanceException(
-                "Given instance of type " + type.getSimpleName() + "is null.");
+                String.format("Given instance to register for %s is null.", type.getSimpleName()));
 
         typesContainer.addInstance(type, instance);
 
@@ -141,7 +144,7 @@ public final class DIContainer
     {
         resolved.push(type);
 
-        Class<? extends T> mappedClass = findRegisteredConcreteClass(type);
+        Class<? extends T> mappedClass = findRegisteredConcreteType(type);
         Constructor<? extends T>[] constructors = getConstructors(mappedClass);
 
         Arrays.sort(constructors, new ConstructorComparator());
@@ -173,8 +176,9 @@ public final class DIContainer
 
         if(object == null)
             throw lastException != null ? lastException : new NoInstanceCreatedException(
-                "No instance produced for " + type.getSimpleName()
-                    + ", though all possibilities have been checked.");
+                String.format(
+                    "No instance produced for %s, although all possibilities have been checked.",
+                    type.getSimpleName()));
 
         typesContainer.updateInstance(type, object);
 
@@ -244,7 +248,7 @@ public final class DIContainer
         }
     }
 
-    private <T> Class<? extends T> findRegisteredConcreteClass(Class<T> type)
+    private <T> Class<? extends T> findRegisteredConcreteType(Class<T> type)
         throws DIException
     {
         Class<? extends T> subtype = type;
@@ -280,12 +284,14 @@ public final class DIContainer
         catch(SecurityException e)
         {
             throw new NoSuitableConstructorException(
-                "No dependency constructor found for class " + type.getSimpleName(), e);
+                String.format("No dependency constructor found for class %s", type.getSimpleName()),
+                e);
         }
 
         if(constructors == null || constructors.length == 0)
             throw new NoSuitableConstructorException(
-                "No dependency constructor found for class " + type.getSimpleName());
+                String.format("No dependency constructor found for class %s",
+                              type.getSimpleName()));
 
         return (Constructor<? extends T>[])constructors;
     }
