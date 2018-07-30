@@ -2,11 +2,18 @@ package refhumbold.dicontainer;
 
 public abstract class DIContainerProvider
 {
-    public DIContainerProvider()
+    private final DIContainer container;
+
+    public DIContainerProvider(DIContainer container)
     {
+        this.container = container;
+        configure(this.container);
     }
 
-    public abstract DIContainer getContainer();
+    public DIContainer getContainer()
+    {
+        return this.container;
+    }
 
-    protected abstract void configureContainer(DIContainer container);
+    protected abstract void configure(DIContainer container);
 }

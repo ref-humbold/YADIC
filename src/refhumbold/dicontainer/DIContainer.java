@@ -12,7 +12,7 @@ import refhumbold.dicontainer.exception.*;
 
 public final class DIContainer
 {
-    private TypesContainer typesContainer = new TypesContainer();
+    private final TypesContainer typesContainer = new TypesContainer();
 
     public DIContainer()
     {

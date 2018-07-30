@@ -5,36 +5,42 @@ import refhumbold.dicontainer.exception.EmptyContainerProviderException;
 
 public final class DIServiceLocator
 {
-    private static DIContainerProvider containerProvider = null;
+    private static DIContainerProvider provider = null;
 
-    public static void setContainerProvider(DIContainerProvider provider)
+    public static void setProvider(DIContainerProvider provider)
     {
-        DIServiceLocator.containerProvider = provider;
+        DIServiceLocator.provider = provider;
     }
 
-    public static boolean isProviderPresent()
+    public static boolean hasProvider()
     {
-        return DIServiceLocator.containerProvider != null;
+        return provider != null;
+    }
+
+    public static DIContainer getContainer()
+    {
+        if(!hasProvider())
+            throw new EmptyContainerProviderException("Container provider is empty.");
+
+        return provider.getContainer();
     }
 
     @SuppressWarnings("unchecked")
     public static <T> T resolve(Class<T> type)
         throws DIException
     {
-        if(DIServiceLocator.containerProvider == null)
+        if(!hasProvider())
             throw new EmptyContainerProviderException("Container provider is empty.");
 
-        return type == DIContainer.class ? (T)DIServiceLocator.containerProvider.getContainer()
-                                         : DIServiceLocator.containerProvider.getContainer()
-                                                                             .resolve(type);
+        return getContainer().resolve(type);
     }
 
     public static <T> T buildUp(T instance)
         throws DIException
     {
-        if(DIServiceLocator.containerProvider == null)
+        if(!hasProvider())
             throw new EmptyContainerProviderException("Container provider is empty.");
 
-        return DIServiceLocator.containerProvider.getContainer().buildUp(instance);
+        return getContainer().buildUp(instance);
     }
 }

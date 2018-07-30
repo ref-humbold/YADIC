@@ -37,21 +37,21 @@ public class DIServiceLocatorTest
     }
 
     @Test
-    public void testIsProviderPresentWhenProviderSet()
+    public void testHasProviderWhenProviderSet()
     {
-        DIServiceLocator.setContainerProvider(provider);
+        DIServiceLocator.setProvider(provider);
 
-        boolean result = DIServiceLocator.isProviderPresent();
+        boolean result = DIServiceLocator.hasProvider();
 
         Assert.assertTrue(result);
     }
 
     @Test
-    public void testIsProviderPresentWhenProviderNotSet()
+    public void testHasProviderWhenProviderNotSet()
     {
-        DIServiceLocator.setContainerProvider(null);
+        DIServiceLocator.setProvider(null);
 
-        boolean result = DIServiceLocator.isProviderPresent();
+        boolean result = DIServiceLocator.hasProvider();
 
         Assert.assertFalse(result);
     }
@@ -59,7 +59,7 @@ public class DIServiceLocatorTest
     @Test
     public void testResolveWhenAllDependenciesArePresent()
     {
-        DIServiceLocator.setContainerProvider(provider);
+        DIServiceLocator.setProvider(provider);
 
         InterfaceBasicsComplexDependency result = null;
 
@@ -87,45 +87,43 @@ public class DIServiceLocatorTest
     public void testResolveWhenMissingDependencies()
         throws DIException
     {
-        DIServiceLocator.setContainerProvider(provider);
+        DIServiceLocator.setProvider(provider);
 
         DIServiceLocator.resolve(InterfaceDiamondsBottom.class);
     }
 
     @Test(expected = EmptyContainerProviderException.class)
-    public void testResolveWhenContainerProviderIsNull()
+    public void testResolveWhenProviderIsNull()
         throws DIException
     {
-        DIServiceLocator.setContainerProvider(null);
+        DIServiceLocator.setProvider(null);
 
         DIServiceLocator.resolve(InterfaceBasicsComplexDependency.class);
     }
 
     @Test
-    public void testResolveWhenContainerType()
+    public void testGetContainerWhenProviderPresent()
     {
-        DIServiceLocator.setContainerProvider(provider);
+        DIServiceLocator.setProvider(provider);
 
-        DIContainer result = null;
-
-        try
-        {
-            result = DIServiceLocator.resolve(DIContainer.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
-        }
+        DIContainer result = DIServiceLocator.getContainer();
 
         Assert.assertNotNull(result);
         Assert.assertSame(container, result);
     }
 
+    @Test(expected = EmptyContainerProviderException.class)
+    public void testGetContainerWhenProviderIsNull()
+    {
+        DIServiceLocator.setProvider(null);
+
+        DIServiceLocator.getContainer();
+    }
+
     @Test
     public void testBuildUpWhenWhenAllDependenciesArePresent()
     {
-        DIServiceLocator.setContainerProvider(provider);
+        DIServiceLocator.setProvider(provider);
 
         InterfaceBasicsComplexDependency instance = null;
         InterfaceBasicsComplexDependency result = null;
@@ -166,7 +164,7 @@ public class DIServiceLocatorTest
     public void testBuildUpWhenIncorrectSetters()
         throws DIException
     {
-        DIServiceLocator.setContainerProvider(provider);
+        DIServiceLocator.setProvider(provider);
 
         InterfaceSettersDouble instance = new ClassSettersDouble();
 

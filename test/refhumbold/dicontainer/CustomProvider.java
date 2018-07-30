@@ -5,7 +5,7 @@ import refhumbold.dicontainer.auxiliary.constructors.ClassConstructorsDefault;
 import refhumbold.dicontainer.auxiliary.diamonds.*;
 
 class CustomProvider
-    extends DIContainerBaseProvider
+    extends DIContainerProvider
 {
     public CustomProvider(DIContainer container)
     {
@@ -13,7 +13,7 @@ class CustomProvider
     }
 
     @Override
-    protected void configureContainer(DIContainer container)
+    protected void configure(DIContainer container)
     {
         container.registerType(InterfaceBasicsComplexDependency.class,
                                ClassBasicsComplexDependency.class)
