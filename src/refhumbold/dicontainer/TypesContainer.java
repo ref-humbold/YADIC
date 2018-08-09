@@ -92,19 +92,24 @@ final class TypesContainer
         return containsInstance(type) || containsSubtype(type);
     }
 
-    public <T> boolean updateInstance(Class<T> type, T instance)
+    public <T> void updateInstance(Class<T> type, T instance)
     {
-        if(!instances.containsKey(toRefType(type)) && !isSingletonAnnotated(type))
-            return false;
-
-        addInstance(type, instance);
-        return true;
+        if(instances.containsKey(toRefType(type)) || isSingletonAnnotated(type))
+            addInstance(type, instance);
     }
 
     @SuppressWarnings("unchecked")
     public <T> T getInstance(Class<?> type)
     {
-        return containsRealInstance(type) ? (T)instances.get(toRefType(type)).get() : null;
+        if(!containsRealInstance(type))
+            return null;
+
+        Optional<Object> optional = instances.get(toRefType(type));
+
+        if(!optional.isPresent())
+            return null;
+
+        return (T)optional.get();
     }
 
     private boolean isAnnotatedType(Class<?> type)
