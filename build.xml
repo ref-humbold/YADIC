@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="DI-Container" basedir="." default="all">
   <property name="vendor" value="Rafał Kaleta" />
-  <property name="major.version" value="3" />
-  <property name="minor.version" value="0" />
   <property name="src.dir" value="src" />
   <property name="test.dir" value="test" />
   <property name="build.dir" value="bin" />
@@ -15,6 +13,10 @@
   <property name="debuglevel" value="source,lines,vars" />
   <property name="target" value="1.8" />
   <property name="source" value="1.8" />
+
+  <tstamp>
+    <format property="version" pattern="yyyy.M.d" locale="en,GB" />
+  </tstamp>
 
   <path id="DI-container.classpath">
     <fileset dir="${ivy.lib.dir}" includes="*.jar" />
@@ -64,16 +66,18 @@
   </target>
 
   <target name="jar" depends="build">
-    <delete file="dicontainer-*.jar" />
-    <jar destfile="dicontainer-${major.version}.${minor.version}.jar" basedir="${build.dir}"
+    <delete>
+      <fileset dir="." includes="dicontainer-*.jar" />
+    </delete>
+    <jar destfile="dicontainer-${version}.jar" basedir="${build.dir}"
          excludes="**/*Test.class">
       <manifest>
         <attribute name="Built-By" value="${vendor}" />
         <attribute name="Specification-Title" value="Dependency Injection Container" />
-        <attribute name="Specification-Version" value="${major.version}" />
+        <attribute name="Specification-Version" value="2.0" />
         <attribute name="Specification-Vendor" value="${vendor}" />
         <attribute name="Implementation-Title" value="${main.package}" />
-        <attribute name="Implementation-Verion" value="${major.version}.${minor.version}" />
+        <attribute name="Implementation-Verion" value="${version}" />
         <attribute name="Implementation-Vendor" value="${vendor}" />
       </manifest>
     </jar>
