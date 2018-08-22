@@ -74,7 +74,7 @@
       <manifest>
         <attribute name="Built-By" value="${vendor}" />
         <attribute name="Specification-Title" value="Dependency Injection Container" />
-        <attribute name="Specification-Version" value="2.0" />
+        <attribute name="Specification-Version" value="2" />
         <attribute name="Specification-Vendor" value="${vendor}" />
         <attribute name="Implementation-Title" value="${main.package}" />
         <attribute name="Implementation-Verion" value="${version}" />
