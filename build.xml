@@ -67,7 +67,7 @@
   </target>
 
   <target name="jar" depends="build">
-    <delete>
+    <delete verbose="true">
       <fileset dir="." includes="dicontainer-*.jar" />
     </delete>
     <jar destfile="dicontainer-${jar.version}.jar" basedir="${build.dir}"
