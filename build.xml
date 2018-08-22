@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="DI-Container" basedir="." default="all">
   <property name="vendor" value="Rafał Kaleta" />
+  <property name="spec.version" value="2" />
   <property name="src.dir" value="src" />
   <property name="test.dir" value="test" />
   <property name="build.dir" value="bin" />
@@ -15,7 +16,7 @@
   <property name="source" value="1.8" />
 
   <tstamp>
-    <format property="version" pattern="yyyy.M.d" locale="en,GB" />
+    <format property="jar.version" pattern="yyyy.M.d" locale="en,GB" />
   </tstamp>
 
   <path id="DI-container.classpath">
@@ -69,15 +70,15 @@
     <delete>
       <fileset dir="." includes="dicontainer-*.jar" />
     </delete>
-    <jar destfile="dicontainer-${version}.jar" basedir="${build.dir}"
+    <jar destfile="dicontainer-${jar.version}.jar" basedir="${build.dir}"
          excludes="**/*Test.class">
       <manifest>
         <attribute name="Built-By" value="${vendor}" />
         <attribute name="Specification-Title" value="Dependency Injection Container" />
-        <attribute name="Specification-Version" value="2" />
+        <attribute name="Specification-Version" value="${spec.version}" />
         <attribute name="Specification-Vendor" value="${vendor}" />
         <attribute name="Implementation-Title" value="${main.package}" />
-        <attribute name="Implementation-Verion" value="${version}" />
+        <attribute name="Implementation-Version" value="${jar.version}" />
         <attribute name="Implementation-Vendor" value="${vendor}" />
       </manifest>
     </jar>
