@@ -1,6 +1,7 @@
 # Java, Apache ANT, Apache Ivy
 bin
 lib
+dicontainer-*.jar
 
 # Javadoc
 docs
