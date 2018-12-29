@@ -7,7 +7,7 @@ public class ClassDiamonds1
 
     public ClassDiamonds1()
     {
-        this.object = null;
+        object = null;
     }
 
     public ClassDiamonds1(InterfaceDiamondsTop object)

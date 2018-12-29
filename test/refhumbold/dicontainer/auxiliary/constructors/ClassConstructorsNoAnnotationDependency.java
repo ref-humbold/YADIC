@@ -13,7 +13,7 @@ public class ClassConstructorsNoAnnotationDependency
     public ClassConstructorsNoAnnotationDependency(InterfaceDiamonds1 firstObject)
     {
         this.firstObject = firstObject;
-        this.secondObject = null;
+        secondObject = null;
     }
 
     public ClassConstructorsNoAnnotationDependency(InterfaceDiamonds1 firstObject,

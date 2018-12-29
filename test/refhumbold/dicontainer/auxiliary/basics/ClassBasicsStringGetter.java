@@ -7,7 +7,7 @@ public class ClassBasicsStringGetter
 
     public ClassBasicsStringGetter()
     {
-        this.text = "";
+        text = "";
     }
 
     public ClassBasicsStringGetter(String text)

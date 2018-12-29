@@ -9,7 +9,7 @@ public class ClassConstructorsDefaultAndParameter
 
     public ClassConstructorsDefaultAndParameter()
     {
-        this.text = "";
+        text = "";
     }
 
     public ClassConstructorsDefaultAndParameter(String text)

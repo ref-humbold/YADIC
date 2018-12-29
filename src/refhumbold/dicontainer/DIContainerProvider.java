@@ -7,12 +7,12 @@ public abstract class DIContainerProvider
     public DIContainerProvider(DIContainer container)
     {
         this.container = container;
-        configure(this.container);
+        configure(container);
     }
 
     public DIContainer getContainer()
     {
-        return this.container;
+        return container;
     }
 
     protected abstract void configure(DIContainer container);
