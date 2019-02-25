@@ -1,14 +1,11 @@
 # Java, Apache ANT, Apache Ivy
 bin
+dist
 lib
-dicontainer-*.jar
 
-# Javadoc
+# Javadoc, JUnit
 docs
-
-# JUnit
-junit_reports
-junit_results
+junit
 
 # IntelliJ IDEA
 *.iml
