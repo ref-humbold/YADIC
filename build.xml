@@ -47,9 +47,10 @@
     <delete dir="${dist.dir}" />
   </target>
 
-  <target name="clean-test" depends="clean">
+  <target name="clean-all" depends="clean">
     <delete dir="${junit.output.dir}" />
-    <delete dir="${junit.reports.dir}" />
+    <delete dir="${junit.report.dir}" />
+    <delete dir="${javadoc.output.dir}" />
   </target>
 
   <target name="init" depends="resolve">
@@ -94,7 +95,6 @@
       </batchtest>
       <classpath refid="DI-container.classpath" />
     </junit>
-    <delete dir="${junit.report.dir}" />
     <mkdir dir="${junit.report.dir}" />
     <junitreport todir="${junit.report.dir}">
       <fileset dir="${junit.output.dir}" includes="TEST-*.xml" />
@@ -103,7 +103,6 @@
   </target>
 
   <target name="javadocs">
-    <delete dir="${javadoc.output.dir}" />
     <mkdir dir="${javadoc.output.dir}" />
     <javadoc sourcepath="${src.dir}" destdir="${javadoc.output.dir}" access="public">
       <package name="${main.package}.*" />
@@ -112,5 +111,5 @@
 
   <target name="release" depends="clean, jar" />
 
-  <target name="all" depends="clean-test, jar, test, javadocs" />
+  <target name="all" depends="clean-all, jar, test, javadocs" />
 </project>
