@@ -20,6 +20,8 @@
     <format property="jar.version" pattern="yyyy.M.d" locale="en,GB" />
   </tstamp>
 
+  <property name="jar.file" value="${dist.dir}/dicontainer-${jar.version}.jar" />
+
   <path id="DI-container.classpath">
     <fileset dir="${ivy.lib.dir}" includes="*.jar" />
     <pathelement location="${build.dir}" />
@@ -72,8 +74,7 @@
   </target>
 
   <target name="jar" depends="build">
-    <jar destfile="${dist.dir}/dicontainer-${jar.version}.jar" basedir="${build.dir}"
-         excludes="**/*Test.class">
+    <jar destfile="${jar.file}" basedir="${build.dir}" excludes="**/*Test.class">
       <manifest>
         <attribute name="Built-By" value="${vendor}" />
         <attribute name="Specification-Title" value="Dependency Injection Container" />
