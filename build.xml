@@ -110,7 +110,11 @@
     </javadoc>
   </target>
 
-  <target name="release" depends="clean, jar" />
+  <target name="release" depends="jar" />
 
-  <target name="all" depends="clean-all, jar, test, javadocs" />
+  <target name="all" depends="jar, test, javadocs" />
+
+  <target name="refresh" depends="clean, release" />
+
+  <target name="refresh-all" depends="clean-all, all" />
 </project>
