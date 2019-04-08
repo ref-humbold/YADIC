@@ -1,6 +1,6 @@
 <ivy-module version="2.0">
   <info organisation="ref_humbold" module="di_coitainer" />
   <dependencies>
-    <dependency org="junit" name="junit" rev="4.12" />
+    <dependency org="junit" name="junit" rev="4.+" />
   </dependencies>
 </ivy-module>
