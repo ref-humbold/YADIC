@@ -1,11 +1,9 @@
-# Java, Apache ANT, Apache Ivy
+# Java, Apache ANT, Apache Ivy, Javadoc, JUnit
 bin
 dist
-lib
-
-# Javadoc, JUnit
 docs
 junit
+lib
 
 # IntelliJ IDEA
 *.iml
