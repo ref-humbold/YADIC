@@ -1,17 +1,17 @@
 # [ Java ]
-# Java, Apache ANT output
-bin
-dist
+# Java / Apache ANT output
+bin/
+dist/
 
 # Javadoc output
-docs
+docs/
 
 # JUnit output
-junit
+junit/
 
 # Apache Ivy dependencies
-lib
+lib/
 
 # IntelliJ IDEA
 .idea
-out
+out/
