@@ -22,7 +22,7 @@
   <property name="jar.file" value="${main.package}-${jar.version}.jar" />
 
   <property name="ivy.lib.dir" value="lib" />
-  <property name="ivy.install.version" value="2.5.0-rc1" />
+  <property name="ivy.install.version" value="2.5.0" />
 
   <property name="source.level" value="8" />
   <property name="target.level" value="8" />
