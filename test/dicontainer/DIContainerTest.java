@@ -32,7 +32,7 @@ public class DIContainerTest
     // region registerType (single class)
 
     @Test
-    public void testRegisterWhenSingleClass()
+    public void register_WhenSingleClass_ThenDifferentInstances()
     {
         try
         {
@@ -41,7 +41,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         ClassConstructorsDefault result1 = null;
@@ -55,7 +55,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -64,7 +64,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testRegisterWhenSingleClassAsSingleton()
+    public void register_WhenSingleClassAsSingleton_ThenSameInstance()
     {
         try
         {
@@ -73,7 +73,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         ClassConstructorsDefault result1 = null;
@@ -87,7 +87,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -96,7 +96,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testRegisterWhenSingleClassChangesSingleton()
+    public void register_WhenSingleClassChangesSingleton_ThenChangesInstances()
     {
         try
         {
@@ -105,7 +105,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         ClassConstructorsDefault result11 = null;
@@ -119,7 +119,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result11);
@@ -133,7 +133,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         ClassConstructorsDefault result21 = null;
@@ -147,7 +147,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result21);
@@ -156,15 +156,15 @@ public class DIContainerTest
     }
 
     @Test(expected = AbstractTypeException.class)
-    public void testRegisterWhenSingleClassIsInterface()
-        throws AbstractTypeException
+    public void register_WhenSingleClassIsInterface_ThenAbstractTypeException()
+            throws AbstractTypeException
     {
         testObject.registerType(InterfaceBasics.class);
     }
 
     @Test(expected = AbstractTypeException.class)
-    public void testRegisterWhenSingleClassIsAbstractClass()
-        throws AbstractTypeException
+    public void register_WhenSingleClassIsAbstractClass_ThenAbstractTypeException()
+            throws AbstractTypeException
     {
         testObject.registerType(ClassBasicsAbstract.class);
     }
@@ -173,7 +173,7 @@ public class DIContainerTest
     // region registerType (inheritance)
 
     @Test
-    public void testRegisterWhenInheritanceFromInterface()
+    public void register_WhenInheritanceFromInterface_ThenDifferentInstances()
     {
         testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class);
 
@@ -188,7 +188,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -199,7 +199,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testRegisterWhenInheritanceFromInterfaceAsSingleton()
+    public void register_WhenInheritanceFromInterfaceAsSingleton_ThenSameInstances()
     {
         testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class,
                                 ConstructionPolicy.SINGLETON);
@@ -215,7 +215,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -226,7 +226,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testRegisterWhenInheritanceFromInterfaceChangesSingleton()
+    public void register_WhenInheritanceFromInterfaceChangesSingleton_ThenChangeInstances()
     {
         testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class,
                                 ConstructionPolicy.SINGLETON);
@@ -242,7 +242,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result11);
@@ -265,7 +265,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result21);
@@ -276,7 +276,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testRegisterWhenInheritanceFromInterfaceChangesClass()
+    public void register_WhenInheritanceFromInterfaceChangesClass_ThenInstanceIsDerived()
     {
         testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class);
 
@@ -289,7 +289,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -306,7 +306,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result3);
@@ -314,7 +314,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testRegisterWhenInheritanceFromAbstractClass()
+    public void register_WhenInheritanceFromAbstractClass_ThenInstanceIsDerived()
     {
         testObject.registerType(ClassBasicsAbstract.class, ClassBasicsInheritsFromAbstract.class);
 
@@ -327,7 +327,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -335,7 +335,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testRegisterWhenInheritanceFromConcreteClass()
+    public void register_WhenInheritanceFromConcreteClass_ThenInstanceIsDerived()
     {
         testObject.registerType(ClassConstructorsParameter.class,
                                 ClassConstructorsInheritParameter.class);
@@ -349,7 +349,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -357,7 +357,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testRegisterWhenTwoStepsOfHierarchy()
+    public void register_WhenTwoStepsOfHierarchy_ThenInstanceIsDerived()
     {
         testObject.registerType(InterfaceBasics.class, ClassBasicsAbstract.class)
                   .registerType(ClassBasicsAbstract.class, ClassBasicsInheritsFromAbstract.class);
@@ -371,7 +371,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -382,7 +382,7 @@ public class DIContainerTest
     // region registerInstance
 
     @Test
-    public void testRegisterInstanceWhenInterface()
+    public void registerInstance_WhenInterface_ThenRegisteredInstance()
     {
         ClassConstructorsDefault obj = new ClassConstructorsDefault();
 
@@ -397,7 +397,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -406,7 +406,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testRegisterInstanceWhenAbstractClass()
+    public void registerInstance_WhenAbstractClass_ThenRegisteredInstance()
     {
         ClassBasicsInheritsFromAbstract obj = new ClassBasicsInheritsFromAbstract();
 
@@ -421,7 +421,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -430,7 +430,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testRegisterInstanceWhenSameConcreteClass()
+    public void registerInstance_WhenSameConcreteClass_ThenRegisteredInstance()
     {
         ClassConstructorsDefaultAndParameter obj = new ClassConstructorsDefaultAndParameter();
 
@@ -445,7 +445,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -454,7 +454,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testRegisterInstanceWhenDerivedConcreteClass()
+    public void registerInstance_WhenDerivedConcreteClass_ThenRegisteredInstance()
     {
         ClassConstructorsInheritParameter obj = new ClassConstructorsInheritParameter();
 
@@ -469,7 +469,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -479,8 +479,8 @@ public class DIContainerTest
     }
 
     @Test(expected = NullInstanceException.class)
-    public void testRegisterInstanceWhenInstanceIsNull()
-        throws IllegalArgumentException
+    public void registerInstance_WhenInstanceIsNull_ThenNullInstanceException()
+            throws IllegalArgumentException
     {
         testObject.registerInstance(ClassConstructorsDefaultAndParameter.class, null);
     }
@@ -489,7 +489,7 @@ public class DIContainerTest
     //region resolve (class)
 
     @Test
-    public void testResolveWhenClassHasDefaultConstructorOnly()
+    public void resolve_WhenClassHasDefaultConstructorOnly_ThenInstanceIsResolved()
     {
         ClassConstructorsDefault result = null;
 
@@ -500,14 +500,14 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
     }
 
     @Test
-    public void testResolveWhenClassInheritsFromConcreteClass()
+    public void resolve_WhenClassInheritsFromConcreteClass_ThenInstanceIsResolved()
     {
         ClassConstructorsInheritParameter result = null;
 
@@ -518,14 +518,14 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
     }
 
     @Test
-    public void testResolveWhenClassInheritsFromAbstractClass()
+    public void resolve_WhenClassInheritsFromAbstractClass_ThenInstanceIsResolved()
     {
         ClassBasicsInheritsFromAbstract result = null;
 
@@ -536,22 +536,21 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
     }
 
     @Test(expected = MissingDependenciesException.class)
-    public void testResolveWhenClassHasParameterConstructorWithoutRegisteredParameter()
-        throws DIException
-
+    public void resolve_WhenClassHasParameterConstructorWithoutRegisteredParameter_ThenMissingDependenciesException()
+            throws DIException
     {
         testObject.resolve(ClassConstructorsParameter.class);
     }
 
     @Test
-    public void testResolveWhenClassHasParameterConstructorWithRegisteredPrimitiveParameter()
+    public void resolve_WhenClassHasParameterConstructorWithRegisteredPrimitiveParameter_ThenInstanceIsResolved()
     {
         int number = 10;
 
@@ -566,7 +565,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -574,7 +573,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveWhenClassHasParameterConstructorWithRegisteredReferenceParameter()
+    public void resolve_WhenClassHasParameterConstructorWithRegisteredReferenceParameter_ThenInstanceIsResolved()
     {
         Integer number = 10;
 
@@ -589,16 +588,17 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
     }
 
     @Test
-    public void testResolveWhenClassHasDefaultAndParameterConstructorWithoutRegisteredParameter()
+    public void resolve_WhenClassHasDefaultAndParameterConstructorWithoutRegisteredParameter_ThenInstanceIsResolved()
     {
         ClassConstructorsDefaultAndParameter result = null;
+
         try
         {
             result = testObject.resolve(ClassConstructorsDefaultAndParameter.class);
@@ -606,22 +606,22 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
     }
 
     @Test(expected = MissingDependenciesException.class)
-    public void testResolveWhenInterface()
-        throws DIException
+    public void resolve_WhenInterface_ThenMissingDependenciesException()
+            throws DIException
     {
         testObject.resolve(InterfaceBasics.class);
     }
 
     @Test(expected = MissingDependenciesException.class)
-    public void testResolveWhenAbstractClass()
-        throws DIException
+    public void resolve_WhenAbstractClass_ThenMissingDependenciesException()
+            throws DIException
     {
         testObject.resolve(ClassBasicsAbstract.class);
     }
@@ -630,7 +630,7 @@ public class DIContainerTest
     // region resolve (dependencies schemas)
 
     @Test
-    public void testResolveDependenciesWithRegisteredInstance()
+    public void resolve_WhenDependenciesWithRegisteredInstance_ThenInstanceIsResolved()
     {
         String string = "String";
 
@@ -651,7 +651,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -664,7 +664,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveDependenciesWithoutAnnotatedConstructorsWithAllDependencies()
+    public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithAllDependencies_ThenInstanceIsResolved()
     {
         testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
                   .registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
@@ -682,7 +682,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -695,7 +695,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveDependenciesWithoutAnnotatedConstructorsWithoutSomeDependencies()
+    public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithoutSomeDependencies_ThenInstanceIsResolved()
     {
         testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
                   .registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
@@ -712,7 +712,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -723,7 +723,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveDependenciesWithAnnotatedConstructor()
+    public void resolve_WhenDependenciesWithAnnotatedConstructor_ThenInstanceIsResolved()
     {
         testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
                   .registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
@@ -741,7 +741,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -754,9 +754,8 @@ public class DIContainerTest
     }
 
     @Test(expected = MissingDependenciesException.class)
-    public void testResolveDependenciesWithAnnotatedConstructorWithoutSomeDependencies()
-        throws DIException
-
+    public void resolve_WhenDependenciesWithAnnotatedConstructorWithoutSomeDependencies_ThenMissingDependenciesException()
+            throws DIException
     {
         testObject.registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
                   .registerType(InterfaceDiamonds2.class, ClassDiamonds2.class)
@@ -766,7 +765,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveDiamondDependenciesWithoutSingleton()
+    public void resolve_WhenDiamondDependenciesWithoutSingleton_ThenInstanceIsResolved()
     {
         testObject.registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
                   .registerType(InterfaceDiamonds2.class, ClassDiamonds2.class)
@@ -782,7 +781,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -795,7 +794,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveDiamondDependenciesWithSingleton()
+    public void resolve_WhenDiamondDependenciesWithSingleton_ThenInstanceIsResolved()
     {
         testObject.registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
                   .registerType(InterfaceDiamonds2.class, ClassDiamonds2.class)
@@ -812,7 +811,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -825,9 +824,8 @@ public class DIContainerTest
     }
 
     @Test(expected = CircularDependenciesException.class)
-    public void testResolveCircularDependencies()
-        throws DIException
-
+    public void resolve_WhenCircularDependencies_ThenCircularDependenciesException()
+            throws DIException
     {
         testObject.registerType(InterfaceCirculars1.class, ClassCirculars1.class)
                   .registerType(InterfaceCirculars2.class, ClassCirculars2.class);
@@ -836,7 +834,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveWhenCanOmitCircularDependencies()
+    public void resolve_WhenCanOmitCircularDependencies_ThenInstanceIsResolved()
     {
         String string = "String";
 
@@ -855,7 +853,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -870,42 +868,42 @@ public class DIContainerTest
     // region resolve (@Dependency)
 
     @Test(expected = MultipleAnnotatedConstructorsException.class)
-    public void testResolveWhenMultipleAnnotatedConstructors()
-        throws DIException
+    public void resolve_WhenMultipleAnnotatedConstructors_ThenMultipleAnnotatedConstructorsException()
+            throws DIException
     {
         testObject.resolve(ClassConstructorsMultipleAnnotated.class);
     }
 
     @Test(expected = NoSuitableConstructorException.class)
-    public void testResolveWhenNoPublicConstructors()
-        throws DIException
+    public void resolve_WhenNoPublicConstructors_ThenNoSuitableConstructorException()
+            throws DIException
     {
         testObject.resolve(ClassConstructorsPrivate.class);
     }
 
     @Test(expected = IncorrectDependencySetterException.class)
-    public void testResolveWhenDependencySetterHasReturnType()
-        throws DIException
+    public void resolve_WhenDependencySetterHasReturnType_ThenIncorrectDependencySetterException()
+            throws DIException
     {
         testObject.resolve(ClassSettersIncorrect1.class);
     }
 
     @Test(expected = IncorrectDependencySetterException.class)
-    public void testResolveWhenDependencySetterHasNoParameters()
-        throws DIException
+    public void resolve_WhenDependencySetterHasNoParameters_ThenIncorrectDependencySetterException()
+            throws DIException
     {
         testObject.resolve(ClassSettersIncorrect2.class);
     }
 
     @Test(expected = IncorrectDependencySetterException.class)
-    public void testResolveWhenDependencySetterNameDoesNotStartWithSet()
-        throws DIException
+    public void resolve_WhenDependencySetterNameDoesNotStartWithSet_ThenIncorrectDependencySetterException()
+            throws DIException
     {
         testObject.resolve(ClassSettersIncorrect3.class);
     }
 
     @Test
-    public void testResolveWhenDependencySetterOnly()
+    public void resolve_WhenDependencySetterOnly_ThenInstanceIsResolved()
     {
         testObject.registerType(InterfaceSetters.class, ClassSettersSingle.class)
                   .registerType(InterfaceBasics.class, ClassConstructorsDefault.class);
@@ -919,7 +917,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -928,7 +926,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveWhenDependencySetterAndConstructor()
+    public void resolve_WhenDependencySetterAndConstructor_ThenInstanceIsResolved()
     {
         testObject.registerType(InterfaceSetters.class, ClassSettersConstructor.class)
                   .registerType(InterfaceBasics.class, ClassConstructorsDefault.class);
@@ -942,7 +940,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -951,7 +949,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveWhenComplexDependency()
+    public void resolve_WhenComplexDependency_ThenInstanceIsResolved()
     {
         String string = "string";
 
@@ -973,7 +971,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -987,18 +985,16 @@ public class DIContainerTest
     }
 
     @Test(expected = IncorrectDependencySetterException.class)
-    public void testResolveWhenDoubleDependencySetter()
-        throws DIException
+    public void resolve_WhenDoubleDependencySetter_ThenIncorrectDependencySetterException()
+            throws DIException
     {
-        String string = "string";
-
         testObject.registerType(InterfaceSettersDouble.class, ClassSettersDouble.class);
 
         testObject.resolve(InterfaceSettersDouble.class);
     }
 
     @Test
-    public void testResolveWhenMultipleDependencySetters()
+    public void resolve_WhenMultipleDependencySetters_ThenInstanceIsResolved()
     {
         String string = "string";
 
@@ -1017,7 +1013,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -1032,7 +1028,7 @@ public class DIContainerTest
     // region resolve (@Register and @SelfRegister)
 
     @Test
-    public void testResolveWhenAnnotatedInterface()
+    public void resolve_WhenAnnotatedInterface_ThenInstanceIsResolved()
     {
         InterfaceRegister result1 = null;
         InterfaceRegister result2 = null;
@@ -1045,8 +1041,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail(
-                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+            Assert.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -1057,7 +1052,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveWhenAnnotatedAbstractClass()
+    public void resolve_WhenAnnotatedAbstractClass_ThenInstanceIsResolved()
     {
         ClassRegisterAbstract result1 = null;
         ClassRegisterAbstract result2 = null;
@@ -1070,8 +1065,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail(
-                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+            Assert.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -1082,7 +1076,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveWhenAnnotatedConcreteClass()
+    public void resolve_WhenAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
         ClassRegisterBase result1 = null;
         ClassRegisterBase result2 = null;
@@ -1095,8 +1089,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail(
-                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+            Assert.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -1107,7 +1100,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveWhenSelfAnnotatedConcreteClass()
+    public void resolve_WhenSelfAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
         ClassRegisterSelf1 result1 = null;
         ClassRegisterSelf1 result2 = null;
@@ -1120,8 +1113,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail(
-                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+            Assert.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -1130,7 +1122,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveWhenAnnotatedConcreteClassAsItself()
+    public void resolve_WhenAnnotatedConcreteClassAsItself_ThenInstanceIsResolved()
     {
         ClassRegisterSelf2 result1 = null;
         ClassRegisterSelf2 result2 = null;
@@ -1143,8 +1135,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail(
-                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+            Assert.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -1153,63 +1144,63 @@ public class DIContainerTest
     }
 
     @Test(expected = AbstractTypeException.class)
-    public void testResolveWhenSelfAnnotatedInterface()
-        throws DIException
+    public void resolve_WhenSelfAnnotatedInterface_ThenAbstractTypeException()
+            throws DIException
     {
         testObject.resolve(InterfaceRegisterSelfIncorrect.class);
     }
 
     @Test(expected = NotDerivedTypeException.class)
-    public void testResolveWhenInterfaceAnnotatedClassNotImplementing()
-        throws DIException
+    public void resolve_WhenInterfaceAnnotatedClassNotImplementing_ThenNotDerivedTypeException()
+            throws DIException
     {
         testObject.resolve(InterfaceRegisterIncorrect.class);
     }
 
     @Test(expected = NotDerivedTypeException.class)
-    public void testResolveWhenAnnotatedClassRegistersInterface()
-        throws DIException
+    public void resolve_WhenAnnotatedClassRegistersInterface_ThenNotDerivedTypeException()
+            throws DIException
     {
         testObject.resolve(ClassRegisterInterfaceIncorrect.class);
     }
 
     @Test(expected = NotDerivedTypeException.class)
-    public void testResolveWhenAnnotatedClassRegistersNotDerivedClass()
-        throws DIException
+    public void resolve_WhenAnnotatedClassRegistersNotDerivedClass_ThenNotDerivedTypeException()
+            throws DIException
     {
         testObject.resolve(ClassRegisterIncorrect1.class);
     }
 
     @Test(expected = NotDerivedTypeException.class)
-    public void testResolveWhenAnnotatedClassRegistersAbstractSuperclass()
-        throws DIException
+    public void resolve_WhenAnnotatedClassRegistersAbstractSuperclass_ThenNotDerivedTypeException()
+            throws DIException
     {
         testObject.resolve(ClassRegisterIncorrect2.class);
     }
 
     @Test(expected = NotDerivedTypeException.class)
-    public void testResolveWhenAnnotatedClassRegistersAbstractConcreteSuperclass()
-        throws DIException
+    public void resolve_WhenAnnotatedClassRegistersAbstractConcreteSuperclass_ThenNotDerivedTypeException()
+            throws DIException
     {
         testObject.resolve(ClassRegisterIncorrect3.class);
     }
 
     @Test(expected = AbstractTypeException.class)
-    public void testResolveWhenSelfAnnotatedAbstractClass()
-        throws DIException
+    public void resolve_WhenSelfAnnotatedAbstractClass_ThenAbstractTypeException()
+            throws DIException
     {
         testObject.resolve(ClassRegisterSelfAbstractIncorrect.class);
     }
 
     @Test(expected = AbstractTypeException.class)
-    public void testResolveWhenAnnotatedAbstractClassAsItself()
-        throws DIException
+    public void resolve_WhenAnnotatedAbstractClassAsItself_ThenAbstractTypeException()
+            throws DIException
     {
         testObject.resolve(ClassRegisterAbstractIncorrect.class);
     }
 
     @Test
-    public void testResolveWhenAnnotatedInterfaceSingleton()
+    public void resolve_WhenAnnotatedInterfaceSingleton_ThenSameInstances()
     {
         InterfaceRegisterSingleton result1 = null;
         InterfaceRegisterSingleton result2 = null;
@@ -1222,8 +1213,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail(
-                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+            Assert.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -1234,7 +1224,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveWhenAnnotatedConcreteClassSingleton()
+    public void resolve_WhenAnnotatedConcreteClassSingleton_ThenSameInstances()
     {
         ClassRegisterSingletonBase result1 = null;
         ClassRegisterSingletonBase result2 = null;
@@ -1247,8 +1237,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail(
-                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+            Assert.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -1259,7 +1248,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveWhenSelfAnnotatedConcreteClassSingleton()
+    public void resolve_WhenSelfAnnotatedConcreteClassSingleton_ThenSameInstances()
     {
         ClassRegisterSelfSingleton1 result1 = null;
         ClassRegisterSelfSingleton1 result2 = null;
@@ -1272,8 +1261,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail(
-                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+            Assert.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -1282,7 +1270,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testResolveWhenAnnotatedConcreteClassAsItselfSingleton()
+    public void resolve_WhenAnnotatedConcreteClassAsItselfSingleton_ThenSameInstances()
     {
         ClassRegisterSelfSingleton2 result1 = null;
         ClassRegisterSelfSingleton2 result2 = null;
@@ -1295,8 +1283,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail(
-                String.format("An instance of %s was thrown.", e.getClass().getSimpleName()));
+            Assert.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result1);
@@ -1308,7 +1295,7 @@ public class DIContainerTest
     // region buildUp
 
     @Test
-    public void testBuildUpWhenDependencySetterOnly()
+    public void buildUp_WhenDependencySetterOnly_ThenInstanceIsBuiltUp()
     {
         testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class);
 
@@ -1322,7 +1309,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -1333,8 +1320,8 @@ public class DIContainerTest
     }
 
     @Test(expected = IncorrectDependencySetterException.class)
-    public void testBuildUpWhenDoubleDependencySetter()
-        throws DIException
+    public void buildUp_WhenDoubleDependencySetter_ThenIncorrectDependencySetterException()
+            throws DIException
     {
         InterfaceSettersDouble instance = new ClassSettersDouble();
 
@@ -1342,7 +1329,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testBuildUpWhenMultipleDependencySetters()
+    public void buildUp_WhenMultipleDependencySetters_ThenInstanceIsBuiltUp()
     {
         String string = "string";
 
@@ -1360,7 +1347,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -1377,7 +1364,7 @@ public class DIContainerTest
     }
 
     @Test
-    public void testBuildUpWhenComplexDependency()
+    public void buildUp_WhenComplexDependency_ThenInstanceIsBuiltUp()
     {
         String string = "string";
 
@@ -1393,8 +1380,8 @@ public class DIContainerTest
         try
         {
             InterfaceDiamonds1 diamond1 = testObject.resolve(InterfaceDiamonds1.class);
-            InterfaceBasicsStringGetter withString = testObject.resolve(
-                InterfaceBasicsStringGetter.class);
+            InterfaceBasicsStringGetter withString =
+                    testObject.resolve(InterfaceBasicsStringGetter.class);
 
             instance = new ClassBasicsComplexDependency(diamond1, withString);
             result = testObject.buildUp(instance);
@@ -1402,7 +1389,7 @@ public class DIContainerTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);

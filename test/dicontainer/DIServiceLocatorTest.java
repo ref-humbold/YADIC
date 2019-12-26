@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import dicontainer.auxiliary.CustomProvider;
 import dicontainer.auxiliary.basics.ClassBasicsComplexDependency;
 import dicontainer.auxiliary.basics.InterfaceBasicsComplexDependency;
 import dicontainer.auxiliary.basics.InterfaceBasicsStringGetter;
@@ -37,7 +38,7 @@ public class DIServiceLocatorTest
     }
 
     @Test
-    public void testHasProviderWhenProviderSet()
+    public void hasProvider_WhenProviderSet_ThenTrue()
     {
         DIServiceLocator.setProvider(provider);
 
@@ -47,7 +48,7 @@ public class DIServiceLocatorTest
     }
 
     @Test
-    public void testHasProviderWhenProviderNotSet()
+    public void hasProvider_WhenProviderNotSet_ThenFalse()
     {
         DIServiceLocator.setProvider(null);
 
@@ -57,7 +58,7 @@ public class DIServiceLocatorTest
     }
 
     @Test
-    public void testResolveWhenAllDependenciesArePresent()
+    public void resolve_WhenAllDependenciesArePresent_ThenInstanceIsBuiltUp()
     {
         DIServiceLocator.setProvider(provider);
 
@@ -70,7 +71,7 @@ public class DIServiceLocatorTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -84,7 +85,7 @@ public class DIServiceLocatorTest
     }
 
     @Test(expected = MissingDependenciesException.class)
-    public void testResolveWhenMissingDependencies()
+    public void resolve_WhenMissingDependencies_ThenMissingDependenciesException()
             throws DIException
     {
         DIServiceLocator.setProvider(provider);
@@ -93,7 +94,7 @@ public class DIServiceLocatorTest
     }
 
     @Test(expected = EmptyContainerProviderException.class)
-    public void testResolveWhenProviderIsNull()
+    public void resolve_WhenProviderIsNull_ThenEmptyContainerProviderException()
             throws DIException
     {
         DIServiceLocator.setProvider(null);
@@ -102,7 +103,7 @@ public class DIServiceLocatorTest
     }
 
     @Test
-    public void testGetContainerWhenProviderPresent()
+    public void getContainer_WhenProviderPresent_ThenContainerInstance()
     {
         DIServiceLocator.setProvider(provider);
 
@@ -113,7 +114,7 @@ public class DIServiceLocatorTest
     }
 
     @Test(expected = EmptyContainerProviderException.class)
-    public void testGetContainerWhenProviderIsNull()
+    public void getContainer_WhenProviderIsNull_ThenEmptyContainerProviderException()
     {
         DIServiceLocator.setProvider(null);
 
@@ -121,7 +122,7 @@ public class DIServiceLocatorTest
     }
 
     @Test
-    public void testBuildUpWhenWhenAllDependenciesArePresent()
+    public void buildUp_WhenAllDependenciesArePresent_ThenInstanceIsBuiltUp()
     {
         DIServiceLocator.setProvider(provider);
 
@@ -140,7 +141,7 @@ public class DIServiceLocatorTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail("An instance of " + e.getClass().getSimpleName() + " was thrown.");
+            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
         Assert.assertNotNull(result);
@@ -161,7 +162,7 @@ public class DIServiceLocatorTest
     }
 
     @Test(expected = IncorrectDependencySetterException.class)
-    public void testBuildUpWhenIncorrectSetters()
+    public void buildUp_WhenIncorrectSetters_ThenIncorrectDependencySetterException()
             throws DIException
     {
         DIServiceLocator.setProvider(provider);

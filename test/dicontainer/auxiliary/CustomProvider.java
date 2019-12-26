@@ -1,5 +1,7 @@
-package dicontainer;
+package dicontainer.auxiliary;
 
+import dicontainer.DIContainer;
+import dicontainer.DIContainerProvider;
 import dicontainer.auxiliary.basics.ClassBasicsComplexDependency;
 import dicontainer.auxiliary.basics.ClassBasicsStringGetter;
 import dicontainer.auxiliary.basics.InterfaceBasics;
@@ -8,7 +10,7 @@ import dicontainer.auxiliary.basics.InterfaceBasicsStringGetter;
 import dicontainer.auxiliary.constructors.ClassConstructorsDefault;
 import dicontainer.auxiliary.diamonds.*;
 
-class CustomProvider
+public class CustomProvider
         extends DIContainerProvider
 {
     public CustomProvider(DIContainer container)
@@ -17,7 +19,7 @@ class CustomProvider
     }
 
     @Override
-    protected void configure(DIContainer container)
+    public void configure(DIContainer container)
     {
         container.registerType(InterfaceBasicsComplexDependency.class,
                                ClassBasicsComplexDependency.class)
