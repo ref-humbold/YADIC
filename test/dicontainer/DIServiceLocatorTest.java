@@ -1,9 +1,9 @@
 package dicontainer;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import dicontainer.auxiliary.CustomProvider;
 import dicontainer.auxiliary.basics.ClassBasicsComplexDependency;
@@ -23,14 +23,14 @@ public class DIServiceLocatorTest
     private DIContainer container;
     private CustomProvider provider;
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         container = new DIContainer();
         provider = new CustomProvider(container);
     }
 
-    @After
+    @AfterEach
     public void tearDown()
     {
         container = null;
@@ -44,7 +44,7 @@ public class DIServiceLocatorTest
 
         boolean result = DIServiceLocator.hasProvider();
 
-        Assert.assertTrue(result);
+        Assertions.assertTrue(result);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class DIServiceLocatorTest
 
         boolean result = DIServiceLocator.hasProvider();
 
-        Assert.assertFalse(result);
+        Assertions.assertFalse(result);
     }
 
     @Test
@@ -71,35 +71,36 @@ public class DIServiceLocatorTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
+            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getBasicObject());
-        Assert.assertNotNull(result.getFirstObject());
-        Assert.assertNotNull(result.getSecondObject());
-        Assert.assertNotNull(result.getFirstObject().getObject());
-        Assert.assertNotNull(result.getSecondObject().getString());
-        Assert.assertEquals("string", result.getSecondObject().getString());
-        Assert.assertTrue(result instanceof ClassBasicsComplexDependency);
+        Assertions.assertNotNull(result);
+        Assertions.assertNotNull(result.getBasicObject());
+        Assertions.assertNotNull(result.getFirstObject());
+        Assertions.assertNotNull(result.getSecondObject());
+        Assertions.assertNotNull(result.getFirstObject().getObject());
+        Assertions.assertNotNull(result.getSecondObject().getString());
+        Assertions.assertEquals("string", result.getSecondObject().getString());
+        Assertions.assertTrue(result instanceof ClassBasicsComplexDependency);
     }
 
-    @Test(expected = MissingDependenciesException.class)
+    @Test
     public void resolve_WhenMissingDependencies_ThenMissingDependenciesException()
-            throws DIException
     {
         DIServiceLocator.setProvider(provider);
 
-        DIServiceLocator.resolve(InterfaceDiamondsBottom.class);
+        Assertions.assertThrows(MissingDependenciesException.class,
+                                () -> DIServiceLocator.resolve(InterfaceDiamondsBottom.class));
     }
 
-    @Test(expected = EmptyContainerProviderException.class)
+    @Test
     public void resolve_WhenProviderIsNull_ThenEmptyContainerProviderException()
-            throws DIException
     {
         DIServiceLocator.setProvider(null);
 
-        DIServiceLocator.resolve(InterfaceBasicsComplexDependency.class);
+        Assertions.assertThrows(EmptyContainerProviderException.class,
+                                () -> DIServiceLocator.resolve(
+                                        InterfaceBasicsComplexDependency.class));
     }
 
     @Test
@@ -109,16 +110,17 @@ public class DIServiceLocatorTest
 
         DIContainer result = DIServiceLocator.getContainer();
 
-        Assert.assertNotNull(result);
-        Assert.assertSame(container, result);
+        Assertions.assertNotNull(result);
+        Assertions.assertSame(container, result);
     }
 
-    @Test(expected = EmptyContainerProviderException.class)
+    @Test
     public void getContainer_WhenProviderIsNull_ThenEmptyContainerProviderException()
     {
         DIServiceLocator.setProvider(null);
 
-        DIServiceLocator.getContainer();
+        Assertions.assertThrows(EmptyContainerProviderException.class,
+                                () -> DIServiceLocator.getContainer());
     }
 
     @Test
@@ -141,34 +143,34 @@ public class DIServiceLocatorTest
         catch(DIException e)
         {
             e.printStackTrace();
-            Assert.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
+            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
         }
 
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(instance);
-        Assert.assertNotNull(result.getBasicObject());
-        Assert.assertNotNull(instance.getBasicObject());
-        Assert.assertNotNull(result.getFirstObject());
-        Assert.assertNotNull(instance.getFirstObject());
-        Assert.assertNotNull(result.getSecondObject());
-        Assert.assertNotNull(instance.getSecondObject());
-        Assert.assertNotNull(result.getFirstObject().getObject());
-        Assert.assertNotNull(instance.getFirstObject().getObject());
-        Assert.assertNotNull(result.getSecondObject().getString());
-        Assert.assertNotNull(instance.getSecondObject().getString());
-        Assert.assertEquals("string", result.getSecondObject().getString());
-        Assert.assertEquals("string", instance.getSecondObject().getString());
-        Assert.assertSame(instance, result);
+        Assertions.assertNotNull(result);
+        Assertions.assertNotNull(instance);
+        Assertions.assertNotNull(result.getBasicObject());
+        Assertions.assertNotNull(instance.getBasicObject());
+        Assertions.assertNotNull(result.getFirstObject());
+        Assertions.assertNotNull(instance.getFirstObject());
+        Assertions.assertNotNull(result.getSecondObject());
+        Assertions.assertNotNull(instance.getSecondObject());
+        Assertions.assertNotNull(result.getFirstObject().getObject());
+        Assertions.assertNotNull(instance.getFirstObject().getObject());
+        Assertions.assertNotNull(result.getSecondObject().getString());
+        Assertions.assertNotNull(instance.getSecondObject().getString());
+        Assertions.assertEquals("string", result.getSecondObject().getString());
+        Assertions.assertEquals("string", instance.getSecondObject().getString());
+        Assertions.assertSame(instance, result);
     }
 
-    @Test(expected = IncorrectDependencySetterException.class)
+    @Test
     public void buildUp_WhenIncorrectSetters_ThenIncorrectDependencySetterException()
-            throws DIException
     {
         DIServiceLocator.setProvider(provider);
 
         InterfaceSettersDouble instance = new ClassSettersDouble();
 
-        DIServiceLocator.buildUp(instance);
+        Assertions.assertThrows(IncorrectDependencySetterException.class,
+                                () -> DIServiceLocator.buildUp(instance));
     }
 }
