@@ -86,13 +86,13 @@
 
   <target name="test">
     <mkdir dir="${junit.result.dir}" />
-    <junit fork="yes" printsummary="withOutAndErr">
-      <formatter type="xml" />
-      <batchtest todir="${junit.result.dir}">
-        <fileset dir="${test.dir}" includes="**/*Test.java" />
-      </batchtest>
+    <junitlauncher printsummary="true">
+      <testclasses outputdir="${junit.result.dir}">
+        <fileset dir="${build.dir}" includes="**/*Test.class" />
+        <listener type="legacy-xml" sendSysErr="true" sendSysOut="true" />
+      </testclasses>
       <classpath refid="DI-container.classpath" />
-    </junit>
+    </junitlauncher>
     <mkdir dir="${junit.report.dir}" />
     <junitreport todir="${junit.report.dir}">
       <fileset dir="${junit.result.dir}" includes="TEST-*.xml" />

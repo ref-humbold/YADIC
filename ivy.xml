@@ -1,6 +1,10 @@
 <ivy-module version="2.0">
   <info organisation="ref_humbold" module="di_coitainer" />
   <dependencies>
-    <dependency org="junit" name="junit" rev="4.+" />
+    <dependency org="org.junit.jupiter" name="junit-jupiter-api" rev="5.+" />
+    <dependency org="org.junit.jupiter" name="junit-jupiter-engine" rev="5.+" />
+    <dependency org="org.junit.platform" name="junit-platform-commons" rev="1.+" />
+    <dependency org="org.junit.platform" name="junit-platform-engine" rev="1.+" />
+    <dependency org="org.junit.platform" name="junit-platform-launcher" rev="1.+" />
   </dependencies>
 </ivy-module>
