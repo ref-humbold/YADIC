@@ -5,10 +5,8 @@ addons:
       - ant
 
 language: java
-jdk:
-  - openjdk11
-  - openjdk8
+jdk: openjdk11
 
-before_install: ant resolve
-install: ant build
+before_install: ./ant-junitlauncher.sh
+install: ant rebuild
 script: ant test
