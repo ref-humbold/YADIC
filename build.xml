@@ -5,7 +5,7 @@
   </tstamp>
 
   <property name="major.version" value="2" />
-  <property name="minor.version" value="0" />
+  <property name="minor.version" value="1" />
   <property name="spec.version" value="${major.version}.${minor.version}" />
   <property name="jar.version" value="${major.version}.${minor.version}.${date.version}" />
   <property name="vendor" value="Rafał Kaleta" />
@@ -53,7 +53,7 @@
     <delete dir="${javadoc.output.dir}" />
   </target>
 
-  <target name="init" depends="resolve">
+  <target name="init">
     <mkdir dir="${build.dir}" />
     <copy todir="${build.dir}" includeemptydirs="false">
       <fileset dir="${src.dir}" excludes="**/*.java" />
@@ -109,9 +109,15 @@
 
   <target name="build" depends="jar" />
 
-  <target name="all" depends="build, test" />
+  <target name="rebuild" depends="resolve, build" />
+
+  <target name="main" depends="build, test" />
+
+  <target name="all" depends="resolve, main" />
 
   <target name="refresh" depends="clean, build" />
+
+  <target name="refresh-main" depends="clean, main" />
 
   <target name="refresh-all" depends="clean, all" />
 </project>

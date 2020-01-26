@@ -25,12 +25,15 @@ DI_Container can be built with **Apache ANT** using **Apache Ivy** to resolve al
 
 > Possible ANT targets are:
 > + `ant` - same as `ant all`
-> + `ant build` - resolve dependencies & compile source files & create executable jar
+> + `ant build` - compile source files & create jar
+> + `ant rebuild` - resolve dependencies & compile source files & create jar
 > + `ant test` - run all tests
 > + `ant docs` - generate Javadoc
-> + `ant all` - resolve dependencies & compile source and test files & create executable jar & run all tests
-> + `ant refresh` - remove additional build files & resolve dependencies & compile source files & create executable jar
-> + `ant refresh-all` - remove additional build files & resolve dependencies & compile source and test files & create executable jar & run all tests
+> + `ant main` - compile source and test files & create jar & run all tests
+> + `ant all` - resolve dependencies & compile source and test files & create jar & run all tests
+> + `ant refresh` - remove additional build files & resolve dependencies & compile source files & create jar
+> + `ant refresh-main` - remove additional build files & compile source and test files & create jar & run all tests
+> + `ant refresh-all` - remove additional build files & resolve dependencies & compile source and test files & create jar & run all tests
 
 ## How to include it?
 Simply add the *jar* file from the `dist` directory to your classpath.
