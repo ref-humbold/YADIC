@@ -1,4 +1,7 @@
 # DI-Container
+![Release](https://img.shields.io/github/v/release/ref-humbold/DI-Container?style=plastic)
+![License](https://img.shields.io/github/license/ref-humbold/DI-Container?style=plastic)
+
 Simple dependency injection container in Java
 
 -----
