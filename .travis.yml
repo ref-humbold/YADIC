@@ -1,0 +1,14 @@
+dist: bionic
+addons:
+  apt:
+    packages:
+      - ant
+
+language: java
+jdk:
+  - openjdk11
+  - openjdk8
+
+before_install: ant resolve
+install: ant build
+script: ant test
