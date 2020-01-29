@@ -1,6 +1,6 @@
 #! /bin/sh
 
-set -ex
+set -e
 
 echo ">>>>> Check ant-junitlauncher.jar <<<<<"
 
@@ -14,5 +14,5 @@ else
 
     rm -f ${HOME}/.ant/lib/ant-junitlauncher-*.jar
     echo "Download ant-junitlauncher.jar (version ${ANT})"
-    wget $LINK -P "${HOME}/.ant/lib"
+    wget ${LINK} -P "${HOME}/.ant/lib"
 fi
