@@ -1,3 +1,4 @@
+os: linux
 dist: bionic
 addons:
   apt:
@@ -9,4 +10,4 @@ jdk: openjdk11
 
 before_install: ./ant-junitlauncher.sh
 install: ant rebuild
-script: ant test
+script: ant -lib ./lib test
