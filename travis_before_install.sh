@@ -2,6 +2,8 @@
 
 set -ex
 
+echo ">>>>> Check ant-junitlauncher.jar <<<<<"
+
 ANT=$(ant -version | sed -r 's/.*version ([0-9.]+).*/\1/g')
 
 if [ -f ${HOME}/.ant/lib/ant-junitlauncher-${ANT}.jar ]
