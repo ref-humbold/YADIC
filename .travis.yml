@@ -4,6 +4,7 @@ addons:
   apt:
     packages:
       - ant
+      - ant-optional
 
 language: java
 jdk: openjdk11
