@@ -9,6 +9,6 @@ addons:
 language: java
 jdk: openjdk11
 
-before_install: ./travis_before_install.sh
+before_install: ./travis/before_install.sh
 install: ant rebuild
 script: ant -lib ./lib test
