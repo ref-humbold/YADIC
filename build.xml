@@ -24,9 +24,9 @@
   <property name="ivy.lib.dir" value="lib" />
   <property name="ivy.install.version" value="2.5.0" />
 
-  <path id="DI-container.classpath">
-    <fileset dir="${ivy.lib.dir}" includes="*.jar" />
-    <pathelement location="${build.dir}" />
+  <path id="project.classpath">
+    <fileset dir="${basedir}/${ivy.lib.dir}" includes="*.jar" />
+    <pathelement location="${basedir}/${build.dir}" />
   </path>
 
   <target name="download-ivy" unless="offline">
@@ -66,7 +66,7 @@
       <src path="${src.dir}" />
       <src path="${test.dir}" />
       <compilerarg line="-Xlint" />
-      <classpath refid="DI-container.classpath" />
+      <classpath refid="project.classpath" />
     </javac>
   </target>
 
@@ -87,11 +87,11 @@
   <target name="test">
     <mkdir dir="${junit.result.dir}" />
     <junitlauncher printsummary="true">
+      <classpath refid="project.classpath" />
       <testclasses outputdir="${junit.result.dir}">
         <fileset dir="${build.dir}" includes="**/*Test.class" />
         <listener type="legacy-xml" sendSysErr="true" sendSysOut="true" />
       </testclasses>
-      <classpath refid="DI-container.classpath" />
     </junitlauncher>
     <mkdir dir="${junit.report.dir}" />
     <junitreport todir="${junit.report.dir}">
