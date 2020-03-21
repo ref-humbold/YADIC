@@ -1,6 +1,5 @@
 package dicontainer;
 
-import dicontainer.exception.DIException;
 import dicontainer.exception.EmptyContainerProviderException;
 
 public final class DIServiceLocator
@@ -26,7 +25,6 @@ public final class DIServiceLocator
     }
 
     public static <T> T resolve(Class<T> type)
-            throws DIException
     {
         if(!hasProvider())
             throw new EmptyContainerProviderException("Container provider is empty.");
@@ -35,7 +33,6 @@ public final class DIServiceLocator
     }
 
     public static <T> T buildUp(T instance)
-            throws DIException
     {
         if(!hasProvider())
             throw new EmptyContainerProviderException("Container provider is empty.");

@@ -480,7 +480,6 @@ public class DIContainerTest
 
     @Test
     public void registerInstance_WhenInstanceIsNull_ThenNullInstanceException()
-            throws IllegalArgumentException
     {
         Assertions.assertThrows(NullInstanceException.class, () -> testObject.registerInstance(
                 ClassConstructorsDefaultAndParameter.class, null));

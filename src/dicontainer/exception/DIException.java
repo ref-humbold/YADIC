@@ -1,7 +1,7 @@
 package dicontainer.exception;
 
 public class DIException
-        extends Exception
+        extends RuntimeException
 {
     private static final long serialVersionUID = -3019200382390630637L;
 

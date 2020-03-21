@@ -25,7 +25,6 @@ public final class DIContainer
      * @throws AbstractTypeException if type is an abstract class or an interface
      */
     public <T> DIContainer registerType(Class<T> type)
-            throws AbstractTypeException
     {
         return registerType(type, ConstructionPolicy.CONSTRUCT);
     }
@@ -38,7 +37,6 @@ public final class DIContainer
      * @throws AbstractTypeException if type is an abstract class or an interface
      */
     public <T> DIContainer registerType(Class<T> type, ConstructionPolicy policy)
-            throws AbstractTypeException
     {
         if(TypesContainer.isAbstractType(type))
             throw new AbstractTypeException(
@@ -102,7 +100,6 @@ public final class DIContainer
      * @throws DIException if type cannot be resolved
      */
     public <T> T resolve(Class<T> type)
-            throws DIException
     {
         return resolveType(type, new Stack<>());
     }
@@ -114,7 +111,6 @@ public final class DIContainer
      * @throws DIException if instance cannot be built up
      */
     public <T> T buildUp(T instance)
-            throws DIException
     {
         buildUpObject(instance, new Stack<>());
 
@@ -128,7 +124,6 @@ public final class DIContainer
     }
 
     private <T> T resolveType(Class<T> type, Stack<Class<?>> resolved)
-            throws DIException
     {
         T object = typesContainer.getInstance(type);
 
@@ -141,7 +136,6 @@ public final class DIContainer
     }
 
     private <T> T resolveConstructor(Class<T> type, Stack<Class<?>> resolved)
-            throws DIException
     {
         resolved.push(type);
 
@@ -187,7 +181,6 @@ public final class DIContainer
     }
 
     private <T> void resolveSetter(T object, Method setter, Stack<Class<?>> resolved)
-            throws DIException
     {
         ArrayList<Object> paramObjects = new ArrayList<>();
 
@@ -205,7 +198,6 @@ public final class DIContainer
     }
 
     private <T> void buildUpObject(T obj, Stack<Class<?>> resolved)
-            throws DIException
     {
         ArrayList<Method> setters = new ArrayList<>();
 
@@ -215,7 +207,7 @@ public final class DIContainer
                 if(!isSetter(m))
                     throw new IncorrectDependencySetterException(
                             "Dependency method must have exactly one argument, void return type "
-                                    + "and name starting with \'set\'.");
+                                    + "and name starting with 'set'.");
 
                 setters.add(m);
             }
@@ -225,7 +217,6 @@ public final class DIContainer
     }
 
     private <T> T createInstance(Constructor<? extends T> ctor, Stack<Class<?>> resolved)
-            throws DIException
     {
         ArrayList<Object> params = new ArrayList<>();
 
@@ -251,7 +242,6 @@ public final class DIContainer
     }
 
     private <T> Class<? extends T> findRegisteredConcreteType(Class<T> type)
-            throws DIException
     {
         Class<? extends T> subtype = type;
 
@@ -275,7 +265,6 @@ public final class DIContainer
 
     @SuppressWarnings("unchecked")
     private <T> Constructor<? extends T>[] getConstructors(Class<? extends T> type)
-            throws NoSuitableConstructorException
     {
         Constructor<?>[] constructors;
 

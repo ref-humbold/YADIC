@@ -9,7 +9,6 @@ import java.util.Optional;
 import dicontainer.annotation.Register;
 import dicontainer.annotation.SelfRegister;
 import dicontainer.exception.AbstractTypeException;
-import dicontainer.exception.DIException;
 import dicontainer.exception.NotDerivedTypeException;
 
 final class TypesContainer
@@ -28,7 +27,6 @@ final class TypesContainer
 
     @SuppressWarnings("unchecked")
     public <T> Class<? extends T> getSubtype(Class<T> type)
-            throws DIException
     {
         if(type.isAnnotationPresent(Register.class))
         {
