@@ -679,29 +679,29 @@ public class DIContainerTest
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
-        Assertions.assertTrue(result2 instanceof ClassRegisterBase);
-        Assertions.assertTrue(result1 instanceof ClassRegisterBase);
+        Assertions.assertTrue(result2 instanceof ClassRegisterConcrete);
+        Assertions.assertTrue(result1 instanceof ClassRegisterConcrete);
         Assertions.assertNotSame(result1, result2);
     }
 
     @Test
     public void resolve_WhenAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
-        ClassRegisterBase result1 = testObject.resolve(ClassRegisterBase.class);
-        ClassRegisterBase result2 = testObject.resolve(ClassRegisterBase.class);
+        ClassRegisterConcrete result1 = testObject.resolve(ClassRegisterConcrete.class);
+        ClassRegisterConcrete result2 = testObject.resolve(ClassRegisterConcrete.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
-        Assertions.assertTrue(result1 instanceof ClassRegisterDerived);
-        Assertions.assertTrue(result2 instanceof ClassRegisterDerived);
+        Assertions.assertTrue(result1 instanceof ClassRegisterDerivedFromRegister);
+        Assertions.assertTrue(result2 instanceof ClassRegisterDerivedFromRegister);
         Assertions.assertNotSame(result1, result2);
     }
 
     @Test
     public void resolve_WhenSelfAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
-        ClassRegisterSelf1 result1 = testObject.resolve(ClassRegisterSelf1.class);
-        ClassRegisterSelf1 result2 = testObject.resolve(ClassRegisterSelf1.class);
+        ClassRegisterSelf result1 = testObject.resolve(ClassRegisterSelf.class);
+        ClassRegisterSelf result2 = testObject.resolve(ClassRegisterSelf.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -711,8 +711,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenAnnotatedConcreteClassAsItself_ThenInstanceIsResolved()
     {
-        ClassRegisterSelf2 result1 = testObject.resolve(ClassRegisterSelf2.class);
-        ClassRegisterSelf2 result2 = testObject.resolve(ClassRegisterSelf2.class);
+        ClassRegisterSelfAsSubtype result1 = testObject.resolve(ClassRegisterSelfAsSubtype.class);
+        ClassRegisterSelfAsSubtype result2 = testObject.resolve(ClassRegisterSelfAsSubtype.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -804,8 +804,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenSelfAnnotatedConcreteClassSingleton_ThenSameInstances()
     {
-        ClassRegisterSelfSingleton1 result1 = testObject.resolve(ClassRegisterSelfSingleton1.class);
-        ClassRegisterSelfSingleton1 result2 = testObject.resolve(ClassRegisterSelfSingleton1.class);
+        ClassRegisterSelfSingleton result1 = testObject.resolve(ClassRegisterSelfSingleton.class);
+        ClassRegisterSelfSingleton result2 = testObject.resolve(ClassRegisterSelfSingleton.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -815,8 +815,10 @@ public class DIContainerTest
     @Test
     public void resolve_WhenAnnotatedConcreteClassAsItselfSingleton_ThenSameInstances()
     {
-        ClassRegisterSelfSingleton2 result1 = testObject.resolve(ClassRegisterSelfSingleton2.class);
-        ClassRegisterSelfSingleton2 result2 = testObject.resolve(ClassRegisterSelfSingleton2.class);
+        ClassRegisterSelfAsSubtypeSingleton result1 =
+                testObject.resolve(ClassRegisterSelfAsSubtypeSingleton.class);
+        ClassRegisterSelfAsSubtypeSingleton result2 =
+                testObject.resolve(ClassRegisterSelfAsSubtypeSingleton.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);

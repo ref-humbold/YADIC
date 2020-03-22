@@ -2,8 +2,8 @@ package dicontainer.auxiliary.register;
 
 import dicontainer.annotation.Register;
 
-@Register(ClassRegisterDerived.class)
-public class ClassRegisterBase
+@Register(ClassRegisterDerivedFromRegister.class)
+public class ClassRegisterConcrete
         extends ClassRegisterAbstract
 {
 }
