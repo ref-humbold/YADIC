@@ -6,14 +6,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dicontainer.auxiliary.CustomProvider;
-import dicontainer.auxiliary.basics.ClassBasicsComplexDependency;
-import dicontainer.auxiliary.basics.InterfaceBasicsComplexDependency;
-import dicontainer.auxiliary.basics.InterfaceBasicsStringGetter;
-import dicontainer.auxiliary.diamonds.InterfaceDiamonds1;
-import dicontainer.auxiliary.diamonds.InterfaceDiamondsBottom;
-import dicontainer.auxiliary.setters.ClassSettersDouble;
-import dicontainer.auxiliary.setters.InterfaceSettersDouble;
-import dicontainer.exception.DIException;
+import dicontainer.auxiliary.basic.ClassBasicComplexDependency;
+import dicontainer.auxiliary.basic.InterfaceBasicComplexDependency;
+import dicontainer.auxiliary.basic.InterfaceBasicStringGetter;
+import dicontainer.auxiliary.diamond.InterfaceDiamondBottom;
+import dicontainer.auxiliary.diamond.InterfaceDiamondLeft;
+import dicontainer.auxiliary.setter.ClassSetterDouble;
+import dicontainer.auxiliary.setter.InterfaceSetterDouble;
 import dicontainer.exception.EmptyContainerProviderException;
 import dicontainer.exception.IncorrectDependencySetterException;
 import dicontainer.exception.MissingDependenciesException;
@@ -62,17 +61,8 @@ public class DIServiceLocatorTest
     {
         DIServiceLocator.setProvider(provider);
 
-        InterfaceBasicsComplexDependency result = null;
-
-        try
-        {
-            result = DIServiceLocator.resolve(InterfaceBasicsComplexDependency.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasicComplexDependency result =
+                DIServiceLocator.resolve(InterfaceBasicComplexDependency.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getBasicObject());
@@ -81,7 +71,7 @@ public class DIServiceLocatorTest
         Assertions.assertNotNull(result.getFirstObject().getObject());
         Assertions.assertNotNull(result.getSecondObject().getString());
         Assertions.assertEquals("string", result.getSecondObject().getString());
-        Assertions.assertTrue(result instanceof ClassBasicsComplexDependency);
+        Assertions.assertTrue(result instanceof ClassBasicComplexDependency);
     }
 
     @Test
@@ -90,7 +80,7 @@ public class DIServiceLocatorTest
         DIServiceLocator.setProvider(provider);
 
         Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> DIServiceLocator.resolve(InterfaceDiamondsBottom.class));
+                                () -> DIServiceLocator.resolve(InterfaceDiamondBottom.class));
     }
 
     @Test
@@ -100,7 +90,7 @@ public class DIServiceLocatorTest
 
         Assertions.assertThrows(EmptyContainerProviderException.class,
                                 () -> DIServiceLocator.resolve(
-                                        InterfaceBasicsComplexDependency.class));
+                                        InterfaceBasicComplexDependency.class));
     }
 
     @Test
@@ -128,23 +118,13 @@ public class DIServiceLocatorTest
     {
         DIServiceLocator.setProvider(provider);
 
-        InterfaceBasicsComplexDependency instance = null;
-        InterfaceBasicsComplexDependency result = null;
+        InterfaceDiamondLeft diamond1 = DIServiceLocator.resolve(InterfaceDiamondLeft.class);
+        InterfaceBasicStringGetter withString =
+                DIServiceLocator.resolve(InterfaceBasicStringGetter.class);
 
-        try
-        {
-            InterfaceDiamonds1 diamond1 = DIServiceLocator.resolve(InterfaceDiamonds1.class);
-            InterfaceBasicsStringGetter withString =
-                    DIServiceLocator.resolve(InterfaceBasicsStringGetter.class);
-
-            instance = new ClassBasicsComplexDependency(diamond1, withString);
-            result = DIServiceLocator.buildUp(instance);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasicComplexDependency instance =
+                new ClassBasicComplexDependency(diamond1, withString);
+        InterfaceBasicComplexDependency result = DIServiceLocator.buildUp(instance);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(instance);
@@ -168,7 +148,7 @@ public class DIServiceLocatorTest
     {
         DIServiceLocator.setProvider(provider);
 
-        InterfaceSettersDouble instance = new ClassSettersDouble();
+        InterfaceSetterDouble instance = new ClassSetterDouble();
 
         Assertions.assertThrows(IncorrectDependencySetterException.class,
                                 () -> DIServiceLocator.buildUp(instance));

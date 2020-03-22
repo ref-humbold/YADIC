@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dicontainer.auxiliary.basics.*;
-import dicontainer.auxiliary.circulars.*;
-import dicontainer.auxiliary.constructors.*;
-import dicontainer.auxiliary.diamonds.*;
+import dicontainer.auxiliary.basic.*;
+import dicontainer.auxiliary.circular.*;
+import dicontainer.auxiliary.constructor.*;
+import dicontainer.auxiliary.diamond.*;
 import dicontainer.auxiliary.register.*;
-import dicontainer.auxiliary.setters.*;
+import dicontainer.auxiliary.setter.*;
 import dicontainer.exception.*;
 
 public class DIContainerTest
@@ -34,29 +34,10 @@ public class DIContainerTest
     @Test
     public void register_WhenSingleClass_ThenDifferentInstances()
     {
-        try
-        {
-            testObject.registerType(ClassConstructorsDefault.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        testObject.registerType(ClassConstructorDefault.class);
 
-        ClassConstructorsDefault result1 = null;
-        ClassConstructorsDefault result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(ClassConstructorsDefault.class);
-            result2 = testObject.resolve(ClassConstructorsDefault.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorDefault result1 = testObject.resolve(ClassConstructorDefault.class);
+        ClassConstructorDefault result2 = testObject.resolve(ClassConstructorDefault.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -66,29 +47,10 @@ public class DIContainerTest
     @Test
     public void register_WhenSingleClassAsSingleton_ThenSameInstance()
     {
-        try
-        {
-            testObject.registerType(ClassConstructorsDefault.class, ConstructionPolicy.SINGLETON);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        testObject.registerType(ClassConstructorDefault.class, ConstructionPolicy.SINGLETON);
 
-        ClassConstructorsDefault result1 = null;
-        ClassConstructorsDefault result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(ClassConstructorsDefault.class);
-            result2 = testObject.resolve(ClassConstructorsDefault.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorDefault result1 = testObject.resolve(ClassConstructorDefault.class);
+        ClassConstructorDefault result2 = testObject.resolve(ClassConstructorDefault.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -98,57 +60,19 @@ public class DIContainerTest
     @Test
     public void register_WhenSingleClassChangesSingleton_ThenChangesInstances()
     {
-        try
-        {
-            testObject.registerType(ClassConstructorsDefault.class, ConstructionPolicy.SINGLETON);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        testObject.registerType(ClassConstructorDefault.class, ConstructionPolicy.SINGLETON);
 
-        ClassConstructorsDefault result11 = null;
-        ClassConstructorsDefault result12 = null;
-
-        try
-        {
-            result11 = testObject.resolve(ClassConstructorsDefault.class);
-            result12 = testObject.resolve(ClassConstructorsDefault.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorDefault result11 = testObject.resolve(ClassConstructorDefault.class);
+        ClassConstructorDefault result12 = testObject.resolve(ClassConstructorDefault.class);
 
         Assertions.assertNotNull(result11);
         Assertions.assertNotNull(result12);
         Assertions.assertSame(result11, result12);
 
-        try
-        {
-            testObject.registerType(ClassConstructorsDefault.class, ConstructionPolicy.CONSTRUCT);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        testObject.registerType(ClassConstructorDefault.class, ConstructionPolicy.CONSTRUCT);
 
-        ClassConstructorsDefault result21 = null;
-        ClassConstructorsDefault result22 = null;
-
-        try
-        {
-            result21 = testObject.resolve(ClassConstructorsDefault.class);
-            result22 = testObject.resolve(ClassConstructorsDefault.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorDefault result21 = testObject.resolve(ClassConstructorDefault.class);
+        ClassConstructorDefault result22 = testObject.resolve(ClassConstructorDefault.class);
 
         Assertions.assertNotNull(result21);
         Assertions.assertNotNull(result22);
@@ -159,14 +83,14 @@ public class DIContainerTest
     public void register_WhenSingleClassIsInterface_ThenAbstractTypeException()
     {
         Assertions.assertThrows(AbstractTypeException.class,
-                                () -> testObject.registerType(InterfaceBasics.class));
+                                () -> testObject.registerType(InterfaceBasic.class));
     }
 
     @Test
     public void register_WhenSingleClassIsAbstractClass_ThenAbstractTypeException()
     {
         Assertions.assertThrows(AbstractTypeException.class,
-                                () -> testObject.registerType(ClassBasicsAbstract.class));
+                                () -> testObject.registerType(ClassBasicAbstract.class));
     }
 
     // endregion
@@ -175,207 +99,114 @@ public class DIContainerTest
     @Test
     public void register_WhenInheritanceFromInterface_ThenDifferentInstances()
     {
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class);
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class);
 
-        InterfaceBasics result1 = null;
-        InterfaceBasics result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(InterfaceBasics.class);
-            result2 = testObject.resolve(InterfaceBasics.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
+        InterfaceBasic result2 = testObject.resolve(InterfaceBasic.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
         Assertions.assertNotSame(result1, result2);
-        Assertions.assertTrue(result1 instanceof ClassConstructorsDefault);
-        Assertions.assertTrue(result2 instanceof ClassConstructorsDefault);
+        Assertions.assertTrue(result1 instanceof ClassConstructorDefault);
+        Assertions.assertTrue(result2 instanceof ClassConstructorDefault);
     }
 
     @Test
     public void register_WhenInheritanceFromInterfaceAsSingleton_ThenSameInstances()
     {
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class,
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
                                 ConstructionPolicy.SINGLETON);
 
-        InterfaceBasics result1 = null;
-        InterfaceBasics result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(InterfaceBasics.class);
-            result2 = testObject.resolve(InterfaceBasics.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
+        InterfaceBasic result2 = testObject.resolve(InterfaceBasic.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
         Assertions.assertSame(result1, result2);
-        Assertions.assertTrue(result1 instanceof ClassConstructorsDefault);
-        Assertions.assertTrue(result2 instanceof ClassConstructorsDefault);
+        Assertions.assertTrue(result1 instanceof ClassConstructorDefault);
+        Assertions.assertTrue(result2 instanceof ClassConstructorDefault);
     }
 
     @Test
     public void register_WhenInheritanceFromInterfaceChangesSingleton_ThenChangeInstances()
     {
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class,
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
                                 ConstructionPolicy.SINGLETON);
 
-        InterfaceBasics result11 = null;
-        InterfaceBasics result12 = null;
-
-        try
-        {
-            result11 = testObject.resolve(InterfaceBasics.class);
-            result12 = testObject.resolve(InterfaceBasics.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasic result11 = testObject.resolve(InterfaceBasic.class);
+        InterfaceBasic result12 = testObject.resolve(InterfaceBasic.class);
 
         Assertions.assertNotNull(result11);
         Assertions.assertNotNull(result12);
         Assertions.assertSame(result11, result12);
-        Assertions.assertTrue(result11 instanceof ClassConstructorsDefault);
-        Assertions.assertTrue(result12 instanceof ClassConstructorsDefault);
+        Assertions.assertTrue(result11 instanceof ClassConstructorDefault);
+        Assertions.assertTrue(result12 instanceof ClassConstructorDefault);
 
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class,
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
                                 ConstructionPolicy.CONSTRUCT);
 
-        InterfaceBasics result21 = null;
-        InterfaceBasics result22 = null;
-
-        try
-        {
-            result21 = testObject.resolve(InterfaceBasics.class);
-            result22 = testObject.resolve(InterfaceBasics.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasic result21 = testObject.resolve(InterfaceBasic.class);
+        InterfaceBasic result22 = testObject.resolve(InterfaceBasic.class);
 
         Assertions.assertNotNull(result21);
         Assertions.assertNotNull(result22);
         Assertions.assertNotSame(result21, result22);
-        Assertions.assertTrue(result21 instanceof ClassConstructorsDefault);
-        Assertions.assertTrue(result22 instanceof ClassConstructorsDefault);
+        Assertions.assertTrue(result21 instanceof ClassConstructorDefault);
+        Assertions.assertTrue(result22 instanceof ClassConstructorDefault);
     }
 
     @Test
     public void register_WhenInheritanceFromInterfaceChangesClass_ThenInstanceIsDerived()
     {
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class);
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class);
 
-        InterfaceBasics result1 = null;
-
-        try
-        {
-            result1 = testObject.resolve(InterfaceBasics.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
 
         Assertions.assertNotNull(result1);
-        Assertions.assertTrue(result1 instanceof ClassConstructorsDefault);
+        Assertions.assertTrue(result1 instanceof ClassConstructorDefault);
 
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefaultAndParameter.class);
+        testObject.registerType(InterfaceBasic.class,
+                                ClassConstructorDefaultAndParameterized.class);
 
-        InterfaceBasics result3 = null;
-
-        try
-        {
-            result3 = testObject.resolve(InterfaceBasics.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasic result3 = testObject.resolve(InterfaceBasic.class);
 
         Assertions.assertNotNull(result3);
-        Assertions.assertTrue(result3 instanceof ClassConstructorsDefaultAndParameter);
+        Assertions.assertTrue(result3 instanceof ClassConstructorDefaultAndParameterized);
     }
 
     @Test
     public void register_WhenInheritanceFromAbstractClass_ThenInstanceIsDerived()
     {
-        testObject.registerType(ClassBasicsAbstract.class, ClassBasicsInheritsFromAbstract.class);
+        testObject.registerType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class);
 
-        ClassBasicsAbstract result = null;
-
-        try
-        {
-            result = testObject.resolve(ClassBasicsAbstract.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassBasicAbstract result = testObject.resolve(ClassBasicAbstract.class);
 
         Assertions.assertNotNull(result);
-        Assertions.assertTrue(result instanceof ClassBasicsInheritsFromAbstract);
+        Assertions.assertTrue(result instanceof ClassBasicInheritsFromAbstract);
     }
 
     @Test
     public void register_WhenInheritanceFromConcreteClass_ThenInstanceIsDerived()
     {
-        testObject.registerType(ClassConstructorsParameter.class,
-                                ClassConstructorsInheritParameter.class);
+        testObject.registerType(ClassConstructorParameter.class,
+                                ClassConstructorSuperParameterized.class);
 
-        ClassConstructorsParameter result = null;
-
-        try
-        {
-            result = testObject.resolve(ClassConstructorsParameter.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorParameter result = testObject.resolve(ClassConstructorParameter.class);
 
         Assertions.assertNotNull(result);
-        Assertions.assertTrue(result instanceof ClassConstructorsInheritParameter);
+        Assertions.assertTrue(result instanceof ClassConstructorSuperParameterized);
     }
 
     @Test
     public void register_WhenTwoStepsOfHierarchy_ThenInstanceIsDerived()
     {
-        testObject.registerType(InterfaceBasics.class, ClassBasicsAbstract.class)
-                  .registerType(ClassBasicsAbstract.class, ClassBasicsInheritsFromAbstract.class);
+        testObject.registerType(InterfaceBasic.class, ClassBasicAbstract.class)
+                  .registerType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class);
 
-        InterfaceBasics result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceBasics.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasic result = testObject.resolve(InterfaceBasic.class);
 
         Assertions.assertNotNull(result);
-        Assertions.assertTrue(result instanceof ClassBasicsInheritsFromAbstract);
+        Assertions.assertTrue(result instanceof ClassBasicInheritsFromAbstract);
     }
 
     // endregion
@@ -384,69 +215,40 @@ public class DIContainerTest
     @Test
     public void registerInstance_WhenInterface_ThenRegisteredInstance()
     {
-        ClassConstructorsDefault obj = new ClassConstructorsDefault();
+        ClassConstructorDefault obj = new ClassConstructorDefault();
 
-        testObject.registerInstance(InterfaceBasics.class, obj);
+        testObject.registerInstance(InterfaceBasic.class, obj);
 
-        InterfaceBasics result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceBasics.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasic result = testObject.resolve(InterfaceBasic.class);
 
         Assertions.assertNotNull(result);
-        Assertions.assertTrue(result instanceof ClassConstructorsDefault);
+        Assertions.assertTrue(result instanceof ClassConstructorDefault);
         Assertions.assertSame(obj, result);
     }
 
     @Test
     public void registerInstance_WhenAbstractClass_ThenRegisteredInstance()
     {
-        ClassBasicsInheritsFromAbstract obj = new ClassBasicsInheritsFromAbstract();
+        ClassBasicInheritsFromAbstract obj = new ClassBasicInheritsFromAbstract();
 
-        testObject.registerInstance(ClassBasicsAbstract.class, obj);
+        testObject.registerInstance(ClassBasicAbstract.class, obj);
 
-        ClassBasicsAbstract result = null;
-
-        try
-        {
-            result = testObject.resolve(ClassBasicsAbstract.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassBasicAbstract result = testObject.resolve(ClassBasicAbstract.class);
 
         Assertions.assertNotNull(result);
-        Assertions.assertTrue(result instanceof ClassBasicsInheritsFromAbstract);
+        Assertions.assertTrue(result instanceof ClassBasicInheritsFromAbstract);
         Assertions.assertSame(obj, result);
     }
 
     @Test
     public void registerInstance_WhenSameConcreteClass_ThenRegisteredInstance()
     {
-        ClassConstructorsDefaultAndParameter obj = new ClassConstructorsDefaultAndParameter();
+        ClassConstructorDefaultAndParameterized obj = new ClassConstructorDefaultAndParameterized();
 
-        testObject.registerInstance(ClassConstructorsDefaultAndParameter.class, obj);
+        testObject.registerInstance(ClassConstructorDefaultAndParameterized.class, obj);
 
-        ClassConstructorsDefaultAndParameter result = null;
-
-        try
-        {
-            result = testObject.resolve(ClassConstructorsDefaultAndParameter.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorDefaultAndParameterized result =
+                testObject.resolve(ClassConstructorDefaultAndParameterized.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertSame(obj, result);
@@ -456,25 +258,15 @@ public class DIContainerTest
     @Test
     public void registerInstance_WhenDerivedConcreteClass_ThenRegisteredInstance()
     {
-        ClassConstructorsInheritParameter obj = new ClassConstructorsInheritParameter();
+        ClassConstructorSuperParameterized obj = new ClassConstructorSuperParameterized();
 
-        testObject.registerInstance(ClassConstructorsParameter.class, obj);
+        testObject.registerInstance(ClassConstructorParameter.class, obj);
 
-        ClassConstructorsParameter result = null;
-
-        try
-        {
-            result = testObject.resolve(ClassConstructorsParameter.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorParameter result = testObject.resolve(ClassConstructorParameter.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertSame(obj, result);
-        Assertions.assertTrue(result instanceof ClassConstructorsInheritParameter);
+        Assertions.assertTrue(result instanceof ClassConstructorSuperParameterized);
         Assertions.assertEquals(obj.getNumber(), result.getNumber());
     }
 
@@ -482,7 +274,7 @@ public class DIContainerTest
     public void registerInstance_WhenInstanceIsNull_ThenNullInstanceException()
     {
         Assertions.assertThrows(NullInstanceException.class, () -> testObject.registerInstance(
-                ClassConstructorsDefaultAndParameter.class, null));
+                ClassConstructorDefaultAndParameterized.class, null));
     }
 
     // endregion
@@ -491,17 +283,7 @@ public class DIContainerTest
     @Test
     public void resolve_WhenClassHasDefaultConstructorOnly_ThenInstanceIsResolved()
     {
-        ClassConstructorsDefault result = null;
-
-        try
-        {
-            result = testObject.resolve(ClassConstructorsDefault.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorDefault result = testObject.resolve(ClassConstructorDefault.class);
 
         Assertions.assertNotNull(result);
     }
@@ -509,17 +291,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenClassInheritsFromConcreteClass_ThenInstanceIsResolved()
     {
-        ClassConstructorsInheritParameter result = null;
-
-        try
-        {
-            result = testObject.resolve(ClassConstructorsInheritParameter.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorSuperParameterized result =
+                testObject.resolve(ClassConstructorSuperParameterized.class);
 
         Assertions.assertNotNull(result);
     }
@@ -527,17 +300,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenClassInheritsFromAbstractClass_ThenInstanceIsResolved()
     {
-        ClassBasicsInheritsFromAbstract result = null;
-
-        try
-        {
-            result = testObject.resolve(ClassBasicsInheritsFromAbstract.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassBasicInheritsFromAbstract result =
+                testObject.resolve(ClassBasicInheritsFromAbstract.class);
 
         Assertions.assertNotNull(result);
     }
@@ -546,7 +310,7 @@ public class DIContainerTest
     public void resolve_WhenClassHasParameterConstructorWithoutRegisteredParameter_ThenMissingDependenciesException()
     {
         Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(ClassConstructorsParameter.class));
+                                () -> testObject.resolve(ClassConstructorParameter.class));
     }
 
     @Test
@@ -556,17 +320,7 @@ public class DIContainerTest
 
         testObject.registerInstance(int.class, number);
 
-        ClassConstructorsParameter result = null;
-
-        try
-        {
-            result = testObject.resolve(ClassConstructorsParameter.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorParameter result = testObject.resolve(ClassConstructorParameter.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(number, result.getNumber());
@@ -579,17 +333,7 @@ public class DIContainerTest
 
         testObject.registerInstance(Integer.class, number);
 
-        ClassConstructorsParameter result = null;
-
-        try
-        {
-            result = testObject.resolve(ClassConstructorsParameter.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorParameter result = testObject.resolve(ClassConstructorParameter.class);
 
         Assertions.assertNotNull(result);
     }
@@ -597,17 +341,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenClassHasDefaultAndParameterConstructorWithoutRegisteredParameter_ThenInstanceIsResolved()
     {
-        ClassConstructorsDefaultAndParameter result = null;
-
-        try
-        {
-            result = testObject.resolve(ClassConstructorsDefaultAndParameter.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        ClassConstructorDefaultAndParameterized result =
+                testObject.resolve(ClassConstructorDefaultAndParameterized.class);
 
         Assertions.assertNotNull(result);
     }
@@ -616,14 +351,14 @@ public class DIContainerTest
     public void resolve_WhenInterface_ThenMissingDependenciesException()
     {
         Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(InterfaceBasics.class));
+                                () -> testObject.resolve(InterfaceBasic.class));
     }
 
     @Test
     public void resolve_WhenAbstractClass_ThenMissingDependenciesException()
     {
         Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(ClassBasicsAbstract.class));
+                                () -> testObject.resolve(ClassBasicAbstract.class));
     }
 
     // endregion
@@ -635,24 +370,15 @@ public class DIContainerTest
         String string = "String";
 
         testObject.registerInstance(String.class, string)
-                  .registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
-                  .registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
-                  .registerType(InterfaceDiamondsTop.class, ClassDiamondsTop.class)
-                  .registerType(InterfaceBasicsStringGetter.class, ClassBasicsStringGetter.class)
-                  .registerType(InterfaceBasicsSimpleDependency.class,
-                                ClassConstructorsNoAnnotationDependency.class);
+                  .registerType(InterfaceBasic.class, ClassConstructorDefault.class)
+                  .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
+                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
+                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class)
+                  .registerType(InterfaceBasicSimpleDependency.class,
+                                ClassConstructorNotAnnotatedWithDependency.class);
 
-        InterfaceBasicsSimpleDependency result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceBasicsSimpleDependency.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasicSimpleDependency result =
+                testObject.resolve(InterfaceBasicSimpleDependency.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
@@ -660,30 +386,21 @@ public class DIContainerTest
         Assertions.assertNotNull(result.getFirstObject().getObject());
         Assertions.assertNotNull(result.getSecondObject().getString());
         Assertions.assertEquals(string, result.getSecondObject().getString());
-        Assertions.assertTrue(result instanceof ClassConstructorsNoAnnotationDependency);
+        Assertions.assertTrue(result instanceof ClassConstructorNotAnnotatedWithDependency);
     }
 
     @Test
     public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithAllDependencies_ThenInstanceIsResolved()
     {
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
-                  .registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
-                  .registerType(InterfaceDiamondsTop.class, ClassDiamondsTop.class)
-                  .registerType(InterfaceBasicsStringGetter.class, ClassBasicsStringGetter.class)
-                  .registerType(InterfaceBasicsSimpleDependency.class,
-                                ClassConstructorsNoAnnotationDependency.class);
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class)
+                  .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
+                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
+                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class)
+                  .registerType(InterfaceBasicSimpleDependency.class,
+                                ClassConstructorNotAnnotatedWithDependency.class);
 
-        InterfaceBasicsSimpleDependency result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceBasicsSimpleDependency.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasicSimpleDependency result =
+                testObject.resolve(InterfaceBasicSimpleDependency.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
@@ -691,58 +408,40 @@ public class DIContainerTest
         Assertions.assertNotNull(result.getFirstObject().getObject());
         Assertions.assertNotNull(result.getSecondObject().getString());
         Assertions.assertEquals("", result.getSecondObject().getString());
-        Assertions.assertTrue(result instanceof ClassConstructorsNoAnnotationDependency);
+        Assertions.assertTrue(result instanceof ClassConstructorNotAnnotatedWithDependency);
     }
 
     @Test
     public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithoutSomeDependencies_ThenInstanceIsResolved()
     {
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
-                  .registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
-                  .registerType(InterfaceDiamondsTop.class, ClassDiamondsTop.class)
-                  .registerType(InterfaceBasicsSimpleDependency.class,
-                                ClassConstructorsNoAnnotationDependency.class);
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class)
+                  .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
+                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
+                  .registerType(InterfaceBasicSimpleDependency.class,
+                                ClassConstructorNotAnnotatedWithDependency.class);
 
-        InterfaceBasicsSimpleDependency result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceBasicsSimpleDependency.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasicSimpleDependency result =
+                testObject.resolve(InterfaceBasicSimpleDependency.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
         Assertions.assertNull(result.getSecondObject());
         Assertions.assertNotNull(result.getFirstObject().getObject());
-        Assertions.assertTrue(result instanceof ClassConstructorsNoAnnotationDependency);
+        Assertions.assertTrue(result instanceof ClassConstructorNotAnnotatedWithDependency);
     }
 
     @Test
     public void resolve_WhenDependenciesWithAnnotatedConstructor_ThenInstanceIsResolved()
     {
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
-                  .registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
-                  .registerType(InterfaceDiamondsTop.class, ClassDiamondsTop.class)
-                  .registerType(InterfaceBasicsStringGetter.class, ClassBasicsStringGetter.class)
-                  .registerType(InterfaceBasicsSimpleDependency.class,
-                                ClassConstructorsAnnotationDependency.class);
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class)
+                  .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
+                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
+                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class)
+                  .registerType(InterfaceBasicSimpleDependency.class,
+                                ClassConstructorAnnotatedWithDependency.class);
 
-        InterfaceBasicsSimpleDependency result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceBasicsSimpleDependency.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasicSimpleDependency result =
+                testObject.resolve(InterfaceBasicSimpleDependency.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
@@ -750,39 +449,29 @@ public class DIContainerTest
         Assertions.assertNotNull(result.getFirstObject().getObject());
         Assertions.assertNotNull(result.getSecondObject().getString());
         Assertions.assertEquals("", result.getSecondObject().getString());
-        Assertions.assertTrue(result instanceof ClassConstructorsAnnotationDependency);
+        Assertions.assertTrue(result instanceof ClassConstructorAnnotatedWithDependency);
     }
 
     @Test
     public void resolve_WhenDependenciesWithAnnotatedConstructorWithoutSomeDependencies_ThenMissingDependenciesException()
     {
-        testObject.registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
-                  .registerType(InterfaceDiamonds2.class, ClassDiamonds2.class)
-                  .registerType(InterfaceDiamondsBottom.class, ClassDiamondsBottom.class);
+        testObject.registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
+                  .registerType(InterfaceDiamondRight.class, ClassDiamondRight.class)
+                  .registerType(InterfaceDiamondBottom.class, ClassDiamondBottom.class);
 
         Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(InterfaceDiamondsBottom.class));
+                                () -> testObject.resolve(InterfaceDiamondBottom.class));
     }
 
     @Test
     public void resolve_WhenDiamondDependenciesWithoutSingleton_ThenInstanceIsResolved()
     {
-        testObject.registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
-                  .registerType(InterfaceDiamonds2.class, ClassDiamonds2.class)
-                  .registerType(InterfaceDiamondsBottom.class, ClassDiamondsBottom.class)
-                  .registerType(InterfaceDiamondsTop.class, ClassDiamondsTop.class);
+        testObject.registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
+                  .registerType(InterfaceDiamondRight.class, ClassDiamondRight.class)
+                  .registerType(InterfaceDiamondBottom.class, ClassDiamondBottom.class)
+                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class);
 
-        InterfaceDiamondsBottom result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceDiamondsBottom.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getDiamond1());
@@ -791,29 +480,19 @@ public class DIContainerTest
         Assertions.assertNotNull(result.getDiamond2().getObject());
         Assertions.assertNotSame(result.getDiamond1().getObject(),
                                  result.getDiamond2().getObject());
-        Assertions.assertTrue(result instanceof ClassDiamondsBottom);
+        Assertions.assertTrue(result instanceof ClassDiamondBottom);
     }
 
     @Test
     public void resolve_WhenDiamondDependenciesWithSingleton_ThenInstanceIsResolved()
     {
-        testObject.registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
-                  .registerType(InterfaceDiamonds2.class, ClassDiamonds2.class)
-                  .registerType(InterfaceDiamondsBottom.class, ClassDiamondsBottom.class)
-                  .registerType(InterfaceDiamondsTop.class, ClassDiamondsTop.class,
+        testObject.registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
+                  .registerType(InterfaceDiamondRight.class, ClassDiamondRight.class)
+                  .registerType(InterfaceDiamondBottom.class, ClassDiamondBottom.class)
+                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class,
                                 ConstructionPolicy.SINGLETON);
 
-        InterfaceDiamondsBottom result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceDiamondsBottom.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getDiamond1());
@@ -821,17 +500,17 @@ public class DIContainerTest
         Assertions.assertNotNull(result.getDiamond1().getObject());
         Assertions.assertNotNull(result.getDiamond2().getObject());
         Assertions.assertSame(result.getDiamond1().getObject(), result.getDiamond2().getObject());
-        Assertions.assertTrue(result instanceof ClassDiamondsBottom);
+        Assertions.assertTrue(result instanceof ClassDiamondBottom);
     }
 
     @Test
     public void resolve_WhenCircularDependencies_ThenCircularDependenciesException()
     {
-        testObject.registerType(InterfaceCirculars1.class, ClassCirculars1.class)
-                  .registerType(InterfaceCirculars2.class, ClassCirculars2.class);
+        testObject.registerType(InterfaceCircularLeft.class, ClassCircularLeft.class)
+                  .registerType(InterfaceCircularRight.class, ClassCircularRight.class);
 
         Assertions.assertThrows(CircularDependenciesException.class,
-                                () -> testObject.resolve(InterfaceCirculars2.class));
+                                () -> testObject.resolve(InterfaceCircularRight.class));
     }
 
     @Test
@@ -840,29 +519,19 @@ public class DIContainerTest
         String string = "String";
 
         testObject.registerInstance(String.class, string)
-                  .registerType(InterfaceBasicsStringGetter.class, ClassBasicsStringGetter.class)
-                  .registerType(InterfaceCirculars1.class, ClassCirculars1.class)
-                  .registerType(InterfaceCirculars2.class, ClassCirculars2.class)
-                  .registerType(InterfaceCircularsDependency.class, ClassCircularsDependency.class);
+                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class)
+                  .registerType(InterfaceCircularLeft.class, ClassCircularLeft.class)
+                  .registerType(InterfaceCircularRight.class, ClassCircularRight.class)
+                  .registerType(InterfaceCircularDependency.class, ClassCircularDependency.class);
 
-        InterfaceCircularsDependency result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceCircularsDependency.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceCircularDependency result = testObject.resolve(InterfaceCircularDependency.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getNonCircularObject());
         Assertions.assertNull(result.getCircularObject());
         Assertions.assertNotNull(result.getNonCircularObject().getString());
         Assertions.assertEquals(string, result.getNonCircularObject().getString());
-        Assertions.assertTrue(result instanceof ClassCircularsDependency);
+        Assertions.assertTrue(result instanceof ClassCircularDependency);
     }
 
     // endregion
@@ -872,81 +541,61 @@ public class DIContainerTest
     public void resolve_WhenMultipleAnnotatedConstructors_ThenMultipleAnnotatedConstructorsException()
     {
         Assertions.assertThrows(MultipleAnnotatedConstructorsException.class,
-                                () -> testObject.resolve(ClassConstructorsMultipleAnnotated.class));
+                                () -> testObject.resolve(ClassConstructorMultipleAnnotated.class));
     }
 
     @Test
     public void resolve_WhenNoPublicConstructors_ThenNoSuitableConstructorException()
     {
         Assertions.assertThrows(NoSuitableConstructorException.class,
-                                () -> testObject.resolve(ClassConstructorsPrivate.class));
+                                () -> testObject.resolve(ClassConstructorPrivate.class));
     }
 
     @Test
     public void resolve_WhenDependencySetterHasReturnType_ThenIncorrectDependencySetterException()
     {
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(ClassSettersIncorrect1.class));
+                                () -> testObject.resolve(ClassSetterIncorrect1.class));
     }
 
     @Test
     public void resolve_WhenDependencySetterHasNoParameters_ThenIncorrectDependencySetterException()
     {
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(ClassSettersIncorrect2.class));
+                                () -> testObject.resolve(ClassSetterIncorrect2.class));
     }
 
     @Test
     public void resolve_WhenDependencySetterNameDoesNotStartWithSet_ThenIncorrectDependencySetterException()
     {
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(ClassSettersIncorrect3.class));
+                                () -> testObject.resolve(ClassSetterIncorrect3.class));
     }
 
     @Test
     public void resolve_WhenDependencySetterOnly_ThenInstanceIsResolved()
     {
-        testObject.registerType(InterfaceSetters.class, ClassSettersSingle.class)
-                  .registerType(InterfaceBasics.class, ClassConstructorsDefault.class);
+        testObject.registerType(InterfaceSetter.class, ClassSetterSingle.class)
+                  .registerType(InterfaceBasic.class, ClassConstructorDefault.class);
 
-        InterfaceSetters result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceSetters.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceSetter result = testObject.resolve(InterfaceSetter.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getBasicObject());
-        Assertions.assertTrue(result instanceof ClassSettersSingle);
+        Assertions.assertTrue(result instanceof ClassSetterSingle);
     }
 
     @Test
     public void resolve_WhenDependencySetterAndConstructor_ThenInstanceIsResolved()
     {
-        testObject.registerType(InterfaceSetters.class, ClassSettersConstructor.class)
-                  .registerType(InterfaceBasics.class, ClassConstructorsDefault.class);
+        testObject.registerType(InterfaceSetter.class, ClassSetterConstructor.class)
+                  .registerType(InterfaceBasic.class, ClassConstructorDefault.class);
 
-        InterfaceSetters result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceSetters.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceSetter result = testObject.resolve(InterfaceSetter.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getBasicObject());
-        Assertions.assertTrue(result instanceof ClassSettersConstructor);
+        Assertions.assertTrue(result instanceof ClassSetterConstructor);
     }
 
     @Test
@@ -954,26 +603,17 @@ public class DIContainerTest
     {
         String string = "string";
 
-        testObject.registerType(InterfaceBasicsComplexDependency.class,
-                                ClassBasicsComplexDependency.class)
-                  .registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
-                  .registerType(InterfaceDiamondsTop.class, ClassDiamondsTop.class)
-                  .registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
-                  .registerType(InterfaceBasicsStringGetter.class, ClassBasicsStringGetter.class);
+        testObject.registerType(InterfaceBasicComplexDependency.class,
+                                ClassBasicComplexDependency.class)
+                  .registerType(InterfaceBasic.class, ClassConstructorDefault.class)
+                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
+                  .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
+                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class);
 
         testObject.registerInstance(String.class, string);
 
-        InterfaceBasicsComplexDependency result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceBasicsComplexDependency.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasicComplexDependency result =
+                testObject.resolve(InterfaceBasicComplexDependency.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getBasicObject());
@@ -982,16 +622,16 @@ public class DIContainerTest
         Assertions.assertNotNull(result.getFirstObject().getObject());
         Assertions.assertNotNull(result.getSecondObject().getString());
         Assertions.assertEquals(string, result.getSecondObject().getString());
-        Assertions.assertTrue(result instanceof ClassBasicsComplexDependency);
+        Assertions.assertTrue(result instanceof ClassBasicComplexDependency);
     }
 
     @Test
     public void resolve_WhenDoubleDependencySetter_ThenIncorrectDependencySetterException()
     {
-        testObject.registerType(InterfaceSettersDouble.class, ClassSettersDouble.class);
+        testObject.registerType(InterfaceSetterDouble.class, ClassSetterDouble.class);
 
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(InterfaceSettersDouble.class));
+                                () -> testObject.resolve(InterfaceSetterDouble.class));
     }
 
     @Test
@@ -999,30 +639,20 @@ public class DIContainerTest
     {
         String string = "string";
 
-        testObject.registerType(InterfaceSettersMultiple.class, ClassSettersMultiple.class)
-                  .registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
-                  .registerType(InterfaceBasicsStringGetter.class, ClassBasicsStringGetter.class);
+        testObject.registerType(InterfaceSetterMultiple.class, ClassSetterMultiple.class)
+                  .registerType(InterfaceBasic.class, ClassConstructorDefault.class)
+                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class);
 
         testObject.registerInstance(String.class, string);
 
-        InterfaceSettersMultiple result = null;
-
-        try
-        {
-            result = testObject.resolve(InterfaceSettersMultiple.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceSetterMultiple result = testObject.resolve(InterfaceSetterMultiple.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getBasicObject());
         Assertions.assertNotNull(result.getStringObject());
         Assertions.assertNotNull(result.getStringObject().getString());
         Assertions.assertEquals(string, result.getStringObject().getString());
-        Assertions.assertTrue(result instanceof ClassSettersMultiple);
+        Assertions.assertTrue(result instanceof ClassSetterMultiple);
     }
 
     // endregion
@@ -1031,19 +661,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenAnnotatedInterface_ThenInstanceIsResolved()
     {
-        InterfaceRegister result1 = null;
-        InterfaceRegister result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(InterfaceRegister.class);
-            result2 = testObject.resolve(InterfaceRegister.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
-        }
+        InterfaceRegister result1 = testObject.resolve(InterfaceRegister.class);
+        InterfaceRegister result2 = testObject.resolve(InterfaceRegister.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -1055,19 +674,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenAnnotatedAbstractClass_ThenInstanceIsResolved()
     {
-        ClassRegisterAbstract result1 = null;
-        ClassRegisterAbstract result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(ClassRegisterAbstract.class);
-            result2 = testObject.resolve(ClassRegisterAbstract.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
-        }
+        ClassRegisterAbstract result1 = testObject.resolve(ClassRegisterAbstract.class);
+        ClassRegisterAbstract result2 = testObject.resolve(ClassRegisterAbstract.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -1079,19 +687,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
-        ClassRegisterBase result1 = null;
-        ClassRegisterBase result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(ClassRegisterBase.class);
-            result2 = testObject.resolve(ClassRegisterBase.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
-        }
+        ClassRegisterBase result1 = testObject.resolve(ClassRegisterBase.class);
+        ClassRegisterBase result2 = testObject.resolve(ClassRegisterBase.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -1103,19 +700,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenSelfAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
-        ClassRegisterSelf1 result1 = null;
-        ClassRegisterSelf1 result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(ClassRegisterSelf1.class);
-            result2 = testObject.resolve(ClassRegisterSelf1.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
-        }
+        ClassRegisterSelf1 result1 = testObject.resolve(ClassRegisterSelf1.class);
+        ClassRegisterSelf1 result2 = testObject.resolve(ClassRegisterSelf1.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -1125,19 +711,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenAnnotatedConcreteClassAsItself_ThenInstanceIsResolved()
     {
-        ClassRegisterSelf2 result1 = null;
-        ClassRegisterSelf2 result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(ClassRegisterSelf2.class);
-            result2 = testObject.resolve(ClassRegisterSelf2.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
-        }
+        ClassRegisterSelf2 result1 = testObject.resolve(ClassRegisterSelf2.class);
+        ClassRegisterSelf2 result2 = testObject.resolve(ClassRegisterSelf2.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -1203,19 +778,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenAnnotatedInterfaceSingleton_ThenSameInstances()
     {
-        InterfaceRegisterSingleton result1 = null;
-        InterfaceRegisterSingleton result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(InterfaceRegisterSingleton.class);
-            result2 = testObject.resolve(InterfaceRegisterSingleton.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
-        }
+        InterfaceRegisterSingleton result1 = testObject.resolve(InterfaceRegisterSingleton.class);
+        InterfaceRegisterSingleton result2 = testObject.resolve(InterfaceRegisterSingleton.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -1227,19 +791,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenAnnotatedConcreteClassSingleton_ThenSameInstances()
     {
-        ClassRegisterSingletonBase result1 = null;
-        ClassRegisterSingletonBase result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(ClassRegisterSingletonBase.class);
-            result2 = testObject.resolve(ClassRegisterSingletonBase.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
-        }
+        ClassRegisterSingletonBase result1 = testObject.resolve(ClassRegisterSingletonBase.class);
+        ClassRegisterSingletonBase result2 = testObject.resolve(ClassRegisterSingletonBase.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -1251,19 +804,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenSelfAnnotatedConcreteClassSingleton_ThenSameInstances()
     {
-        ClassRegisterSelfSingleton1 result1 = null;
-        ClassRegisterSelfSingleton1 result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(ClassRegisterSelfSingleton1.class);
-            result2 = testObject.resolve(ClassRegisterSelfSingleton1.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
-        }
+        ClassRegisterSelfSingleton1 result1 = testObject.resolve(ClassRegisterSelfSingleton1.class);
+        ClassRegisterSelfSingleton1 result2 = testObject.resolve(ClassRegisterSelfSingleton1.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -1273,19 +815,8 @@ public class DIContainerTest
     @Test
     public void resolve_WhenAnnotatedConcreteClassAsItselfSingleton_ThenSameInstances()
     {
-        ClassRegisterSelfSingleton2 result1 = null;
-        ClassRegisterSelfSingleton2 result2 = null;
-
-        try
-        {
-            result1 = testObject.resolve(ClassRegisterSelfSingleton2.class);
-            result2 = testObject.resolve(ClassRegisterSelfSingleton2.class);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown.", e.getClass().getName()));
-        }
+        ClassRegisterSelfSingleton2 result1 = testObject.resolve(ClassRegisterSelfSingleton2.class);
+        ClassRegisterSelfSingleton2 result2 = testObject.resolve(ClassRegisterSelfSingleton2.class);
 
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -1298,20 +829,11 @@ public class DIContainerTest
     @Test
     public void buildUp_WhenDependencySetterOnly_ThenInstanceIsBuiltUp()
     {
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class);
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class);
 
-        InterfaceSetters instance = new ClassSettersSingle();
-        InterfaceSetters result = null;
+        InterfaceSetter instance = new ClassSetterSingle();
 
-        try
-        {
-            result = testObject.buildUp(instance);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceSetter result = testObject.buildUp(instance);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(instance);
@@ -1323,7 +845,7 @@ public class DIContainerTest
     @Test
     public void buildUp_WhenDoubleDependencySetter_ThenIncorrectDependencySetterException()
     {
-        InterfaceSettersDouble instance = new ClassSettersDouble();
+        InterfaceSetterDouble instance = new ClassSetterDouble();
 
         Assertions.assertThrows(IncorrectDependencySetterException.class,
                                 () -> testObject.buildUp(instance));
@@ -1334,22 +856,12 @@ public class DIContainerTest
     {
         String string = "string";
 
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
-                  .registerType(InterfaceBasicsStringGetter.class, ClassBasicsStringGetter.class)
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class)
+                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class)
                   .registerInstance(String.class, string);
 
-        InterfaceSettersMultiple instance = new ClassSettersMultiple();
-        InterfaceSettersMultiple result = new ClassSettersMultiple();
-
-        try
-        {
-            result = testObject.buildUp(instance);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceSetterMultiple instance = new ClassSetterMultiple();
+        InterfaceSetterMultiple result = testObject.buildUp(instance);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(instance);
@@ -1369,29 +881,19 @@ public class DIContainerTest
     {
         String string = "string";
 
-        testObject.registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
-                  .registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
-                  .registerType(InterfaceDiamondsTop.class, ClassDiamondsTop.class)
-                  .registerType(InterfaceBasicsStringGetter.class, ClassBasicsStringGetter.class)
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class)
+                  .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
+                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
+                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class)
                   .registerInstance(String.class, string);
 
-        InterfaceBasicsComplexDependency instance = null;
-        InterfaceBasicsComplexDependency result = null;
+        InterfaceDiamondLeft diamond1 = testObject.resolve(InterfaceDiamondLeft.class);
+        InterfaceBasicStringGetter withString =
+                testObject.resolve(InterfaceBasicStringGetter.class);
 
-        try
-        {
-            InterfaceDiamonds1 diamond1 = testObject.resolve(InterfaceDiamonds1.class);
-            InterfaceBasicsStringGetter withString =
-                    testObject.resolve(InterfaceBasicsStringGetter.class);
-
-            instance = new ClassBasicsComplexDependency(diamond1, withString);
-            result = testObject.buildUp(instance);
-        }
-        catch(DIException e)
-        {
-            e.printStackTrace();
-            Assertions.fail(String.format("An instance of %s was thrown", e.getClass().getName()));
-        }
+        InterfaceBasicComplexDependency instance =
+                new ClassBasicComplexDependency(diamond1, withString);
+        InterfaceBasicComplexDependency result = testObject.buildUp(instance);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(instance);
