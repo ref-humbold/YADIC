@@ -2,13 +2,13 @@ package dicontainer.auxiliary;
 
 import dicontainer.DIContainer;
 import dicontainer.DIContainerProvider;
-import dicontainer.auxiliary.basics.ClassBasicsComplexDependency;
-import dicontainer.auxiliary.basics.ClassBasicsStringGetter;
-import dicontainer.auxiliary.basics.InterfaceBasics;
-import dicontainer.auxiliary.basics.InterfaceBasicsComplexDependency;
-import dicontainer.auxiliary.basics.InterfaceBasicsStringGetter;
-import dicontainer.auxiliary.constructors.ClassConstructorsDefault;
-import dicontainer.auxiliary.diamonds.*;
+import dicontainer.auxiliary.basic.ClassBasicComplexDependency;
+import dicontainer.auxiliary.basic.ClassBasicStringGetter;
+import dicontainer.auxiliary.basic.InterfaceBasic;
+import dicontainer.auxiliary.basic.InterfaceBasicComplexDependency;
+import dicontainer.auxiliary.basic.InterfaceBasicStringGetter;
+import dicontainer.auxiliary.constructor.ClassConstructorDefault;
+import dicontainer.auxiliary.diamond.*;
 
 public class CustomProvider
         extends DIContainerProvider
@@ -21,13 +21,13 @@ public class CustomProvider
     @Override
     public void configure(DIContainer container)
     {
-        container.registerType(InterfaceBasicsComplexDependency.class,
-                               ClassBasicsComplexDependency.class)
-                 .registerType(InterfaceBasics.class, ClassConstructorsDefault.class)
-                 .registerType(InterfaceDiamonds1.class, ClassDiamonds1.class)
-                 .registerType(InterfaceDiamondsBottom.class, ClassDiamondsBottom.class)
-                 .registerType(InterfaceDiamondsTop.class, ClassDiamondsTop.class)
-                 .registerType(InterfaceBasicsStringGetter.class, ClassBasicsStringGetter.class)
+        container.registerType(InterfaceBasicComplexDependency.class,
+                               ClassBasicComplexDependency.class)
+                 .registerType(InterfaceBasic.class, ClassConstructorDefault.class)
+                 .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
+                 .registerType(InterfaceDiamondBottom.class, ClassDiamondBottom.class)
+                 .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
+                 .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class)
                  .registerInstance(String.class, "string");
     }
 }
