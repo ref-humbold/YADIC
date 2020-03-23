@@ -54,6 +54,20 @@ public class TypesDictionary
         insert(type, subtype, policy, false);
     }
 
+    public boolean contains(Class<?> type)
+    {
+        try
+        {
+            validateAnnotation(type);
+        }
+        catch(NotDerivedTypeException | AbstractTypeException e)
+        {
+            return false;
+        }
+
+        return isAnnotatedType(type) || subtypes.containsKey(type);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> SubtypeMapping<? extends T> get(Class<T> type)
     {
@@ -73,18 +87,20 @@ public class TypesDictionary
         return new SubtypeMapping<>(type, false, ConstructionPolicy.getDefault());
     }
 
-    public boolean contains(Class<?> type)
+    public <T> SubtypeMapping<? extends T> find(Class<T> type)
     {
-        try
+        SubtypeMapping<? extends T> mapping = get(type);
+        ConstructionPolicy desiredPolicy = mapping.policy;
+
+        while(isAbstractType(mapping.subtype) || contains(mapping.subtype))
         {
-            validateAnnotation(type);
-        }
-        catch(NotDerivedTypeException | AbstractTypeException e)
-        {
-            return false;
+            mapping = get(mapping.subtype);
+
+            if(mapping.policy != desiredPolicy)
+                throw new MixingPoliciesException("");
         }
 
-        return isAnnotatedType(type) || subtypes.containsKey(type);
+        return mapping;
     }
 
     private <T> void insert(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy,

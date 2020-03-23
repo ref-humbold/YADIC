@@ -255,5 +255,61 @@ class TypesDictionaryTest
         Assertions.assertFalse(result);
     }
 
-    //endregion
+    // endregion
+    // region find
+
+    @Test
+    public void find_WhenAbstractClass_ThenFoundMapping()
+    {
+        // given
+        testObject.insert(InterfaceBasic.class, ClassBasicAbstract.class);
+        testObject.insert(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class);
+        // when
+        SubtypeMapping<? extends InterfaceBasic> result = testObject.find(InterfaceBasic.class);
+        // then
+        Assertions.assertEquals(ClassBasicInheritsFromAbstract.class, result.subtype);
+        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
+        Assertions.assertFalse(result.isFromAnnotation);
+    }
+
+    @Test
+    public void find_WhenConcreteClassNotRegistered_ThenFoundNewMapping()
+    {
+        // given
+        Class<ClassBasicInheritsFromAbstract> type = ClassBasicInheritsFromAbstract.class;
+        // when
+        SubtypeMapping<? extends ClassBasicInheritsFromAbstract> result = testObject.find(type);
+        // then
+        Assertions.assertEquals(type, result.subtype);
+        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
+        Assertions.assertFalse(result.isFromAnnotation);
+    }
+
+    @Test
+    public void find_WhenAnnotatedClass_ThenMappingFromAnnotation()
+    {
+        // when
+        SubtypeMapping<? extends ClassRegisterAbstract> result =
+                testObject.find(ClassRegisterAbstract.class);
+        // then
+        Assertions.assertEquals(ClassRegisterDerivedFromRegister.class, result.subtype);
+        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
+        Assertions.assertTrue(result.isFromAnnotation);
+    }
+
+    @Test
+    public void find_WhenDifferentPolicy_ThenMixingPoliciesException()
+    {
+        // given
+        testObject.insert(InterfaceBasic.class, ClassBasicAbstract.class,
+                          ConstructionPolicy.CONSTRUCT);
+        testObject.insert(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
+                          ConstructionPolicy.SINGLETON);
+        // when
+        Executable executable = () -> testObject.find(InterfaceBasic.class);
+        // then
+        Assertions.assertThrows(MixingPoliciesException.class, executable);
+    }
+
+    // endregion
 }
