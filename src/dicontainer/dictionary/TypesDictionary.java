@@ -3,12 +3,12 @@ package dicontainer.dictionary;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import dicontainer.ConstructionPolicy;
 import dicontainer.annotation.Register;
 import dicontainer.annotation.SelfRegister;
 import dicontainer.exception.AbstractTypeException;
+import dicontainer.exception.MissingDependenciesException;
 import dicontainer.exception.NotDerivedTypeException;
 
 public class TypesDictionary
@@ -22,30 +22,16 @@ public class TypesDictionary
     @SuppressWarnings("unchecked")
     public <T> void insert(Class<T> type)
     {
+        validateAnnotation(type);
+
         if(type.isAnnotationPresent(Register.class))
         {
             Register annotation = type.getAnnotation(Register.class);
-            Class<?> subtype = annotation.value();
 
-            if(!type.isAssignableFrom(subtype))
-                throw new NotDerivedTypeException(
-                        String.format("Type %s registered via @Register is not derived type of %s",
-                                      subtype.getName(), type.getName()));
-
-            if(isAbstractType(type) && Objects.equals(type, subtype))
-                throw new AbstractTypeException(
-                        String.format("Type %s registered via @Register in %s is abstract",
-                                      subtype.getName(), type.getName()));
-
-            insert(type, (Class<? extends T>)subtype, annotation.policy(), true);
+            insert(type, (Class<? extends T>)annotation.value(), annotation.policy(), true);
         }
         else if(type.isAnnotationPresent(SelfRegister.class))
         {
-            if(isAbstractType(type))
-                throw new AbstractTypeException(
-                        String.format("Abstract type %s cannot be annotated with @SelfRegister",
-                                      type.getName()));
-
             SelfRegister annotation = type.getAnnotation(SelfRegister.class);
 
             insert(type, type, annotation.policy(), true);
@@ -62,8 +48,8 @@ public class TypesDictionary
     public <T> void insert(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
     {
         if(isAnnotatedType(type))
-            throw new AlreadyAnnotatedException(
-                    String.format("Cannot changed registration from annotation for type %s", type));
+            throw new ChangingAnnotatedRegistrationException(
+                    String.format("Cannot change registration from annotation for type %s", type));
 
         insert(type, subtype, policy, false);
     }
@@ -71,7 +57,34 @@ public class TypesDictionary
     @SuppressWarnings("unchecked")
     public <T> SubtypeMapping<? extends T> get(Class<T> type)
     {
-        return (SubtypeMapping<? extends T>)subtypes.get(type);
+        if(isAnnotatedType(type) && !subtypes.containsKey(type))
+            insert(type);
+
+        SubtypeMapping<? extends T> mapping = (SubtypeMapping<? extends T>)subtypes.get(type);
+
+        if(mapping != null)
+            return mapping;
+
+        if(isAbstractType(type))
+            throw new MissingDependenciesException(
+                    String.format("Abstract type %s has no registered concrete subclass",
+                                  type.getName()));
+
+        return new SubtypeMapping<>(type, false, ConstructionPolicy.getDefault());
+    }
+
+    public boolean contains(Class<?> type)
+    {
+        try
+        {
+            validateAnnotation(type);
+        }
+        catch(NotDerivedTypeException | AbstractTypeException e)
+        {
+            return false;
+        }
+
+        return isAnnotatedType(type) || subtypes.containsKey(type);
     }
 
     private <T> void insert(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy,
@@ -89,5 +102,31 @@ public class TypesDictionary
     {
         return type.isAnnotationPresent(Register.class) || type.isAnnotationPresent(
                 SelfRegister.class);
+    }
+
+    private void validateAnnotation(Class<?> type)
+    {
+        if(type.isAnnotationPresent(Register.class))
+        {
+            Register annotation = type.getAnnotation(Register.class);
+            Class<?> subtype = annotation.value();
+
+            if(!type.isAssignableFrom(subtype))
+                throw new NotDerivedTypeException(
+                        String.format("Type %s registered via @Register is not derived type of %s",
+                                      subtype.getName(), type.getName()));
+
+            if(isAbstractType(subtype))
+                throw new AbstractTypeException(
+                        String.format("Type %s registered via @Register in %s is abstract",
+                                      subtype.getName(), type.getName()));
+        }
+        else if(type.isAnnotationPresent(SelfRegister.class))
+        {
+            if(isAbstractType(type))
+                throw new AbstractTypeException(
+                        String.format("Abstract type %s cannot be annotated with @SelfRegister",
+                                      type.getName()));
+        }
     }
 }

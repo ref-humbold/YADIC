@@ -758,21 +758,14 @@ public class DIContainerTest
     public void resolve_WhenAnnotatedClassRegistersNotDerivedClass_ThenNotDerivedTypeException()
     {
         Assertions.assertThrows(NotDerivedTypeException.class,
-                                () -> testObject.resolve(ClassRegisterIncorrect1.class));
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedClassRegistersAbstractSuperclass_ThenNotDerivedTypeException()
-    {
-        Assertions.assertThrows(NotDerivedTypeException.class,
-                                () -> testObject.resolve(ClassRegisterIncorrect2.class));
+                                () -> testObject.resolve(ClassRegisterIncorrectOtherClass.class));
     }
 
     @Test
     public void resolve_WhenAnnotatedClassRegistersAbstractConcreteSuperclass_ThenNotDerivedTypeException()
     {
         Assertions.assertThrows(NotDerivedTypeException.class,
-                                () -> testObject.resolve(ClassRegisterIncorrect3.class));
+                                () -> testObject.resolve(ClassRegisterIncorrectSuperClass.class));
     }
 
     @Test

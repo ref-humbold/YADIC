@@ -3,6 +3,7 @@ package dicontainer.auxiliary.register;
 import dicontainer.annotation.Register;
 
 @Register(ClassRegisterConcrete.class)
-public class ClassRegisterIncorrect1
+public class ClassRegisterIncorrectSuperClass
+        extends ClassRegisterConcrete
 {
 }
