@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dicontainer.ConstructionPolicy;
-import dicontainer.TypesUtils;
 import dicontainer.annotation.Register;
 import dicontainer.annotation.SelfRegister;
+import dicontainer.commons.TypesUtils;
 import dicontainer.exception.AbstractTypeException;
 import dicontainer.exception.MissingDependenciesException;
 import dicontainer.exception.NotDerivedTypeException;
@@ -28,16 +28,16 @@ public class TypesDictionary
         {
             Register annotation = type.getAnnotation(Register.class);
 
-            insert(type, (Class<? extends T>)annotation.value(), annotation.policy(), true);
+            doInsert(type, (Class<? extends T>)annotation.value(), annotation.policy());
         }
         else if(type.isAnnotationPresent(SelfRegister.class))
         {
             SelfRegister annotation = type.getAnnotation(SelfRegister.class);
 
-            insert(type, type, annotation.policy(), true);
+            doInsert(type, type, annotation.policy());
         }
         else
-            insert(type, type, ConstructionPolicy.getDefault(), false);
+            doInsert(type, type, ConstructionPolicy.getDefault());
     }
 
     public <T> void insert(Class<T> type, Class<? extends T> subtype)
@@ -51,7 +51,7 @@ public class TypesDictionary
             throw new ChangingAnnotatedRegistrationException(
                     String.format("Cannot change registration from annotation for type %s", type));
 
-        insert(type, subtype, policy, false);
+        doInsert(type, subtype, policy);
     }
 
     public boolean contains(Class<?> type)
@@ -84,7 +84,7 @@ public class TypesDictionary
                     String.format("Abstract type %s has no registered concrete subclass",
                                   type.getName()));
 
-        return new SubtypeMapping<>(type, false, ConstructionPolicy.getDefault());
+        return new SubtypeMapping<>(type, ConstructionPolicy.getDefault());
     }
 
     public <T> SubtypeMapping<? extends T> find(Class<T> type)
@@ -103,10 +103,9 @@ public class TypesDictionary
         return mapping;
     }
 
-    private <T> void insert(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy,
-                            boolean isFromAnnotation)
+    private <T> void doInsert(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
     {
-        subtypes.put(type, new SubtypeMapping<>(subtype, isFromAnnotation, policy));
+        subtypes.put(type, new SubtypeMapping<>(subtype, policy));
     }
 
     private void validateAnnotation(Class<?> type)

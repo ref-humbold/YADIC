@@ -1,4 +1,4 @@
-package dicontainer;
+package dicontainer.commons;
 
 import java.lang.reflect.Modifier;
 

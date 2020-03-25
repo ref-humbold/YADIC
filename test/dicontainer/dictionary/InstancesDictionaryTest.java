@@ -8,6 +8,7 @@ import org.junit.jupiter.api.function.Executable;
 
 import dicontainer.auxiliary.basic.ClassBasicStringGetter;
 import dicontainer.auxiliary.constructor.ClassConstructorDefault;
+import dicontainer.commons.Instance;
 
 class InstancesDictionaryTest
 {
@@ -34,11 +35,10 @@ class InstancesDictionaryTest
         ClassConstructorDefault instance = new ClassConstructorDefault();
         // when
         testObject.insert(ClassConstructorDefault.class, instance);
-        InstanceMapping<ClassConstructorDefault> result =
-                testObject.get(ClassConstructorDefault.class);
+        Instance<ClassConstructorDefault> result = testObject.get(ClassConstructorDefault.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertSame(instance, result.instance);
+        Assertions.assertTrue(result.exists());
+        Assertions.assertSame(instance, result.extract());
     }
 
     @Test
@@ -50,12 +50,11 @@ class InstancesDictionaryTest
         testObject.insert(ClassConstructorDefault.class, oldInstance);
         // when
         testObject.insert(ClassConstructorDefault.class, newInstance);
-        InstanceMapping<ClassConstructorDefault> result =
-                testObject.get(ClassConstructorDefault.class);
+        Instance<ClassConstructorDefault> result = testObject.get(ClassConstructorDefault.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertSame(newInstance, result.instance);
-        Assertions.assertNotSame(oldInstance, result.instance);
+        Assertions.assertTrue(result.exists());
+        Assertions.assertSame(newInstance, result.extract());
+        Assertions.assertNotSame(oldInstance, result.extract());
     }
 
     // endregion
@@ -74,13 +73,12 @@ class InstancesDictionaryTest
     // region get
 
     @Test
-    public void get_WhenInstanceAbsent_ThenNull()
+    public void get_WhenInstanceAbsent_ThenMappingNone()
     {
         // when
-        InstanceMapping<ClassBasicStringGetter> result =
-                testObject.get(ClassBasicStringGetter.class);
+        Instance<ClassBasicStringGetter> result = testObject.get(ClassBasicStringGetter.class);
         // then
-        Assertions.assertNull(result);
+        Assertions.assertFalse(result.exists());
     }
 
     // endregion

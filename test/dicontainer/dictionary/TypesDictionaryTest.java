@@ -45,7 +45,6 @@ class TypesDictionaryTest
         // then
         Assertions.assertEquals(subtype, result.subtype);
         Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
-        Assertions.assertFalse(result.isFromAnnotation);
     }
 
     @Test
@@ -60,7 +59,6 @@ class TypesDictionaryTest
         // then
         Assertions.assertEquals(subtype, result.subtype);
         Assertions.assertEquals(ConstructionPolicy.SINGLETON, result.policy);
-        Assertions.assertFalse(result.isFromAnnotation);
     }
 
     @Test
@@ -74,7 +72,6 @@ class TypesDictionaryTest
         // then
         Assertions.assertEquals(type, result.subtype);
         Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
-        Assertions.assertFalse(result.isFromAnnotation);
     }
 
     @Test
@@ -88,7 +85,6 @@ class TypesDictionaryTest
         // then
         Assertions.assertEquals(type, result.subtype);
         Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
-        Assertions.assertTrue(result.isFromAnnotation);
     }
 
     @Test
@@ -102,7 +98,6 @@ class TypesDictionaryTest
         // then
         Assertions.assertEquals(ClassRegisterDerivedFromRegister.class, result.subtype);
         Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
-        Assertions.assertTrue(result.isFromAnnotation);
     }
 
     // endregion
@@ -168,7 +163,6 @@ class TypesDictionaryTest
         // then
         Assertions.assertEquals(type, result.subtype);
         Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
-        Assertions.assertFalse(result.isFromAnnotation);
     }
 
     @Test
@@ -180,7 +174,6 @@ class TypesDictionaryTest
         // then
         Assertions.assertEquals(ClassRegisterDerivedFromRegister.class, result.subtype);
         Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
-        Assertions.assertTrue(result.isFromAnnotation);
     }
 
     @Test
@@ -269,7 +262,6 @@ class TypesDictionaryTest
         // then
         Assertions.assertEquals(ClassBasicInheritsFromAbstract.class, result.subtype);
         Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
-        Assertions.assertFalse(result.isFromAnnotation);
     }
 
     @Test
@@ -282,7 +274,6 @@ class TypesDictionaryTest
         // then
         Assertions.assertEquals(type, result.subtype);
         Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
-        Assertions.assertFalse(result.isFromAnnotation);
     }
 
     @Test
@@ -294,7 +285,6 @@ class TypesDictionaryTest
         // then
         Assertions.assertEquals(ClassRegisterDerivedFromRegister.class, result.subtype);
         Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
-        Assertions.assertTrue(result.isFromAnnotation);
     }
 
     @Test
