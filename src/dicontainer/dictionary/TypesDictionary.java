@@ -1,10 +1,10 @@
 package dicontainer.dictionary;
 
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
 import dicontainer.ConstructionPolicy;
+import dicontainer.TypesUtils;
 import dicontainer.annotation.Register;
 import dicontainer.annotation.SelfRegister;
 import dicontainer.exception.AbstractTypeException;
@@ -47,7 +47,7 @@ public class TypesDictionary
 
     public <T> void insert(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
     {
-        if(isAnnotatedType(type))
+        if(TypesUtils.isAnnotatedType(type))
             throw new ChangingAnnotatedRegistrationException(
                     String.format("Cannot change registration from annotation for type %s", type));
 
@@ -65,13 +65,13 @@ public class TypesDictionary
             return false;
         }
 
-        return isAnnotatedType(type) || subtypes.containsKey(type);
+        return TypesUtils.isAnnotatedType(type) || subtypes.containsKey(type);
     }
 
     @SuppressWarnings("unchecked")
     public <T> SubtypeMapping<? extends T> get(Class<T> type)
     {
-        if(isAnnotatedType(type) && !subtypes.containsKey(type))
+        if(TypesUtils.isAnnotatedType(type) && !subtypes.containsKey(type))
             insert(type);
 
         SubtypeMapping<? extends T> mapping = (SubtypeMapping<? extends T>)subtypes.get(type);
@@ -79,7 +79,7 @@ public class TypesDictionary
         if(mapping != null)
             return mapping;
 
-        if(isAbstractType(type))
+        if(TypesUtils.isAbstractType(type))
             throw new MissingDependenciesException(
                     String.format("Abstract type %s has no registered concrete subclass",
                                   type.getName()));
@@ -92,7 +92,7 @@ public class TypesDictionary
         SubtypeMapping<? extends T> mapping = get(type);
         ConstructionPolicy desiredPolicy = mapping.policy;
 
-        while(isAbstractType(mapping.subtype) || contains(mapping.subtype))
+        while(TypesUtils.isAbstractType(mapping.subtype) || contains(mapping.subtype))
         {
             mapping = get(mapping.subtype);
 
@@ -109,17 +109,6 @@ public class TypesDictionary
         subtypes.put(type, new SubtypeMapping<>(subtype, isFromAnnotation, policy));
     }
 
-    private boolean isAbstractType(Class<?> type)
-    {
-        return type.isInterface() || Modifier.isAbstract(type.getModifiers());
-    }
-
-    private boolean isAnnotatedType(Class<?> type)
-    {
-        return type.isAnnotationPresent(Register.class) || type.isAnnotationPresent(
-                SelfRegister.class);
-    }
-
     private void validateAnnotation(Class<?> type)
     {
         if(type.isAnnotationPresent(Register.class))
@@ -132,14 +121,14 @@ public class TypesDictionary
                         String.format("Type %s registered via @Register is not derived type of %s",
                                       subtype.getName(), type.getName()));
 
-            if(isAbstractType(subtype))
+            if(TypesUtils.isAbstractType(subtype))
                 throw new AbstractTypeException(
                         String.format("Type %s registered via @Register in %s is abstract",
                                       subtype.getName(), type.getName()));
         }
         else if(type.isAnnotationPresent(SelfRegister.class))
         {
-            if(isAbstractType(type))
+            if(TypesUtils.isAbstractType(type))
                 throw new AbstractTypeException(
                         String.format("Abstract type %s cannot be annotated with @SelfRegister",
                                       type.getName()));

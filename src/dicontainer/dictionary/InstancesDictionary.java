@@ -23,9 +23,4 @@ public class InstancesDictionary
     {
         return (InstanceMapping<T>)instances.get(type);
     }
-
-    public void remove(Class<?> type)
-    {
-        instances.remove(type);
-    }
 }

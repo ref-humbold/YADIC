@@ -8,7 +8,6 @@ import org.junit.jupiter.api.function.Executable;
 
 import dicontainer.auxiliary.basic.ClassBasicStringGetter;
 import dicontainer.auxiliary.constructor.ClassConstructorDefault;
-import dicontainer.auxiliary.register.ClassRegisterConcrete;
 
 class InstancesDictionaryTest
 {
@@ -82,29 +81,6 @@ class InstancesDictionaryTest
                 testObject.get(ClassBasicStringGetter.class);
         // then
         Assertions.assertNull(result);
-    }
-
-    // endregion
-    // region remove
-
-    @Test
-    public void remove_WhenInstancePresent_ThenRemoved()
-    {
-        // given
-        testObject.insert(ClassBasicStringGetter.class, new ClassBasicStringGetter("X"));
-        // when
-        testObject.remove(ClassBasicStringGetter.class);
-        // then
-        Assertions.assertNull(testObject.get(ClassBasicStringGetter.class));
-    }
-
-    @Test
-    public void remove_WhenInstanceAbsent_ThenNull()
-    {
-        // when
-        testObject.remove(ClassRegisterConcrete.class);
-        // then
-        Assertions.assertNull(testObject.get(ClassRegisterConcrete.class));
     }
 
     // endregion
