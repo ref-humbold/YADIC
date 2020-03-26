@@ -5,24 +5,34 @@ import java.util.Objects;
 
 public final class Instance<T>
 {
-    public static final Instance<?> noMapping = new Instance<>(null);
     private final T instance;
+    private final RuntimeException exception;
 
-    private Instance(T instance)
+    private Instance(T instance, RuntimeException exception)
     {
         this.instance = instance;
+        this.exception = exception;
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> Instance<T> none()
     {
-        return (Instance<T>)noMapping;
+        return none(new NoSuchElementException("No instance found"));
+    }
+
+    public static <T> Instance<T> none(RuntimeException exception)
+    {
+        Objects.requireNonNull(exception);
+        return new Instance<>(null, exception);
     }
 
     public static <T> Instance<T> make(T instance)
     {
-        Objects.requireNonNull(instance);
-        return new Instance<>(instance);
+        return instance == null ? none() : new Instance<>(instance, null);
+    }
+
+    public static <T> Instance<T> make(T instance, RuntimeException exception)
+    {
+        return instance == null ? none(exception) : new Instance<>(instance, null);
     }
 
     public static <T> Instance<T> cast(Instance<T> mapping)
@@ -38,7 +48,7 @@ public final class Instance<T>
     public T extract()
     {
         if(!exists())
-            throw new NoSuchElementException("No instance found");
+            throw exception;
 
         return instance;
     }

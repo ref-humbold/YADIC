@@ -7,8 +7,8 @@ public class ChangingAnnotatedRegistrationException
 {
     private static final long serialVersionUID = 4583310501511173747L;
 
-    public ChangingAnnotatedRegistrationException(String s)
+    public ChangingAnnotatedRegistrationException(String message)
     {
-        super(s);
+        super(message);
     }
 }

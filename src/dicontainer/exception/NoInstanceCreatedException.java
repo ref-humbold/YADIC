@@ -9,4 +9,9 @@ public class NoInstanceCreatedException
     {
         super(s);
     }
+
+    public NoInstanceCreatedException(String s, Throwable t)
+    {
+        super(s, t);
+    }
 }

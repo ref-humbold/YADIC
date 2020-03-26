@@ -198,7 +198,7 @@ class TypesDictionaryTest
     }
 
     @Test
-    public void get_WhenConcreteTypeIsAbsent_ThenFalse()
+    public void contains_WhenConcreteTypeIsAbsent_ThenFalse()
     {
         // when
         boolean result = testObject.contains(ClassBasicInheritsFromAbstract.class);
@@ -299,6 +299,17 @@ class TypesDictionaryTest
         Executable executable = () -> testObject.find(InterfaceBasic.class);
         // then
         Assertions.assertThrows(MixingPoliciesException.class, executable);
+    }
+
+    @Test
+    public void find_WhenSelfRegisterClass_ThenMapping()
+    {
+        // when
+        SubtypeMapping<? extends ClassRegisterSelf> result =
+                testObject.find(ClassRegisterSelf.class);
+        // then
+        Assertions.assertEquals(ClassRegisterSelf.class, result.subtype);
+        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
     }
 
     // endregion

@@ -7,8 +7,8 @@ public class MixingPoliciesException
 {
     private static final long serialVersionUID = 7409446718002438943L;
 
-    public MixingPoliciesException(String s)
+    public MixingPoliciesException(String message)
     {
-        super(s);
+        super(message);
     }
 }

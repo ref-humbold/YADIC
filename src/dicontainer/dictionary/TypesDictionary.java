@@ -91,13 +91,18 @@ public class TypesDictionary
     {
         SubtypeMapping<? extends T> mapping = get(type);
         ConstructionPolicy desiredPolicy = mapping.policy;
+        Class<?> supertype = type;
 
-        while(TypesUtils.isAbstractType(mapping.subtype) || contains(mapping.subtype))
+        while(TypesUtils.isAbstractType(mapping.subtype)
+                || contains(mapping.subtype) && !mapping.subtype.equals(supertype))
         {
+            supertype = mapping.subtype;
             mapping = get(mapping.subtype);
 
             if(mapping.policy != desiredPolicy)
-                throw new MixingPoliciesException("");
+                throw new MixingPoliciesException(String.format(
+                        "Registered classes chain contains two different construction policies: expected %s, was %s",
+                        desiredPolicy.toString(), mapping.policy.toString()));
         }
 
         return mapping;

@@ -7,14 +7,18 @@ import java.util.List;
 import dicontainer.annotation.Dependency;
 import dicontainer.exception.MultipleAnnotatedConstructorsException;
 
-public class TypeConstructors
+public class TypeConstructors<T>
 {
-    public final Constructor<?> annotatedConstructor;
-    public final List<Constructor<?>> parameterizedConstructors;
+    public final String typename;
+    public final Constructor<T> annotatedConstructor;
+    public final List<Constructor<T>> parameterizedConstructors;
 
-    public TypeConstructors(Class<?> type)
+    @SuppressWarnings("unchecked")
+    public TypeConstructors(Class<T> type)
     {
-        Constructor<?>[] constructors = type.getConstructors();
+        typename = type.getName();
+
+        Constructor<T>[] constructors = (Constructor<T>[])type.getConstructors();
 
         Arrays.sort(constructors, new ConstructorComparator());
         parameterizedConstructors = Arrays.asList(constructors);
@@ -26,7 +30,7 @@ public class TypeConstructors
                         "Type %s has more than one constructor with @Dependency annotation",
                         type.getName()));
 
-            annotatedConstructor = constructors[0];
+            annotatedConstructor = (Constructor<T>)constructors[0];
             parameterizedConstructors.remove(0);
         }
         else
