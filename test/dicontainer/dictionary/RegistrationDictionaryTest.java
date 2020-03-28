@@ -324,6 +324,31 @@ class RegistrationDictionaryTest
     }
 
     // endregion
+    // region containsInstance
+
+    @Test
+    public void containsInstance_WhenPresent_ThenTrue()
+    {
+        // given
+        ClassConstructorDefault instance = new ClassConstructorDefault();
+
+        testObject.insertInstance(ClassConstructorDefault.class, instance);
+        // when
+        boolean result = testObject.containsInstance(ClassConstructorDefault.class);
+        // then
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    public void containsInstance_WhenAbsent_ThenTrue()
+    {
+        // when
+        boolean result = testObject.containsInstance(ClassConstructorDefault.class);
+        // then
+        Assertions.assertFalse(result);
+    }
+
+    // endregion
     // region findType
 
     @Test
