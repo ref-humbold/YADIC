@@ -2,25 +2,28 @@ package dicontainer.dictionary;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import dicontainer.ConstructionPolicy;
 import dicontainer.annotation.Register;
 import dicontainer.annotation.SelfRegister;
+import dicontainer.commons.Instance;
 import dicontainer.commons.TypesUtils;
 import dicontainer.exception.AbstractTypeException;
 import dicontainer.exception.MissingDependenciesException;
 import dicontainer.exception.NotDerivedTypeException;
 
-public class TypesDictionary
+public class RegistrationDictionary
 {
     private final Map<Class<?>, SubtypeMapping<?>> subtypes = new HashMap<>();
+    private final Map<Class<?>, Instance<?>> instances = new HashMap<>();
 
-    public TypesDictionary()
+    public RegistrationDictionary()
     {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> void insert(Class<T> type)
+    public <T> void insertType(Class<T> type)
     {
         validateAnnotation(type);
 
@@ -28,33 +31,40 @@ public class TypesDictionary
         {
             Register annotation = type.getAnnotation(Register.class);
 
-            doInsert(type, (Class<? extends T>)annotation.value(), annotation.policy());
+            doInsertType(type, (Class<? extends T>)annotation.value(), annotation.policy());
         }
         else if(type.isAnnotationPresent(SelfRegister.class))
         {
             SelfRegister annotation = type.getAnnotation(SelfRegister.class);
 
-            doInsert(type, type, annotation.policy());
+            doInsertType(type, type, annotation.policy());
         }
         else
-            doInsert(type, type, ConstructionPolicy.getDefault());
+            doInsertType(type, type, ConstructionPolicy.getDefault());
     }
 
-    public <T> void insert(Class<T> type, Class<? extends T> subtype)
+    public <T> void insertType(Class<T> type, Class<? extends T> subtype)
     {
-        insert(type, subtype, ConstructionPolicy.getDefault());
+        insertType(type, subtype, ConstructionPolicy.getDefault());
     }
 
-    public <T> void insert(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
+    public <T> void insertType(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
     {
         if(TypesUtils.isAnnotatedType(type))
             throw new ChangingAnnotatedRegistrationException(
                     String.format("Cannot change registration from annotation for type %s", type));
 
-        doInsert(type, subtype, policy);
+        doInsertType(type, subtype, policy);
     }
 
-    public boolean contains(Class<?> type)
+    public <T> void insertInstance(Class<T> type, T instance)
+    {
+        Objects.requireNonNull(instance);
+        insertType(type, type, ConstructionPolicy.SINGLETON);
+        instances.put(type, Instance.make(instance));
+    }
+
+    public boolean containsType(Class<?> type)
     {
         try
         {
@@ -68,11 +78,16 @@ public class TypesDictionary
         return TypesUtils.isAnnotatedType(type) || subtypes.containsKey(type);
     }
 
+    public boolean containsInstance(Class<?> type)
+    {
+        return instances.containsKey(type);
+    }
+
     @SuppressWarnings("unchecked")
-    public <T> SubtypeMapping<? extends T> get(Class<T> type)
+    public <T> SubtypeMapping<? extends T> getType(Class<T> type)
     {
         if(TypesUtils.isAnnotatedType(type) && !subtypes.containsKey(type))
-            insert(type);
+            insertType(type);
 
         SubtypeMapping<? extends T> mapping = (SubtypeMapping<? extends T>)subtypes.get(type);
 
@@ -87,17 +102,23 @@ public class TypesDictionary
         return new SubtypeMapping<>(type, ConstructionPolicy.getDefault());
     }
 
-    public <T> SubtypeMapping<? extends T> find(Class<T> type)
+    @SuppressWarnings("unchecked")
+    public <T> Instance<T> getInstance(Class<T> type)
     {
-        SubtypeMapping<? extends T> mapping = get(type);
+        return Instance.cast((Instance<T>)instances.get(type));
+    }
+
+    public <T> SubtypeMapping<? extends T> findType(Class<T> type)
+    {
+        SubtypeMapping<? extends T> mapping = getType(type);
         ConstructionPolicy desiredPolicy = mapping.policy;
         Class<?> supertype = type;
 
         while(TypesUtils.isAbstractType(mapping.subtype)
-                || contains(mapping.subtype) && !mapping.subtype.equals(supertype))
+                || containsType(mapping.subtype) && !mapping.subtype.equals(supertype))
         {
             supertype = mapping.subtype;
-            mapping = get(mapping.subtype);
+            mapping = getType(mapping.subtype);
 
             if(mapping.policy != desiredPolicy)
                 throw new MixingPoliciesException(String.format(
@@ -108,7 +129,8 @@ public class TypesDictionary
         return mapping;
     }
 
-    private <T> void doInsert(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
+    private <T> void doInsertType(Class<T> type, Class<? extends T> subtype,
+                                  ConstructionPolicy policy)
     {
         subtypes.put(type, new SubtypeMapping<>(subtype, policy));
     }

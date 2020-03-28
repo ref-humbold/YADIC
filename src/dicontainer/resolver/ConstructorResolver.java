@@ -8,23 +8,19 @@ import java.util.Stack;
 
 import dicontainer.ConstructionPolicy;
 import dicontainer.commons.Instance;
-import dicontainer.dictionary.InstancesDictionary;
+import dicontainer.dictionary.RegistrationDictionary;
 import dicontainer.dictionary.SubtypeMapping;
-import dicontainer.dictionary.TypesDictionary;
 import dicontainer.exception.CircularDependenciesException;
 import dicontainer.exception.MissingDependenciesException;
 import dicontainer.exception.NoInstanceCreatedException;
 
 public class ConstructorResolver
 {
-    private final TypesDictionary typesDictionary;
-    private final InstancesDictionary instancesDictionary;
+    private final RegistrationDictionary dictionary;
 
-    public ConstructorResolver(TypesDictionary typesDictionary,
-                               InstancesDictionary instancesDictionary)
+    public ConstructorResolver(RegistrationDictionary dictionary)
     {
-        this.typesDictionary = typesDictionary;
-        this.instancesDictionary = instancesDictionary;
+        this.dictionary = dictionary;
     }
 
     public <T> T resolve(Class<T> type)
@@ -36,7 +32,7 @@ public class ConstructorResolver
     {
         path.push(type);
 
-        SubtypeMapping<? extends T> subtypeMapping = typesDictionary.find(type);
+        SubtypeMapping<? extends T> subtypeMapping = dictionary.findType(type);
         T object = resolveType(subtypeMapping, path);
 
         path.pop();
@@ -45,7 +41,7 @@ public class ConstructorResolver
 
     private <T> T resolveType(SubtypeMapping<T> mapping, Stack<Class<?>> path)
     {
-        Instance<T> instance = instancesDictionary.get(mapping.subtype);
+        Instance<T> instance = dictionary.getInstance(mapping.subtype);
 
         if(instance.exists())
             return instance.extract();
@@ -53,7 +49,7 @@ public class ConstructorResolver
         T object = construct(new TypeConstructors<>(mapping.subtype), path);
 
         if(mapping.policy == ConstructionPolicy.SINGLETON)
-            instancesDictionary.insert(mapping.subtype, object);
+            dictionary.insertInstance(mapping.subtype, object);
 
         return object;
     }
@@ -92,7 +88,7 @@ public class ConstructorResolver
                         "Dependencies resolving detected a cycle detected between %s and %s",
                         parameter.getName(), typename)));
 
-            if(!typesDictionary.contains(parameter))
+            if(!dictionary.containsType(parameter))
                 return Instance.none(new MissingDependenciesException(
                         String.format("No dependency for %s found when resolving type %s",
                                       parameter.getName(), typename)));
