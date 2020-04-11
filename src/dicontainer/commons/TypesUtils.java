@@ -5,10 +5,13 @@ import java.lang.reflect.Modifier;
 import dicontainer.annotation.Register;
 import dicontainer.annotation.SelfRegister;
 
-public class TypesUtils
+public final class TypesUtils
 {
-    public static boolean isAbstractType(Class<?> type)
+    public static boolean isAbstractReferenceType(Class<?> type)
     {
+        if(type.isPrimitive())
+            return false;
+
         return type.isInterface() || Modifier.isAbstract(type.getModifiers());
     }
 

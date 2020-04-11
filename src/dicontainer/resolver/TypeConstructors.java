@@ -1,11 +1,13 @@
 package dicontainer.resolver;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import dicontainer.annotation.Dependency;
 import dicontainer.exception.MultipleAnnotatedConstructorsException;
+import dicontainer.exception.NoSuitableConstructorException;
 
 public class TypeConstructors<T>
 {
@@ -20,17 +22,21 @@ public class TypeConstructors<T>
 
         Constructor<T>[] constructors = (Constructor<T>[])type.getConstructors();
 
+        if(constructors.length == 0)
+            throw new NoSuitableConstructorException(
+                    String.format("No public constructors found for type %s", type.getName()));
+
         Arrays.sort(constructors, new ConstructorComparator());
-        parameterizedConstructors = Arrays.asList(constructors);
+        parameterizedConstructors = new ArrayList<>(Arrays.asList(constructors));
 
         if(constructors[0].isAnnotationPresent(Dependency.class))
         {
-            if(constructors[1].isAnnotationPresent(Dependency.class))
+            if(constructors.length > 1 && constructors[1].isAnnotationPresent(Dependency.class))
                 throw new MultipleAnnotatedConstructorsException(String.format(
                         "Type %s has more than one constructor with @Dependency annotation",
                         type.getName()));
 
-            annotatedConstructor = (Constructor<T>)constructors[0];
+            annotatedConstructor = constructors[0];
             parameterizedConstructors.remove(0);
         }
         else

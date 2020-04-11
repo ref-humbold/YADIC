@@ -94,7 +94,7 @@ public class RegistrationDictionary
         if(mapping != null)
             return mapping;
 
-        if(TypesUtils.isAbstractType(type))
+        if(TypesUtils.isAbstractReferenceType(type))
             throw new MissingDependenciesException(
                     String.format("Abstract type %s has no registered concrete subclass",
                                   type.getName()));
@@ -114,7 +114,7 @@ public class RegistrationDictionary
         ConstructionPolicy desiredPolicy = mapping.policy;
         Class<?> supertype = type;
 
-        while(TypesUtils.isAbstractType(mapping.subtype)
+        while(TypesUtils.isAbstractReferenceType(mapping.subtype)
                 || containsType(mapping.subtype) && !mapping.subtype.equals(supertype))
         {
             supertype = mapping.subtype;
@@ -147,14 +147,14 @@ public class RegistrationDictionary
                         String.format("Type %s registered via @Register is not derived type of %s",
                                       subtype.getName(), type.getName()));
 
-            if(TypesUtils.isAbstractType(subtype))
+            if(TypesUtils.isAbstractReferenceType(subtype))
                 throw new AbstractTypeException(
                         String.format("Type %s registered via @Register in %s is abstract",
                                       subtype.getName(), type.getName()));
         }
         else if(type.isAnnotationPresent(SelfRegister.class))
         {
-            if(TypesUtils.isAbstractType(type))
+            if(TypesUtils.isAbstractReferenceType(type))
                 throw new AbstractTypeException(
                         String.format("Abstract type %s cannot be annotated with @SelfRegister",
                                       type.getName()));
