@@ -23,7 +23,7 @@ public class RegistrationDictionary
     }
 
     @SuppressWarnings("unchecked")
-    public <T> void insertType(Class<T> type)
+    public <T> void insertType(Class<T> type, ConstructionPolicy policy)
     {
         validateAnnotation(type);
 
@@ -40,19 +40,15 @@ public class RegistrationDictionary
             doInsertType(type, type, annotation.policy());
         }
         else
-            doInsertType(type, type, ConstructionPolicy.getDefault());
-    }
-
-    public <T> void insertType(Class<T> type, Class<? extends T> subtype)
-    {
-        insertType(type, subtype, ConstructionPolicy.getDefault());
+            doInsertType(type, type, policy);
     }
 
     public <T> void insertType(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
     {
         if(TypesUtils.isAnnotatedType(type))
             throw new ChangingAnnotatedRegistrationException(
-                    String.format("Cannot change registration from annotation for type %s", type));
+                    String.format("Cannot change registration from annotation for type %s",
+                                  type.getName()));
 
         doInsertType(type, subtype, policy);
     }
@@ -87,7 +83,7 @@ public class RegistrationDictionary
     public <T> SubtypeMapping<? extends T> getType(Class<T> type)
     {
         if(TypesUtils.isAnnotatedType(type) && !subtypes.containsKey(type))
-            insertType(type);
+            insertType(type, ConstructionPolicy.getDefault());
 
         SubtypeMapping<? extends T> mapping = (SubtypeMapping<? extends T>)subtypes.get(type);
 

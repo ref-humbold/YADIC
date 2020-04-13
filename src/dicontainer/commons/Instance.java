@@ -40,6 +40,11 @@ public final class Instance<T>
         return mapping == null ? none() : mapping;
     }
 
+    public RuntimeException getException()
+    {
+        return exception;
+    }
+
     public boolean exists()
     {
         return instance != null;

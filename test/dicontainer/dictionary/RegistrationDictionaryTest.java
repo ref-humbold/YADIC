@@ -37,20 +37,6 @@ class RegistrationDictionaryTest
     // region insertType/getType
 
     @Test
-    public void insertType_getType_WhenSpecifyTypeWithSubtype_ThenSubtypeInserted()
-    {
-        // given
-        Class<InterfaceBasic> type = InterfaceBasic.class;
-        Class<ClassBasicAbstract> subtype = ClassBasicAbstract.class;
-        // when
-        testObject.insertType(type, subtype);
-        SubtypeMapping<? extends InterfaceBasic> result = testObject.getType(type);
-        // then
-        Assertions.assertEquals(subtype, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
-    }
-
-    @Test
     public void insertType_getType_WhenSpecifyTypeWithSubtypeAndPolicy_ThenSubtypeInserted()
     {
         // given
@@ -65,16 +51,16 @@ class RegistrationDictionaryTest
     }
 
     @Test
-    public void insertType_getType_WhenSpecifyType_ThenThisTypeInserted()
+    public void insertType_getType_WhenSpecifyTypeAndPolicy_ThenThisTypeInserted()
     {
         // given
         Class<ClassBasicInheritsFromAbstract> type = ClassBasicInheritsFromAbstract.class;
         // when
-        testObject.insertType(type);
+        testObject.insertType(type, ConstructionPolicy.SINGLETON);
         SubtypeMapping<? extends ClassBasicInheritsFromAbstract> result = testObject.getType(type);
         // then
         Assertions.assertEquals(type, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
+        Assertions.assertEquals(ConstructionPolicy.SINGLETON, result.policy);
     }
 
     @Test
@@ -83,7 +69,7 @@ class RegistrationDictionaryTest
         // given
         Class<ClassRegisterSelf> type = ClassRegisterSelf.class;
         // when
-        testObject.insertType(type);
+        testObject.insertType(type, ConstructionPolicy.getDefault());
         SubtypeMapping<? extends ClassRegisterSelf> result = testObject.getType(type);
         // then
         Assertions.assertEquals(type, result.subtype);
@@ -96,7 +82,7 @@ class RegistrationDictionaryTest
         // given
         Class<ClassRegisterConcrete> type = ClassRegisterConcrete.class;
         // when
-        testObject.insertType(type);
+        testObject.insertType(type, ConstructionPolicy.getDefault());
         SubtypeMapping<? extends ClassRegisterConcrete> result = testObject.getType(type);
         // then
         Assertions.assertEquals(ClassRegisterDerivedFromRegister.class, result.subtype);
@@ -111,7 +97,8 @@ class RegistrationDictionaryTest
     {
         // when
         Executable executable = () -> testObject.insertType(ClassRegisterConcrete.class,
-                                                            ClassRegisterDerivedFromRegister.class);
+                                                            ClassRegisterDerivedFromRegister.class,
+                                                            ConstructionPolicy.getDefault());
         // then
         Assertions.assertThrows(ChangingAnnotatedRegistrationException.class, executable);
     }
@@ -121,7 +108,8 @@ class RegistrationDictionaryTest
     {
         // when
         Executable executable = () -> testObject.insertType(ClassRegisterSelf.class,
-                                                            ClassRegisterDerivedFromSelfRegister.class);
+                                                            ClassRegisterDerivedFromSelfRegister.class,
+                                                            ConstructionPolicy.getDefault());
         // then
         Assertions.assertThrows(ChangingAnnotatedRegistrationException.class, executable);
     }
@@ -130,7 +118,8 @@ class RegistrationDictionaryTest
     public void insertType_WhenRegisterTypeAndNotSubtype_ThenNotDerivedTypeException()
     {
         // when
-        Executable executable = () -> testObject.insertType(ClassRegisterIncorrectOtherClass.class);
+        Executable executable = () -> testObject.insertType(ClassRegisterIncorrectOtherClass.class,
+                                                            ConstructionPolicy.getDefault());
         // then
         Assertions.assertThrows(NotDerivedTypeException.class, executable);
     }
@@ -139,7 +128,8 @@ class RegistrationDictionaryTest
     public void insertType_WhenRegisterTypeAndAbstract_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.insertType(ClassRegisterAbstractIncorrect.class);
+        Executable executable = () -> testObject.insertType(ClassRegisterAbstractIncorrect.class,
+                                                            ConstructionPolicy.getDefault());
         // then
         Assertions.assertThrows(AbstractTypeException.class, executable);
     }
@@ -149,7 +139,8 @@ class RegistrationDictionaryTest
     {
         // when
         Executable executable =
-                () -> testObject.insertType(ClassRegisterSelfAbstractIncorrect.class);
+                () -> testObject.insertType(ClassRegisterSelfAbstractIncorrect.class,
+                                            ConstructionPolicy.getDefault());
         // then
         Assertions.assertThrows(AbstractTypeException.class, executable);
     }
@@ -295,7 +286,7 @@ class RegistrationDictionaryTest
     {
         // given
         Class<ClassRegisterConcrete> type = ClassRegisterConcrete.class;
-        testObject.insertType(type);
+        testObject.insertType(type, ConstructionPolicy.getDefault());
         // when
         boolean result = testObject.containsType(type);
         // then
@@ -307,7 +298,7 @@ class RegistrationDictionaryTest
     {
         // given
         Class<InterfaceBasic> type = InterfaceBasic.class;
-        testObject.insertType(type, ClassBasicAbstract.class);
+        testObject.insertType(type, ClassBasicAbstract.class, ConstructionPolicy.getDefault());
         // when
         boolean result = testObject.containsType(type);
         // then
@@ -355,8 +346,10 @@ class RegistrationDictionaryTest
     public void findType_WhenAbstractClass_ThenFoundMapping()
     {
         // given
-        testObject.insertType(InterfaceBasic.class, ClassBasicAbstract.class);
-        testObject.insertType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class);
+        testObject.insertType(InterfaceBasic.class, ClassBasicAbstract.class,
+                              ConstructionPolicy.getDefault());
+        testObject.insertType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
+                              ConstructionPolicy.getDefault());
         // when
         SubtypeMapping<? extends InterfaceBasic> result = testObject.findType(InterfaceBasic.class);
         // then

@@ -11,6 +11,7 @@ import dicontainer.commons.Instance;
 import dicontainer.dictionary.RegistrationDictionary;
 import dicontainer.dictionary.SubtypeMapping;
 import dicontainer.exception.CircularDependenciesException;
+import dicontainer.exception.DIException;
 import dicontainer.exception.MissingDependenciesException;
 import dicontainer.exception.NoInstanceCreatedException;
 
@@ -63,7 +64,7 @@ public class ConstructorResolver
             if(!instance.exists())
                 throw new NoInstanceCreatedException(String.format(
                         "Dependency constructor could not produce an instance for type %s",
-                        constructors.typename));
+                        constructors.typename), instance.getException());
 
             return instance.extract();
         }
@@ -71,7 +72,14 @@ public class ConstructorResolver
         Instance<T> instance = Instance.none();
 
         for(int i = 0; i < constructors.parameterizedConstructors.size() && !instance.exists(); ++i)
-            instance = invoke(constructors.parameterizedConstructors.get(i), path);
+            try
+            {
+                instance = invoke(constructors.parameterizedConstructors.get(i), path);
+            }
+            catch(DIException e)
+            {
+                instance = Instance.none(e);
+            }
 
         return instance.extract();
     }
@@ -90,7 +98,7 @@ public class ConstructorResolver
 
             if(!dictionary.containsType(parameter))
                 return Instance.none(new MissingDependenciesException(
-                        String.format("No dependency for %s found when resolving type %s",
+                        String.format("No dependency for type %s found when resolving type %s",
                                       parameter.getName(), typename)));
 
             parameters.add(resolveWithPath(parameter, path));
