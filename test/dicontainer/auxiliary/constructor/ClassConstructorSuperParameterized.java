@@ -1,7 +1,7 @@
 package dicontainer.auxiliary.constructor;
 
 public class ClassConstructorSuperParameterized
-        extends ClassConstructorParameter
+        extends ClassConstructorParameterized
 {
     public ClassConstructorSuperParameterized()
     {

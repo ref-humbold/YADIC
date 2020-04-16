@@ -50,7 +50,7 @@ public class ConstructorResolver
         T object = construct(new TypeConstructors<>(mapping.subtype), path);
 
         if(mapping.policy == ConstructionPolicy.SINGLETON)
-            dictionary.insertInstance(mapping.subtype, object);
+            dictionary.insertSingleton(mapping.subtype, object);
 
         return object;
     }

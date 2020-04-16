@@ -2,12 +2,12 @@ package dicontainer.auxiliary.constructor;
 
 import dicontainer.auxiliary.basic.InterfaceBasic;
 
-public class ClassConstructorParameter
+public class ClassConstructorParameterized
         implements InterfaceBasic
 {
     private int number;
 
-    public ClassConstructorParameter(int number)
+    public ClassConstructorParameterized(int number)
     {
         this.number = number;
     }

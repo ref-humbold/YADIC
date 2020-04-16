@@ -68,7 +68,7 @@ class ConstructorResolverTest
     public void resolve_WhenClassHasParameterConstructorWithoutRegisteredParameter_ThenMissingDependenciesException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorParameter.class);
+        Executable executable = () -> testObject.resolve(ClassConstructorParameterized.class);
         // then
         Assertions.assertThrows(MissingDependenciesException.class, executable);
     }
@@ -81,7 +81,8 @@ class ConstructorResolverTest
 
         registrationDictionary.insertInstance(int.class, number);
         // when
-        ClassConstructorParameter result = testObject.resolve(ClassConstructorParameter.class);
+        ClassConstructorParameterized result =
+                testObject.resolve(ClassConstructorParameterized.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertEquals(number, result.getNumber());
@@ -95,7 +96,7 @@ class ConstructorResolverTest
 
         registrationDictionary.insertInstance(Integer.class, number);
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorParameter.class);
+        Executable executable = () -> testObject.resolve(ClassConstructorParameterized.class);
         // then
         Assertions.assertThrows(MissingDependenciesException.class, executable);
     }

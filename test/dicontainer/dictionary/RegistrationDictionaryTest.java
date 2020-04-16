@@ -12,11 +12,14 @@ import dicontainer.auxiliary.basic.ClassBasicInheritsFromAbstract;
 import dicontainer.auxiliary.basic.ClassBasicStringGetter;
 import dicontainer.auxiliary.basic.InterfaceBasic;
 import dicontainer.auxiliary.constructor.ClassConstructorDefault;
+import dicontainer.auxiliary.constructor.ClassConstructorParameterized;
+import dicontainer.auxiliary.constructor.ClassConstructorSuperParameterized;
 import dicontainer.auxiliary.register.*;
 import dicontainer.commons.Instance;
 import dicontainer.exception.AbstractTypeException;
 import dicontainer.exception.MissingDependenciesException;
 import dicontainer.exception.NotDerivedTypeException;
+import dicontainer.exception.NullInstanceException;
 
 class RegistrationDictionaryTest
 {
@@ -93,25 +96,25 @@ class RegistrationDictionaryTest
     // region insertType
 
     @Test
-    public void insertType_WhenRegisterAnnotatedTypeAndSubtype_ThenChangingAnnotatedRegistrationException()
+    public void insertType_WhenRegisterAnnotatedTypeAndSubtype_ThenAnnotatedTypeRegistrationException()
     {
         // when
         Executable executable = () -> testObject.insertType(ClassRegisterConcrete.class,
                                                             ClassRegisterDerivedFromRegister.class,
                                                             ConstructionPolicy.getDefault());
         // then
-        Assertions.assertThrows(ChangingAnnotatedRegistrationException.class, executable);
+        Assertions.assertThrows(AnnotatedTypeRegistrationException.class, executable);
     }
 
     @Test
-    public void insertType_WhenSelfRegisterAnnotatedTypeAndSubtype_ThenChangingAnnotatedRegistrationException()
+    public void insertType_WhenSelfRegisterAnnotatedTypeAndSubtype_ThenAnnotatedTypeRegistrationException()
     {
         // when
         Executable executable = () -> testObject.insertType(ClassRegisterSelf.class,
                                                             ClassRegisterDerivedFromSelfRegister.class,
                                                             ConstructionPolicy.getDefault());
         // then
-        Assertions.assertThrows(ChangingAnnotatedRegistrationException.class, executable);
+        Assertions.assertThrows(AnnotatedTypeRegistrationException.class, executable);
     }
 
     @Test
@@ -218,16 +221,16 @@ class RegistrationDictionaryTest
     // region insertInstance
 
     @Test
-    public void insertInstance_WhenInstanceNull_ThenNullPointerException()
+    public void insertInstance_WhenInstanceNull_ThenNullInstanceException()
     {
         // when
         Executable executable = () -> testObject.insertInstance(ClassBasicStringGetter.class, null);
         // then
-        Assertions.assertThrows(NullPointerException.class, executable);
+        Assertions.assertThrows(NullInstanceException.class, executable);
     }
 
     @Test
-    public void insertInstance_WhenAnnotated_ThenChangingAnnotatedRegistrationException()
+    public void insertInstance_WhenAnnotated_ThenAnnotatedTypeRegistrationException()
     {
         // given
         ClassRegisterConcrete instance = new ClassRegisterConcrete();
@@ -235,7 +238,23 @@ class RegistrationDictionaryTest
         Executable executable =
                 () -> testObject.insertInstance(ClassRegisterConcrete.class, instance);
         // then
-        Assertions.assertThrows(ChangingAnnotatedRegistrationException.class, executable);
+        Assertions.assertThrows(AnnotatedTypeRegistrationException.class, executable);
+    }
+
+    @Test
+    public void insertInstance_WhenRegisteredSubtype_ThenInstanceForRegisteredTypeException()
+    {
+        // given
+        ClassConstructorParameterized instance = new ClassConstructorParameterized(33);
+
+        testObject.insertType(ClassConstructorParameterized.class,
+                              ClassConstructorSuperParameterized.class,
+                              ConstructionPolicy.getDefault());
+        // when
+        Executable executable =
+                () -> testObject.insertInstance(ClassConstructorParameterized.class, instance);
+        // then
+        Assertions.assertThrows(InstanceForRegisteredTypeException.class, executable);
     }
 
     // endregion

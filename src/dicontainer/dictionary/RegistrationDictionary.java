@@ -2,7 +2,6 @@ package dicontainer.dictionary;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import dicontainer.ConstructionPolicy;
 import dicontainer.annotation.Register;
@@ -31,32 +30,52 @@ public class RegistrationDictionary
         {
             Register annotation = type.getAnnotation(Register.class);
 
-            doInsertType(type, (Class<? extends T>)annotation.value(), annotation.policy());
+            doInsertType(type, new SubtypeMapping<>((Class<? extends T>)annotation.value(),
+                                                    annotation.policy(), false));
         }
         else if(type.isAnnotationPresent(SelfRegister.class))
         {
             SelfRegister annotation = type.getAnnotation(SelfRegister.class);
 
-            doInsertType(type, type, annotation.policy());
+            doInsertType(type, new SubtypeMapping<>(type, annotation.policy(), false));
         }
         else
-            doInsertType(type, type, policy);
+            doInsertType(type, new SubtypeMapping<>(type, policy, false));
     }
 
     public <T> void insertType(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
     {
         if(TypesUtils.isAnnotatedType(type))
-            throw new ChangingAnnotatedRegistrationException(
-                    String.format("Cannot change registration from annotation for type %s",
-                                  type.getName()));
+            throw new AnnotatedTypeRegistrationException(
+                    String.format("Cannot register type for annotated type %s", type.getName()));
 
-        doInsertType(type, subtype, policy);
+        doInsertType(type, new SubtypeMapping<>(subtype, policy, false));
     }
 
+    @SuppressWarnings("unchecked")
     public <T> void insertInstance(Class<T> type, T instance)
     {
-        Objects.requireNonNull(instance);
-        insertType(type, type, ConstructionPolicy.SINGLETON);
+        TypesUtils.requireNonNull(instance);
+
+        if(TypesUtils.isAnnotatedType(type))
+            throw new AnnotatedTypeRegistrationException(
+                    String.format("Cannot register instance for annotated type %s",
+                                  type.getName()));
+
+        SubtypeMapping<? extends T> mapping = (SubtypeMapping<? extends T>)subtypes.get(type);
+
+        if(mapping != null && !mapping.byInstance)
+            throw new InstanceForRegisteredTypeException(
+                    String.format("Cannot register instance for already registered type %s",
+                                  type.getName()));
+
+        doInsertType(type, new SubtypeMapping<>(type, ConstructionPolicy.SINGLETON, true));
+        instances.put(type, Instance.make(instance));
+    }
+
+    public <T> void insertSingleton(Class<T> type, T instance)
+    {
+        TypesUtils.requireNonNull(instance);
         instances.put(type, Instance.make(instance));
     }
 
@@ -95,7 +114,7 @@ public class RegistrationDictionary
                     String.format("Abstract type %s has no registered concrete subclass",
                                   type.getName()));
 
-        return new SubtypeMapping<>(type, ConstructionPolicy.getDefault());
+        return new SubtypeMapping<>(type, ConstructionPolicy.getDefault(), false);
     }
 
     @SuppressWarnings("unchecked")
@@ -125,10 +144,10 @@ public class RegistrationDictionary
         return mapping;
     }
 
-    private <T> void doInsertType(Class<T> type, Class<? extends T> subtype,
-                                  ConstructionPolicy policy)
+    private <T> void doInsertType(Class<T> type, SubtypeMapping<? extends T> mapping)
     {
-        subtypes.put(type, new SubtypeMapping<>(subtype, policy));
+        subtypes.put(type, mapping);
+        instances.remove(type);
     }
 
     private void validateAnnotation(Class<?> type)

@@ -193,10 +193,11 @@ public class DIContainerTest
     @Test
     public void register_WhenInheritanceFromConcreteClass_ThenInstanceIsDerived()
     {
-        testObject.registerType(ClassConstructorParameter.class,
+        testObject.registerType(ClassConstructorParameterized.class,
                                 ClassConstructorSuperParameterized.class);
 
-        ClassConstructorParameter result = testObject.resolve(ClassConstructorParameter.class);
+        ClassConstructorParameterized result =
+                testObject.resolve(ClassConstructorParameterized.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertTrue(result instanceof ClassConstructorSuperParameterized);
@@ -265,9 +266,10 @@ public class DIContainerTest
     {
         ClassConstructorSuperParameterized obj = new ClassConstructorSuperParameterized();
 
-        testObject.registerInstance(ClassConstructorParameter.class, obj);
+        testObject.registerInstance(ClassConstructorParameterized.class, obj);
 
-        ClassConstructorParameter result = testObject.resolve(ClassConstructorParameter.class);
+        ClassConstructorParameterized result =
+                testObject.resolve(ClassConstructorParameterized.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertSame(obj, result);
