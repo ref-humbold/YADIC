@@ -1,7 +1,8 @@
 package dicontainer.commons;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
+
+import dicontainer.exception.NullInstanceException;
 
 public final class Instance<T>
 {
@@ -16,7 +17,7 @@ public final class Instance<T>
 
     public static <T> Instance<T> none()
     {
-        return none(new NoSuchElementException("No instance found"));
+        return none(new NullInstanceException("No instance found"));
     }
 
     public static <T> Instance<T> none(RuntimeException exception)
