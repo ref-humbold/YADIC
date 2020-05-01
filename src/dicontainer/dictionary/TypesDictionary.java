@@ -12,17 +12,17 @@ import dicontainer.exception.AbstractTypeException;
 import dicontainer.exception.MissingDependenciesException;
 import dicontainer.exception.NotDerivedTypeException;
 
-public class RegistrationDictionary
+class TypesDictionary
 {
     private final Map<Class<?>, SubtypeMapping<?>> subtypes = new HashMap<>();
-    private final Map<Class<?>, Instance<?>> instances = new HashMap<>();
+    private final Map<Class<?>, Instance<?>> singletons = new HashMap<>();
 
-    public RegistrationDictionary()
+    TypesDictionary()
     {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> void insertType(Class<T> type, ConstructionPolicy policy)
+    <T> void insert(Class<T> type, ConstructionPolicy policy)
     {
         validateAnnotation(type);
 
@@ -30,56 +30,29 @@ public class RegistrationDictionary
         {
             Register annotation = type.getAnnotation(Register.class);
 
-            doInsertType(type, new SubtypeMapping<>((Class<? extends T>)annotation.value(),
-                                                    annotation.policy(), false));
+            doInsert(type, new SubtypeMapping<>((Class<? extends T>)annotation.value(),
+                                                annotation.policy()));
         }
         else if(type.isAnnotationPresent(SelfRegister.class))
         {
             SelfRegister annotation = type.getAnnotation(SelfRegister.class);
 
-            doInsertType(type, new SubtypeMapping<>(type, annotation.policy(), false));
+            doInsert(type, new SubtypeMapping<>(type, annotation.policy()));
         }
         else
-            doInsertType(type, new SubtypeMapping<>(type, policy, false));
+            doInsert(type, new SubtypeMapping<>(type, policy));
     }
 
-    public <T> void insertType(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
+    <T> void insert(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
     {
         if(TypesUtils.isAnnotatedType(type))
             throw new AnnotatedTypeRegistrationException(
                     String.format("Cannot register type for annotated type %s", type.getName()));
 
-        doInsertType(type, new SubtypeMapping<>(subtype, policy, false));
+        doInsert(type, new SubtypeMapping<>(subtype, policy));
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> void insertInstance(Class<T> type, T instance)
-    {
-        TypesUtils.requireNonNull(instance);
-
-        if(TypesUtils.isAnnotatedType(type))
-            throw new AnnotatedTypeRegistrationException(
-                    String.format("Cannot register instance for annotated type %s",
-                                  type.getName()));
-
-        SubtypeMapping<? extends T> mapping = (SubtypeMapping<? extends T>)subtypes.get(type);
-
-        if(mapping != null && !mapping.byInstance)
-            throw new InstanceForRegisteredTypeException(
-                    String.format("Cannot register instance for already registered type %s",
-                                  type.getName()));
-
-        doInsertType(type, new SubtypeMapping<>(type, ConstructionPolicy.SINGLETON, true));
-        instances.put(type, Instance.make(instance));
-    }
-
-    public <T> void insertSingleton(Class<T> type, T instance)
-    {
-        TypesUtils.requireNonNull(instance);
-        instances.put(type, Instance.make(instance));
-    }
-
-    public boolean containsType(Class<?> type)
+    boolean contains(Class<?> type)
     {
         try
         {
@@ -93,16 +66,11 @@ public class RegistrationDictionary
         return TypesUtils.isAnnotatedType(type) || subtypes.containsKey(type);
     }
 
-    public boolean containsInstance(Class<?> type)
-    {
-        return instances.containsKey(type);
-    }
-
     @SuppressWarnings("unchecked")
-    public <T> SubtypeMapping<? extends T> getType(Class<T> type)
+    <T> SubtypeMapping<? extends T> get(Class<T> type)
     {
         if(TypesUtils.isAnnotatedType(type) && !subtypes.containsKey(type))
-            insertType(type, ConstructionPolicy.getDefault());
+            insert(type, ConstructionPolicy.getDefault());
 
         SubtypeMapping<? extends T> mapping = (SubtypeMapping<? extends T>)subtypes.get(type);
 
@@ -114,26 +82,20 @@ public class RegistrationDictionary
                     String.format("Abstract type %s has no registered concrete subclass",
                                   type.getName()));
 
-        return new SubtypeMapping<>(type, ConstructionPolicy.getDefault(), false);
+        return new SubtypeMapping<>(type, ConstructionPolicy.getDefault());
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> Instance<T> getInstance(Class<T> type)
+    <T> SubtypeMapping<? extends T> find(Class<T> type)
     {
-        return Instance.cast((Instance<T>)instances.get(type));
-    }
-
-    public <T> SubtypeMapping<? extends T> findType(Class<T> type)
-    {
-        SubtypeMapping<? extends T> mapping = getType(type);
+        SubtypeMapping<? extends T> mapping = get(type);
         ConstructionPolicy desiredPolicy = mapping.policy;
         Class<?> supertype = type;
 
         while(TypesUtils.isAbstractReferenceType(mapping.subtype)
-                || containsType(mapping.subtype) && !mapping.subtype.equals(supertype))
+                || contains(mapping.subtype) && !mapping.subtype.equals(supertype))
         {
             supertype = mapping.subtype;
-            mapping = getType(mapping.subtype);
+            mapping = get(mapping.subtype);
 
             if(mapping.policy != desiredPolicy)
                 throw new MixingPoliciesException(String.format(
@@ -144,10 +106,26 @@ public class RegistrationDictionary
         return mapping;
     }
 
-    private <T> void doInsertType(Class<T> type, SubtypeMapping<? extends T> mapping)
+    <T> void insertSingleton(Class<T> type, T instance)
+    {
+        SubtypeMapping<?> mapping = subtypes.get(type);
+
+        if(mapping == null || mapping.policy != ConstructionPolicy.SINGLETON)
+            return;
+
+        singletons.putIfAbsent(type, Instance.make(instance));
+    }
+
+    @SuppressWarnings("unchecked")
+    <T> Instance<T> getSingleton(Class<T> type)
+    {
+        return (Instance<T>)Instance.cast(singletons.get(type));
+    }
+
+    private <T> void doInsert(Class<T> type, SubtypeMapping<? extends T> mapping)
     {
         subtypes.put(type, mapping);
-        instances.remove(type);
+        singletons.remove(type);
     }
 
     private void validateAnnotation(Class<?> type)

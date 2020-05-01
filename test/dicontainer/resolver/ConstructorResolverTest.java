@@ -12,19 +12,19 @@ import dicontainer.auxiliary.circular.*;
 import dicontainer.auxiliary.constructor.*;
 import dicontainer.auxiliary.diamond.*;
 import dicontainer.auxiliary.register.*;
-import dicontainer.dictionary.RegistrationDictionary;
+import dicontainer.dictionary.DIDictionary;
 import dicontainer.exception.*;
 
 class ConstructorResolverTest
 {
-    private RegistrationDictionary registrationDictionary;
+    private DIDictionary dictionary;
     private ConstructorResolver testObject;
 
     @BeforeEach
     public void setUp()
     {
-        registrationDictionary = new RegistrationDictionary();
-        testObject = new ConstructorResolver(registrationDictionary);
+        dictionary = new DIDictionary();
+        testObject = new ConstructorResolver(dictionary);
     }
 
     @AfterEach
@@ -79,7 +79,7 @@ class ConstructorResolverTest
         // given
         int number = 10;
 
-        registrationDictionary.insertInstance(int.class, number);
+        dictionary.addInstance(int.class, number);
         // when
         ClassConstructorParameterized result =
                 testObject.resolve(ClassConstructorParameterized.class);
@@ -94,7 +94,7 @@ class ConstructorResolverTest
         // given
         Integer number = 10;
 
-        registrationDictionary.insertInstance(Integer.class, number);
+        dictionary.addInstance(Integer.class, number);
         // when
         Executable executable = () -> testObject.resolve(ClassConstructorParameterized.class);
         // then
@@ -136,19 +136,18 @@ class ConstructorResolverTest
         // given
         String string = "String";
 
-        registrationDictionary.insertInstance(String.class, string);
-        registrationDictionary.insertType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceBasicStringGetter.class,
-                                          ClassBasicStringGetter.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceBasicSimpleDependency.class,
-                                          ClassConstructorNotAnnotatedWithDependency.class,
-                                          ConstructionPolicy.getDefault());
+        dictionary.addInstance(String.class, string);
+        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasicSimpleDependency.class,
+                           ClassConstructorNotAnnotatedWithDependency.class,
+                           ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
                 testObject.resolve(InterfaceBasicSimpleDependency.class);
@@ -166,18 +165,17 @@ class ConstructorResolverTest
     public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithAllDependencies_ThenInstanceIsResolved()
     {
         // given
-        registrationDictionary.insertType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceBasicStringGetter.class,
-                                          ClassBasicStringGetter.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceBasicSimpleDependency.class,
-                                          ClassConstructorNotAnnotatedWithDependency.class,
-                                          ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasicSimpleDependency.class,
+                           ClassConstructorNotAnnotatedWithDependency.class,
+                           ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
                 testObject.resolve(InterfaceBasicSimpleDependency.class);
@@ -195,15 +193,15 @@ class ConstructorResolverTest
     public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithoutSomeDependencies_ThenInstanceIsResolved()
     {
         // given
-        registrationDictionary.insertType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceBasicSimpleDependency.class,
-                                          ClassConstructorNotAnnotatedWithDependency.class,
-                                          ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasicSimpleDependency.class,
+                           ClassConstructorNotAnnotatedWithDependency.class,
+                           ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
                 testObject.resolve(InterfaceBasicSimpleDependency.class);
@@ -219,18 +217,17 @@ class ConstructorResolverTest
     public void resolve_WhenDependenciesWithAnnotatedConstructor_ThenInstanceIsResolved()
     {
         // given
-        registrationDictionary.insertType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceBasicStringGetter.class,
-                                          ClassBasicStringGetter.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceBasicSimpleDependency.class,
-                                          ClassConstructorAnnotatedWithDependency.class,
-                                          ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasicSimpleDependency.class,
+                           ClassConstructorAnnotatedWithDependency.class,
+                           ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
                 testObject.resolve(InterfaceBasicSimpleDependency.class);
@@ -248,12 +245,12 @@ class ConstructorResolverTest
     public void resolve_WhenDependenciesWithAnnotatedConstructorWithoutSomeDependencies_ThenMissingDependenciesException()
     {
         // given
-        registrationDictionary.insertType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondRight.class, ClassDiamondRight.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
-                                          ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondRight.class, ClassDiamondRight.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
+                           ConstructionPolicy.getDefault());
         // then
         Assertions.assertThrows(MissingDependenciesException.class,
                                 () -> testObject.resolve(InterfaceDiamondBottom.class));
@@ -263,14 +260,14 @@ class ConstructorResolverTest
     public void resolve_WhenDiamondDependenciesWithoutSingleton_ThenInstanceIsResolved()
     {
         // given
-        registrationDictionary.insertType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondRight.class, ClassDiamondRight.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                                          ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondRight.class, ClassDiamondRight.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
+                           ConstructionPolicy.getDefault());
         // when
         InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
         // then
@@ -288,14 +285,14 @@ class ConstructorResolverTest
     public void resolve_WhenDiamondDependenciesWithSingleton_ThenInstanceIsResolved()
     {
         // given
-        registrationDictionary.insertType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondRight.class, ClassDiamondRight.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                                          ConstructionPolicy.SINGLETON);
+        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondRight.class, ClassDiamondRight.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
+                           ConstructionPolicy.SINGLETON);
         // when
         InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
         // then
@@ -312,10 +309,10 @@ class ConstructorResolverTest
     public void resolve_WhenCircularDependencies_ThenCircularDependenciesException()
     {
         // given
-        registrationDictionary.insertType(InterfaceCircularLeft.class, ClassCircularLeft.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceCircularRight.class, ClassCircularRight.class,
-                                          ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceCircularLeft.class, ClassCircularLeft.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceCircularRight.class, ClassCircularRight.class,
+                           ConstructionPolicy.getDefault());
         // then
         Assertions.assertThrows(CircularDependenciesException.class,
                                 () -> testObject.resolve(InterfaceCircularRight.class));
@@ -327,17 +324,15 @@ class ConstructorResolverTest
         // given
         String string = "String";
 
-        registrationDictionary.insertInstance(String.class, string);
-        registrationDictionary.insertType(InterfaceBasicStringGetter.class,
-                                          ClassBasicStringGetter.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceCircularLeft.class, ClassCircularLeft.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceCircularRight.class, ClassCircularRight.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceCircularDependency.class,
-                                          ClassCircularDependency.class,
-                                          ConstructionPolicy.getDefault());
+        dictionary.addInstance(String.class, string);
+        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceCircularLeft.class, ClassCircularLeft.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceCircularRight.class, ClassCircularRight.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceCircularDependency.class, ClassCircularDependency.class,
+                           ConstructionPolicy.getDefault());
         // when
         InterfaceCircularDependency result = testObject.resolve(InterfaceCircularDependency.class);
         // then
@@ -376,19 +371,17 @@ class ConstructorResolverTest
         // given
         String string = "string";
 
-        registrationDictionary.insertType(InterfaceBasicComplexDependency.class,
-                                          ClassBasicComplexDependency.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertType(InterfaceBasicStringGetter.class,
-                                          ClassBasicStringGetter.class,
-                                          ConstructionPolicy.getDefault());
-        registrationDictionary.insertInstance(String.class, string);
+        dictionary.addType(InterfaceBasicComplexDependency.class, ClassBasicComplexDependency.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
+                           ConstructionPolicy.getDefault());
+        dictionary.addInstance(String.class, string);
         // when
         InterfaceBasicComplexDependency result =
                 testObject.resolve(InterfaceBasicComplexDependency.class);

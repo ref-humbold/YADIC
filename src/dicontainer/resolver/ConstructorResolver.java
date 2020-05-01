@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import dicontainer.ConstructionPolicy;
 import dicontainer.commons.Instance;
-import dicontainer.dictionary.RegistrationDictionary;
-import dicontainer.dictionary.SubtypeMapping;
+import dicontainer.dictionary.DIDictionary;
 import dicontainer.exception.CircularDependenciesException;
 import dicontainer.exception.DIException;
 import dicontainer.exception.MissingDependenciesException;
@@ -17,9 +15,9 @@ import dicontainer.exception.NoInstanceCreatedException;
 
 public class ConstructorResolver
 {
-    private final RegistrationDictionary dictionary;
+    private final DIDictionary dictionary;
 
-    public ConstructorResolver(RegistrationDictionary dictionary)
+    public ConstructorResolver(DIDictionary dictionary)
     {
         this.dictionary = dictionary;
     }
@@ -33,24 +31,22 @@ public class ConstructorResolver
     {
         path.push(type);
 
-        SubtypeMapping<? extends T> subtypeMapping = dictionary.findType(type);
-        T object = resolveType(subtypeMapping, path);
+        T object = resolveType(type, path);
 
         path.pop();
         return object;
     }
 
-    private <T> T resolveType(SubtypeMapping<T> mapping, Stack<Class<?>> path)
+    private <T> T resolveType(Class<T> type, Stack<Class<?>> path)
     {
-        Instance<T> instance = dictionary.getInstance(mapping.subtype);
+        Instance<T> instance = dictionary.findInstance(type);
 
         if(instance.exists())
             return instance.extract();
 
-        T object = construct(new TypeConstructors<>(mapping.subtype), path);
-
-        if(mapping.policy == ConstructionPolicy.SINGLETON)
-            dictionary.insertSingleton(mapping.subtype, object);
+        Class<? extends T> subtype = dictionary.findType(type).subtype;
+        T object = construct(new TypeConstructors<>(subtype), path);
+        dictionary.addSingleton(type, object);
 
         return object;
     }
@@ -96,7 +92,7 @@ public class ConstructorResolver
                         "Dependencies resolving detected a cycle detected between %s and %s",
                         parameter.getName(), typename)));
 
-            if(!dictionary.containsType(parameter))
+            if(!dictionary.contains(parameter))
                 return Instance.none(new MissingDependenciesException(
                         String.format("No dependency for type %s found when resolving type %s",
                                       parameter.getName(), typename)));
