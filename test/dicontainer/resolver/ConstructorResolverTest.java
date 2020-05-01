@@ -114,17 +114,37 @@ class ConstructorResolverTest
     @Test
     public void resolve_WhenInterface_ThenMissingDependenciesException()
     {
+        // when
+        Executable executable = () -> testObject.resolve(InterfaceBasic.class);
         // then
-        Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(InterfaceBasic.class));
+        Assertions.assertThrows(MissingDependenciesException.class, executable);
     }
 
     @Test
     public void resolve_WhenAbstractClass_ThenMissingDependenciesException()
     {
+        // when
+        Executable executable = () -> testObject.resolve(ClassBasicAbstract.class);
         // then
-        Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(ClassBasicAbstract.class));
+        Assertions.assertThrows(MissingDependenciesException.class, executable);
+    }
+
+    @Test
+    public void resolve_WhenClassConstructorThrowsException_ThenNoInstanceCreatedException()
+    {
+        // when
+        Executable executable = () -> testObject.resolve(ClassConstructorExceptionThrown.class);
+        // then
+        Assertions.assertThrows(NoInstanceCreatedException.class, executable);
+    }
+
+    @Test
+    public void resolve_WhenPrimitiveType_ThenNoSuitableConstructorException()
+    {
+        // when
+        Executable executable = () -> testObject.resolve(double.class);
+        // then
+        Assertions.assertThrows(NoSuitableConstructorException.class, executable);
     }
 
     // endregion

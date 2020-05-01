@@ -1,7 +1,6 @@
 package dicontainer.resolver;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -107,7 +106,7 @@ public class ConstructorResolver
                                          "Constructor could not produce an instance of type %s",
                                          typename)));
         }
-        catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+        catch(Exception e)
         {
             return Instance.none(new NoInstanceCreatedException(e.getMessage(), e));
         }

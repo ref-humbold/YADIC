@@ -41,6 +41,9 @@ public class DIDictionary
 
     public <T> SubtypeMapping<? extends T> findType(Class<T> type)
     {
+        if(instancesDictionary.contains(type))
+            return new SubtypeMapping<>(type, ConstructionPolicy.SINGLETON);
+
         return typesDictionary.find(type);
     }
 
@@ -53,8 +56,7 @@ public class DIDictionary
 
     public boolean contains(Class<?> type)
     {
-        return TypesUtils.isAnnotatedType(type) || typesDictionary.contains(type)
-                || instancesDictionary.contains(type);
+        return typesDictionary.contains(type) || instancesDictionary.contains(type);
     }
 
     public <T> void addSingleton(Class<T> type, T instance)
@@ -64,6 +66,9 @@ public class DIDictionary
 
     private <T> void validateRegisterType(Class<T> type)
     {
+        if(type.isPrimitive())
+            throw new RegistrationException("Cannot register a primitive type");
+
         if(instancesDictionary.contains(type))
             throw new RegistrationException(
                     String.format("Type %s was registered with an instance", type.getSimpleName()));
