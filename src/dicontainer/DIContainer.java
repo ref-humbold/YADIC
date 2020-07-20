@@ -9,7 +9,10 @@ import java.util.Stack;
 
 import dicontainer.annotation.Dependency;
 import dicontainer.exception.*;
+import dicontainer.resolver.CircularDependenciesException;
 import dicontainer.resolver.ConstructorComparator;
+import dicontainer.resolver.MultipleAnnotatedConstructorsException;
+import dicontainer.resolver.NoSuitableConstructorException;
 
 public final class DIContainer
 {

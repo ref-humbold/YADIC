@@ -14,9 +14,9 @@ import dicontainer.auxiliary.diamond.InterfaceDiamondTop;
 import dicontainer.auxiliary.setter.*;
 import dicontainer.exception.AbstractTypeException;
 import dicontainer.exception.IncorrectDependencySetterException;
-import dicontainer.exception.MultipleAnnotatedConstructorsException;
-import dicontainer.exception.NoSuitableConstructorException;
 import dicontainer.exception.NullInstanceException;
+import dicontainer.resolver.MultipleAnnotatedConstructorsException;
+import dicontainer.resolver.NoSuitableConstructorException;
 
 public class DIContainerTest
 {

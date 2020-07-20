@@ -1,4 +1,6 @@
-package dicontainer.exception;
+package dicontainer.resolver;
+
+import dicontainer.exception.DIException;
 
 public class MultipleAnnotatedConstructorsException
         extends DIException
