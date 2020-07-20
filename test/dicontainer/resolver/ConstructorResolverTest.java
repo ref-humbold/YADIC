@@ -1,5 +1,6 @@
 package dicontainer.resolver;
 
+import java.util.Stack;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,7 @@ class ConstructorResolverTest
     public void setUp()
     {
         dictionary = new DIDictionary();
-        testObject = new ConstructorResolver(dictionary);
+        testObject = new ConstructorResolver(new DIResolver(dictionary));
     }
 
     @AfterEach
@@ -33,13 +34,14 @@ class ConstructorResolverTest
         testObject = null;
     }
 
-    //region resolve (class)
+    // region resolve (class)
 
     @Test
     public void resolve_WhenClassHasDefaultConstructorOnly_ThenInstanceIsResolved()
     {
         // when
-        ClassConstructorDefault result = testObject.resolve(ClassConstructorDefault.class);
+        ClassConstructorDefault result =
+                testObject.resolve(ClassConstructorDefault.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
     }
@@ -49,7 +51,7 @@ class ConstructorResolverTest
     {
         // when
         ClassConstructorSuperParameterized result =
-                testObject.resolve(ClassConstructorSuperParameterized.class);
+                testObject.resolve(ClassConstructorSuperParameterized.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
     }
@@ -59,7 +61,7 @@ class ConstructorResolverTest
     {
         // when
         ClassBasicInheritsFromAbstract result =
-                testObject.resolve(ClassBasicInheritsFromAbstract.class);
+                testObject.resolve(ClassBasicInheritsFromAbstract.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
     }
@@ -68,7 +70,8 @@ class ConstructorResolverTest
     public void resolve_WhenClassHasParameterConstructorWithoutRegisteredParameter_ThenMissingDependenciesException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorParameterized.class);
+        Executable executable =
+                () -> testObject.resolve(ClassConstructorParameterized.class, new Stack<>());
         // then
         Assertions.assertThrows(MissingDependenciesException.class, executable);
     }
@@ -82,7 +85,7 @@ class ConstructorResolverTest
         dictionary.addInstance(int.class, number);
         // when
         ClassConstructorParameterized result =
-                testObject.resolve(ClassConstructorParameterized.class);
+                testObject.resolve(ClassConstructorParameterized.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
         Assertions.assertEquals(number, result.getNumber());
@@ -96,7 +99,8 @@ class ConstructorResolverTest
 
         dictionary.addInstance(Integer.class, number);
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorParameterized.class);
+        Executable executable =
+                () -> testObject.resolve(ClassConstructorParameterized.class, new Stack<>());
         // then
         Assertions.assertThrows(MissingDependenciesException.class, executable);
     }
@@ -106,7 +110,7 @@ class ConstructorResolverTest
     {
         // when
         ClassConstructorDefaultAndParameterized result =
-                testObject.resolve(ClassConstructorDefaultAndParameterized.class);
+                testObject.resolve(ClassConstructorDefaultAndParameterized.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
     }
@@ -115,7 +119,7 @@ class ConstructorResolverTest
     public void resolve_WhenInterface_ThenMissingDependenciesException()
     {
         // when
-        Executable executable = () -> testObject.resolve(InterfaceBasic.class);
+        Executable executable = () -> testObject.resolve(InterfaceBasic.class, new Stack<>());
         // then
         Assertions.assertThrows(MissingDependenciesException.class, executable);
     }
@@ -124,7 +128,7 @@ class ConstructorResolverTest
     public void resolve_WhenAbstractClass_ThenMissingDependenciesException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassBasicAbstract.class);
+        Executable executable = () -> testObject.resolve(ClassBasicAbstract.class, new Stack<>());
         // then
         Assertions.assertThrows(MissingDependenciesException.class, executable);
     }
@@ -133,7 +137,8 @@ class ConstructorResolverTest
     public void resolve_WhenClassConstructorThrowsException_ThenNoInstanceCreatedException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorExceptionThrown.class);
+        Executable executable =
+                () -> testObject.resolve(ClassConstructorExceptionThrown.class, new Stack<>());
         // then
         Assertions.assertThrows(NoInstanceCreatedException.class, executable);
     }
@@ -142,7 +147,7 @@ class ConstructorResolverTest
     public void resolve_WhenPrimitiveType_ThenNoSuitableConstructorException()
     {
         // when
-        Executable executable = () -> testObject.resolve(double.class);
+        Executable executable = () -> testObject.resolve(double.class, new Stack<>());
         // then
         Assertions.assertThrows(NoSuitableConstructorException.class, executable);
     }
@@ -170,7 +175,7 @@ class ConstructorResolverTest
                            ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
+                testObject.resolve(InterfaceBasicSimpleDependency.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
@@ -198,7 +203,7 @@ class ConstructorResolverTest
                            ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
+                testObject.resolve(InterfaceBasicSimpleDependency.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
@@ -224,7 +229,7 @@ class ConstructorResolverTest
                            ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
+                testObject.resolve(InterfaceBasicSimpleDependency.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
@@ -250,7 +255,7 @@ class ConstructorResolverTest
                            ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
+                testObject.resolve(InterfaceBasicSimpleDependency.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
@@ -273,7 +278,8 @@ class ConstructorResolverTest
                            ConstructionPolicy.getDefault());
         // then
         Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(InterfaceDiamondBottom.class));
+                                () -> testObject.resolve(InterfaceDiamondBottom.class,
+                                                         new Stack<>()));
     }
 
     @Test
@@ -289,7 +295,8 @@ class ConstructorResolverTest
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
                            ConstructionPolicy.getDefault());
         // when
-        InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
+        InterfaceDiamondBottom result =
+                testObject.resolve(InterfaceDiamondBottom.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getDiamond1());
@@ -314,7 +321,8 @@ class ConstructorResolverTest
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
                            ConstructionPolicy.SINGLETON);
         // when
-        InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
+        InterfaceDiamondBottom result =
+                testObject.resolve(InterfaceDiamondBottom.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getDiamond1());
@@ -335,7 +343,8 @@ class ConstructorResolverTest
                            ConstructionPolicy.getDefault());
         // then
         Assertions.assertThrows(CircularDependenciesException.class,
-                                () -> testObject.resolve(InterfaceCircularRight.class));
+                                () -> testObject.resolve(InterfaceCircularRight.class,
+                                                         new Stack<>()));
     }
 
     @Test
@@ -354,7 +363,8 @@ class ConstructorResolverTest
         dictionary.addType(InterfaceCircularDependency.class, ClassCircularDependency.class,
                            ConstructionPolicy.getDefault());
         // when
-        InterfaceCircularDependency result = testObject.resolve(InterfaceCircularDependency.class);
+        InterfaceCircularDependency result =
+                testObject.resolve(InterfaceCircularDependency.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getNonCircularObject());
@@ -371,7 +381,8 @@ class ConstructorResolverTest
     public void resolve_WhenMultipleAnnotatedConstructors_ThenMultipleAnnotatedConstructorsException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorMultipleAnnotated.class);
+        Executable executable =
+                () -> testObject.resolve(ClassConstructorMultipleAnnotated.class, new Stack<>());
         // then
         Assertions.assertThrows(MultipleAnnotatedConstructorsException.class, executable);
     }
@@ -380,7 +391,8 @@ class ConstructorResolverTest
     public void resolve_WhenNoPublicConstructors_ThenNoSuitableConstructorException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorPrivate.class);
+        Executable executable =
+                () -> testObject.resolve(ClassConstructorPrivate.class, new Stack<>());
         // then
         Assertions.assertThrows(NoSuitableConstructorException.class, executable);
     }
@@ -404,7 +416,7 @@ class ConstructorResolverTest
         dictionary.addInstance(String.class, string);
         // when
         InterfaceBasicComplexDependency result =
-                testObject.resolve(InterfaceBasicComplexDependency.class);
+                testObject.resolve(InterfaceBasicComplexDependency.class, new Stack<>());
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNull(result.getBasicObject());
@@ -423,8 +435,8 @@ class ConstructorResolverTest
     public void resolve_WhenAnnotatedInterface_ThenInstanceIsResolved()
     {
         // when
-        InterfaceRegister result1 = testObject.resolve(InterfaceRegister.class);
-        InterfaceRegister result2 = testObject.resolve(InterfaceRegister.class);
+        InterfaceRegister result1 = testObject.resolve(InterfaceRegister.class, new Stack<>());
+        InterfaceRegister result2 = testObject.resolve(InterfaceRegister.class, new Stack<>());
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -437,8 +449,10 @@ class ConstructorResolverTest
     public void resolve_WhenAnnotatedAbstractClass_ThenInstanceIsResolved()
     {
         // when
-        ClassRegisterAbstract result1 = testObject.resolve(ClassRegisterAbstract.class);
-        ClassRegisterAbstract result2 = testObject.resolve(ClassRegisterAbstract.class);
+        ClassRegisterAbstract result1 =
+                testObject.resolve(ClassRegisterAbstract.class, new Stack<>());
+        ClassRegisterAbstract result2 =
+                testObject.resolve(ClassRegisterAbstract.class, new Stack<>());
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -451,8 +465,10 @@ class ConstructorResolverTest
     public void resolve_WhenAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
         // when
-        ClassRegisterConcrete result1 = testObject.resolve(ClassRegisterConcrete.class);
-        ClassRegisterConcrete result2 = testObject.resolve(ClassRegisterConcrete.class);
+        ClassRegisterConcrete result1 =
+                testObject.resolve(ClassRegisterConcrete.class, new Stack<>());
+        ClassRegisterConcrete result2 =
+                testObject.resolve(ClassRegisterConcrete.class, new Stack<>());
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -465,8 +481,8 @@ class ConstructorResolverTest
     public void resolve_WhenSelfAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
         // when
-        ClassRegisterSelf result1 = testObject.resolve(ClassRegisterSelf.class);
-        ClassRegisterSelf result2 = testObject.resolve(ClassRegisterSelf.class);
+        ClassRegisterSelf result1 = testObject.resolve(ClassRegisterSelf.class, new Stack<>());
+        ClassRegisterSelf result2 = testObject.resolve(ClassRegisterSelf.class, new Stack<>());
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -477,8 +493,10 @@ class ConstructorResolverTest
     public void resolve_WhenAnnotatedConcreteClassAsItself_ThenInstanceIsResolved()
     {
         // when
-        ClassRegisterSelfAsSubtype result1 = testObject.resolve(ClassRegisterSelfAsSubtype.class);
-        ClassRegisterSelfAsSubtype result2 = testObject.resolve(ClassRegisterSelfAsSubtype.class);
+        ClassRegisterSelfAsSubtype result1 =
+                testObject.resolve(ClassRegisterSelfAsSubtype.class, new Stack<>());
+        ClassRegisterSelfAsSubtype result2 =
+                testObject.resolve(ClassRegisterSelfAsSubtype.class, new Stack<>());
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -489,7 +507,8 @@ class ConstructorResolverTest
     public void resolve_WhenSelfAnnotatedInterface_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(InterfaceRegisterSelfIncorrect.class);
+        Executable executable =
+                () -> testObject.resolve(InterfaceRegisterSelfIncorrect.class, new Stack<>());
         //then
         Assertions.assertThrows(AbstractTypeException.class, executable);
     }
@@ -498,7 +517,8 @@ class ConstructorResolverTest
     public void resolve_WhenSelfAnnotatedAbstractClass_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassRegisterSelfAbstractIncorrect.class);
+        Executable executable =
+                () -> testObject.resolve(ClassRegisterSelfAbstractIncorrect.class, new Stack<>());
         //then
         Assertions.assertThrows(AbstractTypeException.class, executable);
     }
@@ -507,7 +527,8 @@ class ConstructorResolverTest
     public void resolve_WhenAnnotatedAbstractClassAsItself_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassRegisterAbstractIncorrect.class);
+        Executable executable =
+                () -> testObject.resolve(ClassRegisterAbstractIncorrect.class, new Stack<>());
         //then
         Assertions.assertThrows(AbstractTypeException.class, executable);
     }
@@ -516,7 +537,8 @@ class ConstructorResolverTest
     public void resolve_WhenInterfaceAnnotatedClassNotImplementing_ThenNotDerivedTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(InterfaceRegisterIncorrect.class);
+        Executable executable =
+                () -> testObject.resolve(InterfaceRegisterIncorrect.class, new Stack<>());
         //then
         Assertions.assertThrows(NotDerivedTypeException.class, executable);
     }
@@ -525,7 +547,8 @@ class ConstructorResolverTest
     public void resolve_WhenAnnotatedClassRegistersInterface_ThenNotDerivedTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassRegisterInterfaceIncorrect.class);
+        Executable executable =
+                () -> testObject.resolve(ClassRegisterInterfaceIncorrect.class, new Stack<>());
         //then
         Assertions.assertThrows(NotDerivedTypeException.class, executable);
     }
@@ -534,7 +557,8 @@ class ConstructorResolverTest
     public void resolve_WhenAnnotatedClassRegistersNotDerivedClass_ThenNotDerivedTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassRegisterIncorrectOtherClass.class);
+        Executable executable =
+                () -> testObject.resolve(ClassRegisterIncorrectOtherClass.class, new Stack<>());
         // then
         Assertions.assertThrows(NotDerivedTypeException.class, executable);
     }
@@ -543,7 +567,8 @@ class ConstructorResolverTest
     public void resolve_WhenAnnotatedClassRegistersAbstractConcreteSuperclass_ThenNotDerivedTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassRegisterIncorrectSuperClass.class);
+        Executable executable =
+                () -> testObject.resolve(ClassRegisterIncorrectSuperClass.class, new Stack<>());
         // then
         Assertions.assertThrows(NotDerivedTypeException.class, executable);
     }
@@ -552,8 +577,10 @@ class ConstructorResolverTest
     public void resolve_WhenAnnotatedInterfaceSingleton_ThenSameInstances()
     {
         // when
-        InterfaceRegisterSingleton result1 = testObject.resolve(InterfaceRegisterSingleton.class);
-        InterfaceRegisterSingleton result2 = testObject.resolve(InterfaceRegisterSingleton.class);
+        InterfaceRegisterSingleton result1 =
+                testObject.resolve(InterfaceRegisterSingleton.class, new Stack<>());
+        InterfaceRegisterSingleton result2 =
+                testObject.resolve(InterfaceRegisterSingleton.class, new Stack<>());
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -566,8 +593,10 @@ class ConstructorResolverTest
     public void resolve_WhenAnnotatedConcreteClassSingleton_ThenSameInstances()
     {
         // when
-        ClassRegisterSingletonBase result1 = testObject.resolve(ClassRegisterSingletonBase.class);
-        ClassRegisterSingletonBase result2 = testObject.resolve(ClassRegisterSingletonBase.class);
+        ClassRegisterSingletonBase result1 =
+                testObject.resolve(ClassRegisterSingletonBase.class, new Stack<>());
+        ClassRegisterSingletonBase result2 =
+                testObject.resolve(ClassRegisterSingletonBase.class, new Stack<>());
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -580,8 +609,10 @@ class ConstructorResolverTest
     public void resolve_WhenSelfAnnotatedConcreteClassSingleton_ThenSameInstances()
     {
         // when
-        ClassRegisterSelfSingleton result1 = testObject.resolve(ClassRegisterSelfSingleton.class);
-        ClassRegisterSelfSingleton result2 = testObject.resolve(ClassRegisterSelfSingleton.class);
+        ClassRegisterSelfSingleton result1 =
+                testObject.resolve(ClassRegisterSelfSingleton.class, new Stack<>());
+        ClassRegisterSelfSingleton result2 =
+                testObject.resolve(ClassRegisterSelfSingleton.class, new Stack<>());
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -593,9 +624,9 @@ class ConstructorResolverTest
     {
         // when
         ClassRegisterSelfAsSubtypeSingleton result1 =
-                testObject.resolve(ClassRegisterSelfAsSubtypeSingleton.class);
+                testObject.resolve(ClassRegisterSelfAsSubtypeSingleton.class, new Stack<>());
         ClassRegisterSelfAsSubtypeSingleton result2 =
-                testObject.resolve(ClassRegisterSelfAsSubtypeSingleton.class);
+                testObject.resolve(ClassRegisterSelfAsSubtypeSingleton.class, new Stack<>());
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);

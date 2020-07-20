@@ -9,14 +9,14 @@ import dicontainer.annotation.Dependency;
 import dicontainer.exception.MultipleAnnotatedConstructorsException;
 import dicontainer.exception.NoSuitableConstructorException;
 
-public class TypeConstructors<T>
+class TypeConstructors<T>
 {
-    public final String typename;
-    public final Constructor<T> annotatedConstructor;
-    public final List<Constructor<T>> parameterizedConstructors;
+    final String typename;
+    final Constructor<T> annotatedConstructor;
+    final List<Constructor<T>> parameterizedConstructors;
 
     @SuppressWarnings("unchecked")
-    public TypeConstructors(Class<T> type)
+    TypeConstructors(Class<T> type)
     {
         typename = type.getName();
 

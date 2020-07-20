@@ -6,27 +6,21 @@ import java.util.List;
 import java.util.Stack;
 
 import dicontainer.commons.Instance;
-import dicontainer.dictionary.DIDictionary;
 import dicontainer.exception.CircularDependenciesException;
 import dicontainer.exception.DIException;
 import dicontainer.exception.MissingDependenciesException;
 import dicontainer.exception.NoInstanceCreatedException;
 
-public class ConstructorResolver
+class ConstructorResolver
 {
-    private final DIDictionary dictionary;
+    private final DIResolver resolver;
 
-    public ConstructorResolver(DIDictionary dictionary)
+    ConstructorResolver(DIResolver resolver)
     {
-        this.dictionary = dictionary;
+        this.resolver = resolver;
     }
 
-    public <T> T resolve(Class<T> type)
-    {
-        return resolveWithPath(type, new Stack<>());
-    }
-
-    private <T> T resolveWithPath(Class<T> type, Stack<Class<?>> path)
+    <T> T resolve(Class<T> type, Stack<Class<?>> path)
     {
         path.push(type);
 
@@ -38,14 +32,14 @@ public class ConstructorResolver
 
     private <T> T resolveType(Class<T> type, Stack<Class<?>> path)
     {
-        Instance<T> instance = dictionary.findInstance(type);
+        Instance<T> instance = resolver.dictionary.findInstance(type);
 
         if(instance.exists())
             return instance.extract();
 
-        Class<? extends T> subtype = dictionary.findType(type).subtype;
+        Class<? extends T> subtype = resolver.dictionary.findType(type).subtype;
         T object = construct(new TypeConstructors<>(subtype), path);
-        dictionary.addSingleton(type, object);
+        resolver.dictionary.addSingleton(type, object);
 
         return object;
     }
@@ -91,12 +85,12 @@ public class ConstructorResolver
                         "Dependencies resolving detected a cycle detected between %s and %s",
                         parameter.getName(), typename)));
 
-            if(!dictionary.contains(parameter))
+            if(!resolver.dictionary.contains(parameter))
                 return Instance.none(new MissingDependenciesException(
                         String.format("No dependency for type %s found when resolving type %s",
                                       parameter.getName(), typename)));
 
-            parameters.add(resolveWithPath(parameter, path));
+            parameters.add(resolver.resolveWithPath(parameter, path));
         }
 
         try
@@ -108,7 +102,9 @@ public class ConstructorResolver
         }
         catch(Exception e)
         {
-            return Instance.none(new NoInstanceCreatedException(e.getMessage(), e));
+            return Instance.none(new NoInstanceCreatedException(
+                    String.format("Could not invoke constructor due to an error: %s",
+                                  e.getMessage()), e));
         }
     }
 }
