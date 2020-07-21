@@ -40,7 +40,13 @@ class TypesDictionary
             doInsert(type, new SubtypeMapping<>(type, annotation.policy()));
         }
         else
+        {
+            if(TypesUtils.isAbstractReferenceType(type))
+                throw new AbstractTypeException(
+                        String.format("Cannot register abstract type %s", type.getName()));
+
             doInsert(type, new SubtypeMapping<>(type, policy));
+        }
     }
 
     <T> void insert(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)

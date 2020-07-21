@@ -46,7 +46,7 @@ class SetterResolver
                         String.format("No dependency for type %s found when resolving type %s",
                                       parameter.getName(), typename));
 
-            parameters.add(resolver.resolveWithPath(parameter, path));
+            parameters.add(resolver.resolve(parameter, path));
         }
 
         try

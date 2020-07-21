@@ -15,12 +15,17 @@ public class DIResolver
         this.dictionary = dictionary;
     }
 
-    public <T> T resolve(Class<T> type)
+    public <T> T construct(Class<T> type)
     {
-        return resolveWithPath(type, new Stack<>());
+        return resolve(type, new Stack<>());
     }
 
-    <T> T resolveWithPath(Class<T> type, Stack<Class<?>> path)
+    public <T> T inject(T instance)
+    {
+        return setterResolver.resolve(instance, new Stack<>());
+    }
+
+    <T> T resolve(Class<T> type, Stack<Class<?>> path)
     {
         T object = constructorResolver.resolve(type, path);
 

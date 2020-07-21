@@ -96,6 +96,24 @@ public class DIDictionaryTest
     // region addType
 
     @Test
+    public void addType_WhenSingleInterface_ThenAbstractTypeException()
+    {
+        // when
+        Executable executable = () -> testObject.addType(InterfaceBasic.class);
+        // then
+        Assertions.assertThrows(AbstractTypeException.class, executable);
+    }
+
+    @Test
+    public void addType_WhenSingleAbstractClass_ThenAbstractTypeException()
+    {
+        // when
+        Executable executable = () -> testObject.addType(ClassBasicAbstract.class);
+        // then
+        Assertions.assertThrows(AbstractTypeException.class, executable);
+    }
+
+    @Test
     public void addType_WhenRegisterAnnotatedTypeAndSubtype_ThenAnnotatedTypeRegistrationException()
     {
         // when

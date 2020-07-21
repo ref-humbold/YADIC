@@ -4,13 +4,13 @@ import dicontainer.annotation.Dependency;
 import dicontainer.auxiliary.basic.InterfaceBasic;
 import dicontainer.auxiliary.basic.InterfaceBasicStringGetter;
 
-public class ClassSetterDouble
-        implements InterfaceSetterDouble
+public class ClassSetterMultipleParameters
+        implements InterfaceSetterMultipleParameters
 {
     private InterfaceBasic basicObject;
     private InterfaceBasicStringGetter stringObject;
 
-    public ClassSetterDouble()
+    public ClassSetterMultipleParameters()
     {
     }
 

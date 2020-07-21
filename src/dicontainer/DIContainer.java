@@ -1,36 +1,30 @@
 package dicontainer;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Stack;
-
 import dicontainer.annotation.Dependency;
-import dicontainer.exception.*;
-import dicontainer.resolver.CircularDependenciesException;
-import dicontainer.resolver.ConstructorComparator;
-import dicontainer.resolver.MultipleAnnotatedConstructorsException;
-import dicontainer.resolver.NoSuitableConstructorException;
+import dicontainer.dictionary.DIDictionary;
+import dicontainer.exception.DIException;
+import dicontainer.resolver.DIResolver;
 
 public final class DIContainer
 {
-    private final TypesContainer typesContainer = new TypesContainer();
+    private final DIDictionary diDictionary;
+    private final DIResolver diResolver;
 
     public DIContainer()
     {
+        diDictionary = new DIDictionary();
+        diResolver = new DIResolver(diDictionary);
     }
 
     /**
      * Register concrete type class in the container.
      * @param type type class
      * @return {@code this} for method chaining
-     * @throws AbstractTypeException if type is an abstract class or an interface
      */
     public <T> DIContainer registerType(Class<T> type)
     {
-        return registerType(type, ConstructionPolicy.CONSTRUCT);
+        diDictionary.addType(type);
+        return this;
     }
 
     /**
@@ -38,16 +32,11 @@ public final class DIContainer
      * @param type type class
      * @param policy construction policy of instances
      * @return {@code this} for method chaining
-     * @throws AbstractTypeException if type is an abstract class or an interface
      */
     public <T> DIContainer registerType(Class<T> type, ConstructionPolicy policy)
     {
-        if(TypesContainer.isAbstractType(type))
-            throw new AbstractTypeException(
-                    String.format("Type %s is abstract, so it cannot be self registered.",
-                                  type.getSimpleName()));
-
-        return registerType(type, type, policy);
+        diDictionary.addType(type, policy);
+        return this;
     }
 
     /**
@@ -58,7 +47,8 @@ public final class DIContainer
      */
     public <T> DIContainer registerType(Class<T> supertype, Class<? extends T> subtype)
     {
-        return registerType(supertype, subtype, ConstructionPolicy.CONSTRUCT);
+        diDictionary.addType(supertype, subtype);
+        return this;
     }
 
     /**
@@ -71,11 +61,7 @@ public final class DIContainer
     public <T> DIContainer registerType(Class<T> supertype, Class<? extends T> subtype,
                                         ConstructionPolicy policy)
     {
-        if(policy == ConstructionPolicy.SINGLETON)
-            typesContainer.addSingletonSubtype(supertype, subtype);
-        else
-            typesContainer.addSubtype(supertype, subtype);
-
+        diDictionary.addType(supertype, subtype, policy);
         return this;
     }
 
@@ -87,13 +73,7 @@ public final class DIContainer
      */
     public <T> DIContainer registerInstance(Class<T> type, T instance)
     {
-        if(instance == null)
-            throw new NullInstanceException(
-                    String.format("Given instance to register for %s is null.",
-                                  type.getSimpleName()));
-
-        typesContainer.addInstance(type, instance);
-
+        diDictionary.addInstance(type, instance);
         return this;
     }
 
@@ -105,7 +85,7 @@ public final class DIContainer
      */
     public <T> T resolve(Class<T> type)
     {
-        return resolveType(type, new Stack<>());
+        return diResolver.construct(type);
     }
 
     /**
@@ -116,178 +96,6 @@ public final class DIContainer
      */
     public <T> T buildUp(T instance)
     {
-        buildUpObject(instance, new Stack<>());
-
-        return instance;
-    }
-
-    private boolean isSetter(Method method)
-    {
-        return method.getReturnType() == void.class && method.getName().startsWith("set")
-                && method.getParameterCount() == 1;
-    }
-
-    private <T> T resolveType(Class<T> type, Stack<Class<?>> resolved)
-    {
-        T object = typesContainer.getInstance(type);
-
-        if(object == null)
-            object = resolveConstructor(type, resolved);
-
-        buildUpObject(object, resolved);
-
-        return object;
-    }
-
-    private <T> T resolveConstructor(Class<T> type, Stack<Class<?>> resolved)
-    {
-        resolved.push(type);
-
-        Class<? extends T> mappedClass = findRegisteredConcreteType(type);
-        Constructor<? extends T>[] constructors = getConstructors(mappedClass);
-
-        Arrays.sort(constructors, new ConstructorComparator());
-
-        if(constructors.length > 1)
-            if(constructors[1].isAnnotationPresent(Dependency.class))
-                throw new MultipleAnnotatedConstructorsException(
-                        "Only one constructor can be annotated as dependency.");
-
-        T object = null;
-        DIException lastException = null;
-
-        for(Constructor<? extends T> ctor : constructors)
-        {
-            try
-            {
-                object = createInstance(ctor, resolved);
-            }
-            catch(DIException e)
-            {
-                lastException = e;
-            }
-
-            if(object != null || ctor.isAnnotationPresent(Dependency.class))
-                break;
-        }
-
-        resolved.pop();
-
-        if(object == null)
-            throw lastException != null ? lastException : new NoInstanceCreatedException(
-                    String.format(
-                            "No instance produced for %s, although all possibilities have been "
-                                    + "checked.", type.getSimpleName()));
-
-        typesContainer.updateInstance(type, object);
-
-        return object;
-    }
-
-    private <T> void resolveSetter(T object, Method setter, Stack<Class<?>> resolved)
-    {
-        ArrayList<Object> paramObjects = new ArrayList<>();
-
-        for(Class<?> p : setter.getParameterTypes())
-            paramObjects.add(resolveType(p, resolved));
-
-        try
-        {
-            setter.invoke(object, paramObjects.toArray());
-        }
-        catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-        {
-            throw new DIException(e.getMessage(), e);
-        }
-    }
-
-    private <T> void buildUpObject(T obj, Stack<Class<?>> resolved)
-    {
-        ArrayList<Method> setters = new ArrayList<>();
-
-        for(Method m : obj.getClass().getMethods())
-            if(m.isAnnotationPresent(Dependency.class))
-            {
-                if(!isSetter(m))
-                    throw new IncorrectDependencySetterException(
-                            "Dependency method must have exactly one argument, void return type "
-                                    + "and name starting with 'set'.");
-
-                setters.add(m);
-            }
-
-        for(Method setter : setters)
-            resolveSetter(obj, setter, resolved);
-    }
-
-    private <T> T createInstance(Constructor<? extends T> ctor, Stack<Class<?>> resolved)
-    {
-        ArrayList<Object> params = new ArrayList<>();
-
-        for(Class<?> type : ctor.getParameterTypes())
-        {
-            if(resolved.contains(type))
-                throw new CircularDependenciesException("Dependencies resolving detected a cycle.");
-
-            if(!typesContainer.containsType(type))
-                throw new MissingDependenciesException("No dependency found when resolving.");
-
-            params.add(resolveType(type, resolved));
-        }
-
-        try
-        {
-            return ctor.newInstance(params.toArray());
-        }
-        catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-        {
-            throw new DIException(e.getMessage(), e);
-        }
-    }
-
-    private <T> Class<? extends T> findRegisteredConcreteType(Class<T> type)
-    {
-        Class<? extends T> subtype = type;
-
-        do
-        {
-            if(!typesContainer.containsSubtype(subtype))
-            {
-                if(TypesContainer.isAbstractType(subtype))
-                    throw new MissingDependenciesException(
-                            String.format("Abstract type %s has no registered concrete subclass.",
-                                          subtype.getSimpleName()));
-
-                typesContainer.addSubtype(subtype);
-            }
-
-            subtype = typesContainer.getSubtype(subtype);
-        } while(TypesContainer.isAbstractType(subtype));
-
-        return subtype;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> Constructor<? extends T>[] getConstructors(Class<? extends T> type)
-    {
-        Constructor<?>[] constructors;
-
-        try
-        {
-            constructors = type.getConstructors();
-        }
-        catch(SecurityException e)
-        {
-            throw new NoSuitableConstructorException(
-                    String.format("No dependency constructor found for class %s",
-                                  type.getSimpleName()), e);
-        }
-
-        if(constructors.length == 0)
-            throw new NoSuitableConstructorException(
-                    String.format("No dependency constructor found for class %s",
-                                  type.getSimpleName()));
-
-        return (Constructor<? extends T>[])constructors;
+        return diResolver.inject(instance);
     }
 }

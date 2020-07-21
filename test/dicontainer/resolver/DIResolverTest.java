@@ -38,48 +38,48 @@ public class DIResolverTest
         testObject = null;
     }
 
-    // region resolve [constructor]
+    // region construct [constructor]
 
     @Test
-    public void resolve_WhenClassHasDefaultConstructorOnly_ThenInstanceIsResolved()
+    public void construct_WhenClassHasDefaultConstructorOnly_ThenInstanceIsResolved()
     {
         // when
-        ClassConstructorDefault result = testObject.resolve(ClassConstructorDefault.class);
+        ClassConstructorDefault result = testObject.construct(ClassConstructorDefault.class);
         // then
         Assertions.assertNotNull(result);
     }
 
     @Test
-    public void resolve_WhenClassInheritsFromConcreteClass_ThenInstanceIsResolved()
+    public void construct_WhenClassInheritsFromConcreteClass_ThenInstanceIsResolved()
     {
         // when
         ClassConstructorSuperParameterized result =
-                testObject.resolve(ClassConstructorSuperParameterized.class);
+                testObject.construct(ClassConstructorSuperParameterized.class);
         // then
         Assertions.assertNotNull(result);
     }
 
     @Test
-    public void resolve_WhenClassInheritsFromAbstractClass_ThenInstanceIsResolved()
+    public void construct_WhenClassInheritsFromAbstractClass_ThenInstanceIsResolved()
     {
         // when
         ClassBasicInheritsFromAbstract result =
-                testObject.resolve(ClassBasicInheritsFromAbstract.class);
+                testObject.construct(ClassBasicInheritsFromAbstract.class);
         // then
         Assertions.assertNotNull(result);
     }
 
     @Test
-    public void resolve_WhenClassHasParameterConstructorWithoutRegisteredParameter_ThenMissingDependenciesException()
+    public void construct_WhenClassHasParameterConstructorWithoutRegisteredParameter_ThenMissingDependenciesException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorParameterized.class);
+        Executable executable = () -> testObject.construct(ClassConstructorParameterized.class);
         // then
         Assertions.assertThrows(MissingDependenciesException.class, executable);
     }
 
     @Test
-    public void resolve_WhenClassHasParameterConstructorWithRegisteredPrimitiveParameter_ThenInstanceIsResolved()
+    public void construct_WhenClassHasParameterConstructorWithRegisteredPrimitiveParameter_ThenInstanceIsResolved()
     {
         // given
         int number = 10;
@@ -87,162 +87,162 @@ public class DIResolverTest
         dictionary.addInstance(int.class, number);
         // when
         ClassConstructorParameterized result =
-                testObject.resolve(ClassConstructorParameterized.class);
+                testObject.construct(ClassConstructorParameterized.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertEquals(number, result.getNumber());
     }
 
     @Test
-    public void resolve_WhenClassHasPrimitiveParameterConstructorButRegisteredReferenceParameter_ThenMissingDependenciesException()
+    public void construct_WhenClassHasPrimitiveParameterConstructorButRegisteredReferenceParameter_ThenMissingDependenciesException()
     {
         // given
         Integer number = 10;
 
         dictionary.addInstance(Integer.class, number);
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorParameterized.class);
+        Executable executable = () -> testObject.construct(ClassConstructorParameterized.class);
         // then
         Assertions.assertThrows(MissingDependenciesException.class, executable);
     }
 
     @Test
-    public void resolve_WhenClassHasDefaultAndParameterConstructorWithoutRegisteredParameter_ThenInstanceIsResolved()
+    public void construct_WhenClassHasDefaultAndParameterConstructorWithoutRegisteredParameter_ThenInstanceIsResolved()
     {
         // when
         ClassConstructorDefaultAndParameterized result =
-                testObject.resolve(ClassConstructorDefaultAndParameterized.class);
+                testObject.construct(ClassConstructorDefaultAndParameterized.class);
         // then
         Assertions.assertNotNull(result);
     }
 
     @Test
-    public void resolve_WhenInterface_ThenMissingDependenciesException()
+    public void construct_WhenInterface_ThenMissingDependenciesException()
     {
         // when
-        Executable executable = () -> testObject.resolve(InterfaceBasic.class);
+        Executable executable = () -> testObject.construct(InterfaceBasic.class);
         // then
         Assertions.assertThrows(MissingDependenciesException.class, executable);
     }
 
     @Test
-    public void resolve_WhenAbstractClass_ThenMissingDependenciesException()
+    public void construct_WhenAbstractClass_ThenMissingDependenciesException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassBasicAbstract.class);
+        Executable executable = () -> testObject.construct(ClassBasicAbstract.class);
         // then
         Assertions.assertThrows(MissingDependenciesException.class, executable);
     }
 
     @Test
-    public void resolve_WhenClassConstructorThrowsException_ThenNoInstanceCreatedException()
+    public void construct_WhenClassConstructorThrowsException_ThenNoInstanceCreatedException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorExceptionThrown.class);
+        Executable executable = () -> testObject.construct(ClassConstructorExceptionThrown.class);
         // then
         Assertions.assertThrows(NoInstanceCreatedException.class, executable);
     }
 
     @Test
-    public void resolve_WhenPrimitiveType_ThenNoSuitableConstructorException()
+    public void construct_WhenPrimitiveType_ThenNoSuitableConstructorException()
     {
         // when
-        Executable executable = () -> testObject.resolve(double.class);
+        Executable executable = () -> testObject.construct(double.class);
         // then
         Assertions.assertThrows(NoSuitableConstructorException.class, executable);
     }
 
     @Test
-    public void resolve_WhenMultipleAnnotatedConstructors_ThenMultipleAnnotatedConstructorsException()
+    public void construct_WhenMultipleAnnotatedConstructors_ThenMultipleAnnotatedConstructorsException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorMultipleAnnotated.class);
+        Executable executable = () -> testObject.construct(ClassConstructorMultipleAnnotated.class);
         // then
         Assertions.assertThrows(MultipleAnnotatedConstructorsException.class, executable);
     }
 
     @Test
-    public void resolve_WhenNoPublicConstructors_ThenNoSuitableConstructorException()
+    public void construct_WhenNoPublicConstructors_ThenNoSuitableConstructorException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorPrivate.class);
+        Executable executable = () -> testObject.construct(ClassConstructorPrivate.class);
         // then
         Assertions.assertThrows(NoSuitableConstructorException.class, executable);
     }
 
     // endregion
-    // region resolve [setter]
+    // region construct [setter]
 
     @Test
-    public void resolve_WhenDependencySetterHasReturnType_ThenIncorrectDependencySetterException()
+    public void construct_WhenDependencySetterHasReturnType_ThenIncorrectDependencySetterException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassSetterIncorrect1.class);
+        Executable executable = () -> testObject.construct(ClassSetterIncorrectReturnType.class);
         // then
         Assertions.assertThrows(IncorrectDependencySetterException.class, executable);
     }
 
     @Test
-    public void resolve_WhenDependencySetterHasNoParameters_ThenIncorrectDependencySetterException()
+    public void construct_WhenDependencySetterHasNoParameters_ThenIncorrectDependencySetterException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassSetterIncorrect2.class);
+        Executable executable = () -> testObject.construct(ClassSetterWithoutParameters.class);
         // then
         Assertions.assertThrows(IncorrectDependencySetterException.class, executable);
     }
 
     @Test
-    public void resolve_WhenDependencySetterNameDoesNotStartWithSet_ThenIncorrectDependencySetterException()
+    public void construct_WhenDependencySetterHasIncorrectName_ThenIncorrectDependencySetterException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassSetterIncorrect3.class);
+        Executable executable = () -> testObject.construct(ClassSetterIncorrectName.class);
         // then
         Assertions.assertThrows(IncorrectDependencySetterException.class, executable);
     }
 
     @Test
-    public void resolve_WhenDoubleDependencySetter_ThenIncorrectDependencySetterException()
+    public void construct_WhenDependencySetterHasMultipleParameters_ThenIncorrectDependencySetterException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassSetterDouble.class);
+        Executable executable = () -> testObject.construct(ClassSetterMultipleParameters.class);
         // then
         Assertions.assertThrows(IncorrectDependencySetterException.class, executable);
     }
 
     @Test
-    public void resolve_WhenMissingDependency_ThenMissingDependenciesException()
+    public void construct_WhenMissingDependency_ThenMissingDependenciesException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassSetterSingle.class);
+        Executable executable = () -> testObject.construct(ClassSetterSingle.class);
         // then
         Assertions.assertThrows(MissingDependenciesException.class, executable);
     }
 
     @Test
-    public void resolve_WhenSetterThrowsException_ThenSetterInvocationException()
+    public void construct_WhenSetterThrowsException_ThenSetterInvocationException()
     {
         // given
         dictionary.addInstance(String.class, "string");
         // when
-        Executable executable = () -> testObject.resolve(ClassSetterThrows.class);
+        Executable executable = () -> testObject.construct(ClassSetterThrows.class);
         // then
         Assertions.assertThrows(SetterInvocationException.class, executable);
     }
 
     @Test
-    public void resolve_WhenDependencySetterOnly_ThenInstanceIsResolved()
+    public void construct_WhenDependencySetterOnly_ThenInstanceIsResolved()
     {
         // given
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class);
         // when
-        InterfaceSetter result = testObject.resolve(ClassSetterSingle.class);
+        InterfaceSetter result = testObject.construct(ClassSetterSingle.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getBasicObject());
     }
 
     @Test
-    public void resolve_WhenMultipleDependencySetters_ThenInstanceIsResolved()
+    public void construct_WhenMultipleDependencySetters_ThenInstanceIsResolved()
     {
         // given
         String string = "string";
@@ -252,7 +252,7 @@ public class DIResolverTest
         dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class);
         dictionary.addInstance(String.class, string);
         // when
-        InterfaceSetterMultiple result = testObject.resolve(InterfaceSetterMultiple.class);
+        InterfaceSetterMultiple result = testObject.construct(InterfaceSetterMultiple.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getBasicObject());
@@ -262,10 +262,10 @@ public class DIResolverTest
     }
 
     // endregion
-    // region resolve [dependencies schemas]
+    // region construct [dependencies schemas]
 
     @Test
-    public void resolve_WhenDependenciesWithRegisteredInstance_ThenInstanceIsResolved()
+    public void construct_WhenDependenciesWithRegisteredInstance_ThenInstanceIsResolved()
     {
         // given
         String string = "String";
@@ -284,7 +284,7 @@ public class DIResolverTest
                            ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
+                testObject.construct(InterfaceBasicSimpleDependency.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
@@ -296,7 +296,7 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithAllDependencies_ThenInstanceIsResolved()
+    public void construct_WhenDependenciesWithoutAnnotatedConstructorsWithAllDependencies_ThenInstanceIsResolved()
     {
         // given
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
@@ -312,7 +312,7 @@ public class DIResolverTest
                            ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
+                testObject.construct(InterfaceBasicSimpleDependency.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
@@ -324,7 +324,7 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithoutSomeDependencies_ThenInstanceIsResolved()
+    public void construct_WhenDependenciesWithoutAnnotatedConstructorsWithoutSomeDependencies_ThenInstanceIsResolved()
     {
         // given
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
@@ -338,7 +338,7 @@ public class DIResolverTest
                            ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
+                testObject.construct(InterfaceBasicSimpleDependency.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
@@ -348,7 +348,7 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenDependenciesWithAnnotatedConstructor_ThenInstanceIsResolved()
+    public void construct_WhenDependenciesWithAnnotatedConstructor_ThenInstanceIsResolved()
     {
         // given
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
@@ -364,7 +364,7 @@ public class DIResolverTest
                            ConstructionPolicy.getDefault());
         // when
         InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
+                testObject.construct(InterfaceBasicSimpleDependency.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getFirstObject());
@@ -376,7 +376,7 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenDependenciesWithAnnotatedConstructorWithoutSomeDependencies_ThenMissingDependenciesException()
+    public void construct_WhenDependenciesWithAnnotatedConstructorWithoutSomeDependencies_ThenMissingDependenciesException()
     {
         // given
         dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
@@ -387,11 +387,11 @@ public class DIResolverTest
                            ConstructionPolicy.getDefault());
         // then
         Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(InterfaceDiamondBottom.class));
+                                () -> testObject.construct(InterfaceDiamondBottom.class));
     }
 
     @Test
-    public void resolve_WhenDiamondDependenciesWithoutSingleton_ThenInstanceIsResolved()
+    public void construct_WhenDiamondDependenciesWithoutSingleton_ThenInstanceIsResolved()
     {
         // given
         dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
@@ -403,7 +403,7 @@ public class DIResolverTest
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
                            ConstructionPolicy.getDefault());
         // when
-        InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
+        InterfaceDiamondBottom result = testObject.construct(InterfaceDiamondBottom.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getDiamond1());
@@ -416,7 +416,7 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenDiamondDependenciesWithSingleton_ThenInstanceIsResolved()
+    public void construct_WhenDiamondDependenciesWithSingleton_ThenInstanceIsResolved()
     {
         // given
         dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
@@ -428,7 +428,7 @@ public class DIResolverTest
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
                            ConstructionPolicy.SINGLETON);
         // when
-        InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
+        InterfaceDiamondBottom result = testObject.construct(InterfaceDiamondBottom.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getDiamond1());
@@ -440,7 +440,7 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenCircularDependencies_ThenCircularDependenciesException()
+    public void construct_WhenCircularDependencies_ThenCircularDependenciesException()
     {
         // given
         dictionary.addType(InterfaceCircularLeft.class, ClassCircularLeft.class,
@@ -449,11 +449,11 @@ public class DIResolverTest
                            ConstructionPolicy.getDefault());
         // then
         Assertions.assertThrows(CircularDependenciesException.class,
-                                () -> testObject.resolve(InterfaceCircularRight.class));
+                                () -> testObject.construct(InterfaceCircularRight.class));
     }
 
     @Test
-    public void resolve_WhenCanOmitCircularDependencies_ThenInstanceIsResolved()
+    public void construct_WhenCanOmitCircularDependencies_ThenInstanceIsResolved()
     {
         // given
         String string = "String";
@@ -468,7 +468,8 @@ public class DIResolverTest
         dictionary.addType(InterfaceCircularDependency.class, ClassCircularDependency.class,
                            ConstructionPolicy.getDefault());
         // when
-        InterfaceCircularDependency result = testObject.resolve(InterfaceCircularDependency.class);
+        InterfaceCircularDependency result =
+                testObject.construct(InterfaceCircularDependency.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getNonCircularObject());
@@ -479,7 +480,7 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenComplexDependency_ThenInstanceIsResolved()
+    public void construct_WhenComplexDependency_ThenInstanceIsResolved()
     {
         // given
         String string = "string";
@@ -497,7 +498,7 @@ public class DIResolverTest
         dictionary.addInstance(String.class, string);
         // when
         InterfaceBasicComplexDependency result =
-                testObject.resolve(InterfaceBasicComplexDependency.class);
+                testObject.construct(InterfaceBasicComplexDependency.class);
         // then
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getBasicObject());
@@ -510,14 +511,14 @@ public class DIResolverTest
     }
 
     // endregion
-    // region resolve [@Register and @SelfRegister]
+    // region construct [@Register and @SelfRegister]
 
     @Test
-    public void resolve_WhenAnnotatedInterface_ThenInstanceIsResolved()
+    public void construct_WhenAnnotatedInterface_ThenInstanceIsResolved()
     {
         // when
-        InterfaceRegister result1 = testObject.resolve(InterfaceRegister.class);
-        InterfaceRegister result2 = testObject.resolve(InterfaceRegister.class);
+        InterfaceRegister result1 = testObject.construct(InterfaceRegister.class);
+        InterfaceRegister result2 = testObject.construct(InterfaceRegister.class);
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -527,11 +528,11 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenAnnotatedAbstractClass_ThenInstanceIsResolved()
+    public void construct_WhenAnnotatedAbstractClass_ThenInstanceIsResolved()
     {
         // when
-        ClassRegisterAbstract result1 = testObject.resolve(ClassRegisterAbstract.class);
-        ClassRegisterAbstract result2 = testObject.resolve(ClassRegisterAbstract.class);
+        ClassRegisterAbstract result1 = testObject.construct(ClassRegisterAbstract.class);
+        ClassRegisterAbstract result2 = testObject.construct(ClassRegisterAbstract.class);
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -541,11 +542,11 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenAnnotatedConcreteClass_ThenInstanceIsResolved()
+    public void construct_WhenAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
         // when
-        ClassRegisterConcrete result1 = testObject.resolve(ClassRegisterConcrete.class);
-        ClassRegisterConcrete result2 = testObject.resolve(ClassRegisterConcrete.class);
+        ClassRegisterConcrete result1 = testObject.construct(ClassRegisterConcrete.class);
+        ClassRegisterConcrete result2 = testObject.construct(ClassRegisterConcrete.class);
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -555,11 +556,11 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenSelfAnnotatedConcreteClass_ThenInstanceIsResolved()
+    public void construct_WhenSelfAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
         // when
-        ClassRegisterSelf result1 = testObject.resolve(ClassRegisterSelf.class);
-        ClassRegisterSelf result2 = testObject.resolve(ClassRegisterSelf.class);
+        ClassRegisterSelf result1 = testObject.construct(ClassRegisterSelf.class);
+        ClassRegisterSelf result2 = testObject.construct(ClassRegisterSelf.class);
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -567,11 +568,11 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenAnnotatedConcreteClassAsItself_ThenInstanceIsResolved()
+    public void construct_WhenAnnotatedConcreteClassAsItself_ThenInstanceIsResolved()
     {
         // when
-        ClassRegisterSelfAsSubtype result1 = testObject.resolve(ClassRegisterSelfAsSubtype.class);
-        ClassRegisterSelfAsSubtype result2 = testObject.resolve(ClassRegisterSelfAsSubtype.class);
+        ClassRegisterSelfAsSubtype result1 = testObject.construct(ClassRegisterSelfAsSubtype.class);
+        ClassRegisterSelfAsSubtype result2 = testObject.construct(ClassRegisterSelfAsSubtype.class);
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -579,74 +580,75 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenSelfAnnotatedInterface_ThenAbstractTypeException()
+    public void construct_WhenSelfAnnotatedInterface_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(InterfaceRegisterSelfIncorrect.class);
+        Executable executable = () -> testObject.construct(InterfaceRegisterSelfIncorrect.class);
         //then
         Assertions.assertThrows(AbstractTypeException.class, executable);
     }
 
     @Test
-    public void resolve_WhenSelfAnnotatedAbstractClass_ThenAbstractTypeException()
+    public void construct_WhenSelfAnnotatedAbstractClass_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassRegisterSelfAbstractIncorrect.class);
+        Executable executable =
+                () -> testObject.construct(ClassRegisterSelfAbstractIncorrect.class);
         //then
         Assertions.assertThrows(AbstractTypeException.class, executable);
     }
 
     @Test
-    public void resolve_WhenAnnotatedAbstractClassAsItself_ThenAbstractTypeException()
+    public void construct_WhenAnnotatedAbstractClassAsItself_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassRegisterAbstractIncorrect.class);
+        Executable executable = () -> testObject.construct(ClassRegisterAbstractIncorrect.class);
         //then
         Assertions.assertThrows(AbstractTypeException.class, executable);
     }
 
     @Test
-    public void resolve_WhenInterfaceAnnotatedClassNotImplementing_ThenNotDerivedTypeException()
+    public void construct_WhenInterfaceAnnotatedClassNotImplementing_ThenNotDerivedTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(InterfaceRegisterIncorrect.class);
+        Executable executable = () -> testObject.construct(InterfaceRegisterIncorrect.class);
         //then
         Assertions.assertThrows(NotDerivedTypeException.class, executable);
     }
 
     @Test
-    public void resolve_WhenAnnotatedClassRegistersInterface_ThenNotDerivedTypeException()
+    public void construct_WhenAnnotatedClassRegistersInterface_ThenNotDerivedTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassRegisterInterfaceIncorrect.class);
+        Executable executable = () -> testObject.construct(ClassRegisterInterfaceIncorrect.class);
         //then
         Assertions.assertThrows(NotDerivedTypeException.class, executable);
     }
 
     @Test
-    public void resolve_WhenAnnotatedClassRegistersNotDerivedClass_ThenNotDerivedTypeException()
+    public void construct_WhenAnnotatedClassRegistersNotDerivedClass_ThenNotDerivedTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassRegisterIncorrectOtherClass.class);
+        Executable executable = () -> testObject.construct(ClassRegisterIncorrectOtherClass.class);
         // then
         Assertions.assertThrows(NotDerivedTypeException.class, executable);
     }
 
     @Test
-    public void resolve_WhenAnnotatedClassRegistersAbstractConcreteSuperclass_ThenNotDerivedTypeException()
+    public void construct_WhenAnnotatedClassRegistersAbstractConcreteSuperclass_ThenNotDerivedTypeException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassRegisterIncorrectSuperClass.class);
+        Executable executable = () -> testObject.construct(ClassRegisterIncorrectSuperClass.class);
         // then
         Assertions.assertThrows(NotDerivedTypeException.class, executable);
     }
 
     @Test
-    public void resolve_WhenAnnotatedInterfaceSingleton_ThenSameInstances()
+    public void construct_WhenAnnotatedInterfaceSingleton_ThenSameInstances()
     {
         // when
-        InterfaceRegisterSingleton result1 = testObject.resolve(InterfaceRegisterSingleton.class);
-        InterfaceRegisterSingleton result2 = testObject.resolve(InterfaceRegisterSingleton.class);
+        InterfaceRegisterSingleton result1 = testObject.construct(InterfaceRegisterSingleton.class);
+        InterfaceRegisterSingleton result2 = testObject.construct(InterfaceRegisterSingleton.class);
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -656,11 +658,11 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenAnnotatedConcreteClassSingleton_ThenSameInstances()
+    public void construct_WhenAnnotatedConcreteClassSingleton_ThenSameInstances()
     {
         // when
-        ClassRegisterSingletonBase result1 = testObject.resolve(ClassRegisterSingletonBase.class);
-        ClassRegisterSingletonBase result2 = testObject.resolve(ClassRegisterSingletonBase.class);
+        ClassRegisterSingletonBase result1 = testObject.construct(ClassRegisterSingletonBase.class);
+        ClassRegisterSingletonBase result2 = testObject.construct(ClassRegisterSingletonBase.class);
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -670,11 +672,11 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenSelfAnnotatedConcreteClassSingleton_ThenSameInstances()
+    public void construct_WhenSelfAnnotatedConcreteClassSingleton_ThenSameInstances()
     {
         // when
-        ClassRegisterSelfSingleton result1 = testObject.resolve(ClassRegisterSelfSingleton.class);
-        ClassRegisterSelfSingleton result2 = testObject.resolve(ClassRegisterSelfSingleton.class);
+        ClassRegisterSelfSingleton result1 = testObject.construct(ClassRegisterSelfSingleton.class);
+        ClassRegisterSelfSingleton result2 = testObject.construct(ClassRegisterSelfSingleton.class);
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
@@ -682,18 +684,40 @@ public class DIResolverTest
     }
 
     @Test
-    public void resolve_WhenAnnotatedConcreteClassAsItselfSingleton_ThenSameInstances()
+    public void construct_WhenAnnotatedConcreteClassAsItselfSingleton_ThenSameInstances()
     {
         // when
         ClassRegisterSelfAsSubtypeSingleton result1 =
-                testObject.resolve(ClassRegisterSelfAsSubtypeSingleton.class);
+                testObject.construct(ClassRegisterSelfAsSubtypeSingleton.class);
         ClassRegisterSelfAsSubtypeSingleton result2 =
-                testObject.resolve(ClassRegisterSelfAsSubtypeSingleton.class);
+                testObject.construct(ClassRegisterSelfAsSubtypeSingleton.class);
         // then
         Assertions.assertNotNull(result1);
         Assertions.assertNotNull(result2);
         Assertions.assertSame(result1, result2);
     }
 
+    // endregion
+    // region inject
+
+    @Test
+    public void inject_WhenMultipleDependencySetters_ThenInstanceIsResolved()
+    {
+        // given
+        String string = "string";
+        InterfaceSetterMultiple instance = new ClassSetterMultiple();
+
+        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class);
+        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class);
+        dictionary.addInstance(String.class, string);
+        // when
+        InterfaceSetterMultiple result = testObject.inject(instance);
+        // then
+        Assertions.assertSame(instance, result);
+        Assertions.assertNotNull(result.getBasicObject());
+        Assertions.assertNotNull(result.getStringObject());
+        Assertions.assertNotNull(result.getStringObject().getString());
+        Assertions.assertEquals(string, result.getStringObject().getString());
+    }
     // endregion
 }

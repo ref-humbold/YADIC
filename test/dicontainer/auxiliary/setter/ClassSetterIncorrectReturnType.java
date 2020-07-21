@@ -2,9 +2,9 @@ package dicontainer.auxiliary.setter;
 
 import dicontainer.annotation.Dependency;
 
-public class ClassSetterIncorrect1
+public class ClassSetterIncorrectReturnType
 {
-    public ClassSetterIncorrect1()
+    public ClassSetterIncorrectReturnType()
     {
     }
 

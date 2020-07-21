@@ -11,31 +11,31 @@ public class DIDictionary
 
     public <T> void addType(Class<T> type)
     {
-        validateRegisterType(type);
+        validateRegisteredType(type);
         typesDictionary.insert(type, ConstructionPolicy.getDefault());
     }
 
     public <T> void addType(Class<T> type, ConstructionPolicy policy)
     {
-        validateRegisterType(type);
+        validateRegisteredType(type);
         typesDictionary.insert(type, policy);
     }
 
     public <T> void addType(Class<T> type, Class<? extends T> subtype)
     {
-        validateRegisterType(type);
+        validateRegisteredType(type);
         typesDictionary.insert(type, subtype, ConstructionPolicy.getDefault());
     }
 
     public <T> void addType(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
     {
-        validateRegisterType(type);
+        validateRegisteredType(type);
         typesDictionary.insert(type, subtype, policy);
     }
 
     public <T> void addInstance(Class<T> type, T instance)
     {
-        validateRegisterInstance(type);
+        validateRegisteredInstance(type);
         instancesDictionary.insert(type, instance);
     }
 
@@ -64,7 +64,7 @@ public class DIDictionary
         typesDictionary.insertSingleton(type, instance);
     }
 
-    private <T> void validateRegisterType(Class<T> type)
+    private <T> void validateRegisteredType(Class<T> type)
     {
         if(type.isPrimitive())
             throw new RegistrationException("Cannot register a primitive type");
@@ -74,7 +74,7 @@ public class DIDictionary
                     String.format("Type %s was registered with an instance", type.getSimpleName()));
     }
 
-    private <T> void validateRegisterInstance(Class<T> type)
+    private <T> void validateRegisteredInstance(Class<T> type)
     {
         if(TypesUtils.isAnnotatedType(type))
             throw new RegistrationException(

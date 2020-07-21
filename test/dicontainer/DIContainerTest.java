@@ -305,21 +305,21 @@ public class DIContainerTest
     public void resolve_WhenDependencySetterHasReturnType_ThenIncorrectDependencySetterException()
     {
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(ClassSetterIncorrect1.class));
+                                () -> testObject.resolve(ClassSetterIncorrectReturnType.class));
     }
 
     @Test
     public void resolve_WhenDependencySetterHasNoParameters_ThenIncorrectDependencySetterException()
     {
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(ClassSetterIncorrect2.class));
+                                () -> testObject.resolve(ClassSetterWithoutParameters.class));
     }
 
     @Test
     public void resolve_WhenDependencySetterNameDoesNotStartWithSet_ThenIncorrectDependencySetterException()
     {
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(ClassSetterIncorrect3.class));
+                                () -> testObject.resolve(ClassSetterIncorrectName.class));
     }
 
     @Test
@@ -351,10 +351,11 @@ public class DIContainerTest
     @Test
     public void resolve_WhenDoubleDependencySetter_ThenIncorrectDependencySetterException()
     {
-        testObject.registerType(InterfaceSetterDouble.class, ClassSetterDouble.class);
+        testObject.registerType(InterfaceSetterMultipleParameters.class,
+                                ClassSetterMultipleParameters.class);
 
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(InterfaceSetterDouble.class));
+                                () -> testObject.resolve(InterfaceSetterMultipleParameters.class));
     }
 
     @Test
@@ -400,7 +401,7 @@ public class DIContainerTest
     @Test
     public void buildUp_WhenDoubleDependencySetter_ThenIncorrectDependencySetterException()
     {
-        InterfaceSetterDouble instance = new ClassSetterDouble();
+        InterfaceSetterMultipleParameters instance = new ClassSetterMultipleParameters();
 
         Assertions.assertThrows(IncorrectDependencySetterException.class,
                                 () -> testObject.buildUp(instance));

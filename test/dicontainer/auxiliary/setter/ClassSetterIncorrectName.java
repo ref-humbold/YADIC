@@ -2,11 +2,11 @@ package dicontainer.auxiliary.setter;
 
 import dicontainer.annotation.Dependency;
 
-public class ClassSetterIncorrect3
+public class ClassSetterIncorrectName
 {
     private int number;
 
-    public ClassSetterIncorrect3()
+    public ClassSetterIncorrectName()
     {
     }
 
