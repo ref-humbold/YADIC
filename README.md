@@ -16,9 +16,9 @@ Simple dependency injection container in Java
 General:
 + Operating system *((Debian testing))*
 + [Java](https://www.oracle.com/technetwork/java/javase/overview/index.html) \
-  *((APT package `openjdk-11-jdk`, 11 SE))* \
+  *((APT package `openjdk-11-jdk`, 11 SE))*
 + [Apache ANT](http://ant.apache.org/) \
-  *((APT package `ant`, 1.10.+))* \
+  *((APT package `ant`, 1.10.+))*
 
 ### Unit testing
 > libraries are automatically downloaded during build process
