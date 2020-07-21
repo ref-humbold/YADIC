@@ -6,7 +6,7 @@ import dicontainer.auxiliary.basic.InterfaceBasic;
 public class ClassSetterSingle
         implements InterfaceSetter
 {
-    InterfaceBasic basicObject;
+    private InterfaceBasic basicObject;
 
     public ClassSetterSingle()
     {

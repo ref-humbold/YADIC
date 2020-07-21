@@ -6,12 +6,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dicontainer.auxiliary.basic.*;
-import dicontainer.auxiliary.circular.*;
 import dicontainer.auxiliary.constructor.*;
-import dicontainer.auxiliary.diamond.*;
-import dicontainer.auxiliary.register.*;
+import dicontainer.auxiliary.diamond.ClassDiamondLeft;
+import dicontainer.auxiliary.diamond.ClassDiamondTop;
+import dicontainer.auxiliary.diamond.InterfaceDiamondLeft;
+import dicontainer.auxiliary.diamond.InterfaceDiamondTop;
 import dicontainer.auxiliary.setter.*;
-import dicontainer.exception.*;
+import dicontainer.commons.NullInstanceException;
+import dicontainer.dictionary.exception.AbstractTypeException;
+import dicontainer.resolver.exception.IncorrectDependencySetterException;
+import dicontainer.resolver.exception.MultipleAnnotatedConstructorsException;
+import dicontainer.resolver.exception.NoSuitableConstructorException;
 
 public class DIContainerTest
 {
@@ -94,7 +99,7 @@ public class DIContainerTest
     }
 
     // endregion
-    // region registerType (inheritance)
+    // region registerType [inheritance]
 
     @Test
     public void register_WhenInheritanceFromInterface_ThenDifferentInstances()
@@ -188,10 +193,11 @@ public class DIContainerTest
     @Test
     public void register_WhenInheritanceFromConcreteClass_ThenInstanceIsDerived()
     {
-        testObject.registerType(ClassConstructorParameter.class,
+        testObject.registerType(ClassConstructorParameterized.class,
                                 ClassConstructorSuperParameterized.class);
 
-        ClassConstructorParameter result = testObject.resolve(ClassConstructorParameter.class);
+        ClassConstructorParameterized result =
+                testObject.resolve(ClassConstructorParameterized.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertTrue(result instanceof ClassConstructorSuperParameterized);
@@ -260,9 +266,10 @@ public class DIContainerTest
     {
         ClassConstructorSuperParameterized obj = new ClassConstructorSuperParameterized();
 
-        testObject.registerInstance(ClassConstructorParameter.class, obj);
+        testObject.registerInstance(ClassConstructorParameterized.class, obj);
 
-        ClassConstructorParameter result = testObject.resolve(ClassConstructorParameter.class);
+        ClassConstructorParameterized result =
+                testObject.resolve(ClassConstructorParameterized.class);
 
         Assertions.assertNotNull(result);
         Assertions.assertSame(obj, result);
@@ -275,263 +282,6 @@ public class DIContainerTest
     {
         Assertions.assertThrows(NullInstanceException.class, () -> testObject.registerInstance(
                 ClassConstructorDefaultAndParameterized.class, null));
-    }
-
-    // endregion
-    //region resolve (class)
-
-    @Test
-    public void resolve_WhenClassHasDefaultConstructorOnly_ThenInstanceIsResolved()
-    {
-        ClassConstructorDefault result = testObject.resolve(ClassConstructorDefault.class);
-
-        Assertions.assertNotNull(result);
-    }
-
-    @Test
-    public void resolve_WhenClassInheritsFromConcreteClass_ThenInstanceIsResolved()
-    {
-        ClassConstructorSuperParameterized result =
-                testObject.resolve(ClassConstructorSuperParameterized.class);
-
-        Assertions.assertNotNull(result);
-    }
-
-    @Test
-    public void resolve_WhenClassInheritsFromAbstractClass_ThenInstanceIsResolved()
-    {
-        ClassBasicInheritsFromAbstract result =
-                testObject.resolve(ClassBasicInheritsFromAbstract.class);
-
-        Assertions.assertNotNull(result);
-    }
-
-    @Test
-    public void resolve_WhenClassHasParameterConstructorWithoutRegisteredParameter_ThenMissingDependenciesException()
-    {
-        Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(ClassConstructorParameter.class));
-    }
-
-    @Test
-    public void resolve_WhenClassHasParameterConstructorWithRegisteredPrimitiveParameter_ThenInstanceIsResolved()
-    {
-        int number = 10;
-
-        testObject.registerInstance(int.class, number);
-
-        ClassConstructorParameter result = testObject.resolve(ClassConstructorParameter.class);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(number, result.getNumber());
-    }
-
-    @Test
-    public void resolve_WhenClassHasParameterConstructorWithRegisteredReferenceParameter_ThenInstanceIsResolved()
-    {
-        Integer number = 10;
-
-        testObject.registerInstance(Integer.class, number);
-
-        ClassConstructorParameter result = testObject.resolve(ClassConstructorParameter.class);
-
-        Assertions.assertNotNull(result);
-    }
-
-    @Test
-    public void resolve_WhenClassHasDefaultAndParameterConstructorWithoutRegisteredParameter_ThenInstanceIsResolved()
-    {
-        ClassConstructorDefaultAndParameterized result =
-                testObject.resolve(ClassConstructorDefaultAndParameterized.class);
-
-        Assertions.assertNotNull(result);
-    }
-
-    @Test
-    public void resolve_WhenInterface_ThenMissingDependenciesException()
-    {
-        Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(InterfaceBasic.class));
-    }
-
-    @Test
-    public void resolve_WhenAbstractClass_ThenMissingDependenciesException()
-    {
-        Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(ClassBasicAbstract.class));
-    }
-
-    // endregion
-    // region resolve (dependencies schemas)
-
-    @Test
-    public void resolve_WhenDependenciesWithRegisteredInstance_ThenInstanceIsResolved()
-    {
-        String string = "String";
-
-        testObject.registerInstance(String.class, string)
-                  .registerType(InterfaceBasic.class, ClassConstructorDefault.class)
-                  .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
-                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
-                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class)
-                  .registerType(InterfaceBasicSimpleDependency.class,
-                                ClassConstructorNotAnnotatedWithDependency.class);
-
-        InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getFirstObject());
-        Assertions.assertNotNull(result.getSecondObject());
-        Assertions.assertNotNull(result.getFirstObject().getObject());
-        Assertions.assertNotNull(result.getSecondObject().getString());
-        Assertions.assertEquals(string, result.getSecondObject().getString());
-        Assertions.assertTrue(result instanceof ClassConstructorNotAnnotatedWithDependency);
-    }
-
-    @Test
-    public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithAllDependencies_ThenInstanceIsResolved()
-    {
-        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class)
-                  .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
-                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
-                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class)
-                  .registerType(InterfaceBasicSimpleDependency.class,
-                                ClassConstructorNotAnnotatedWithDependency.class);
-
-        InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getFirstObject());
-        Assertions.assertNotNull(result.getSecondObject());
-        Assertions.assertNotNull(result.getFirstObject().getObject());
-        Assertions.assertNotNull(result.getSecondObject().getString());
-        Assertions.assertEquals("", result.getSecondObject().getString());
-        Assertions.assertTrue(result instanceof ClassConstructorNotAnnotatedWithDependency);
-    }
-
-    @Test
-    public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithoutSomeDependencies_ThenInstanceIsResolved()
-    {
-        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class)
-                  .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
-                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
-                  .registerType(InterfaceBasicSimpleDependency.class,
-                                ClassConstructorNotAnnotatedWithDependency.class);
-
-        InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getFirstObject());
-        Assertions.assertNull(result.getSecondObject());
-        Assertions.assertNotNull(result.getFirstObject().getObject());
-        Assertions.assertTrue(result instanceof ClassConstructorNotAnnotatedWithDependency);
-    }
-
-    @Test
-    public void resolve_WhenDependenciesWithAnnotatedConstructor_ThenInstanceIsResolved()
-    {
-        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class)
-                  .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
-                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
-                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class)
-                  .registerType(InterfaceBasicSimpleDependency.class,
-                                ClassConstructorAnnotatedWithDependency.class);
-
-        InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getFirstObject());
-        Assertions.assertNotNull(result.getSecondObject());
-        Assertions.assertNotNull(result.getFirstObject().getObject());
-        Assertions.assertNotNull(result.getSecondObject().getString());
-        Assertions.assertEquals("", result.getSecondObject().getString());
-        Assertions.assertTrue(result instanceof ClassConstructorAnnotatedWithDependency);
-    }
-
-    @Test
-    public void resolve_WhenDependenciesWithAnnotatedConstructorWithoutSomeDependencies_ThenMissingDependenciesException()
-    {
-        testObject.registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
-                  .registerType(InterfaceDiamondRight.class, ClassDiamondRight.class)
-                  .registerType(InterfaceDiamondBottom.class, ClassDiamondBottom.class);
-
-        Assertions.assertThrows(MissingDependenciesException.class,
-                                () -> testObject.resolve(InterfaceDiamondBottom.class));
-    }
-
-    @Test
-    public void resolve_WhenDiamondDependenciesWithoutSingleton_ThenInstanceIsResolved()
-    {
-        testObject.registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
-                  .registerType(InterfaceDiamondRight.class, ClassDiamondRight.class)
-                  .registerType(InterfaceDiamondBottom.class, ClassDiamondBottom.class)
-                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class);
-
-        InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getDiamond1());
-        Assertions.assertNotNull(result.getDiamond2());
-        Assertions.assertNotNull(result.getDiamond1().getObject());
-        Assertions.assertNotNull(result.getDiamond2().getObject());
-        Assertions.assertNotSame(result.getDiamond1().getObject(),
-                                 result.getDiamond2().getObject());
-        Assertions.assertTrue(result instanceof ClassDiamondBottom);
-    }
-
-    @Test
-    public void resolve_WhenDiamondDependenciesWithSingleton_ThenInstanceIsResolved()
-    {
-        testObject.registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
-                  .registerType(InterfaceDiamondRight.class, ClassDiamondRight.class)
-                  .registerType(InterfaceDiamondBottom.class, ClassDiamondBottom.class)
-                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                                ConstructionPolicy.SINGLETON);
-
-        InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getDiamond1());
-        Assertions.assertNotNull(result.getDiamond2());
-        Assertions.assertNotNull(result.getDiamond1().getObject());
-        Assertions.assertNotNull(result.getDiamond2().getObject());
-        Assertions.assertSame(result.getDiamond1().getObject(), result.getDiamond2().getObject());
-        Assertions.assertTrue(result instanceof ClassDiamondBottom);
-    }
-
-    @Test
-    public void resolve_WhenCircularDependencies_ThenCircularDependenciesException()
-    {
-        testObject.registerType(InterfaceCircularLeft.class, ClassCircularLeft.class)
-                  .registerType(InterfaceCircularRight.class, ClassCircularRight.class);
-
-        Assertions.assertThrows(CircularDependenciesException.class,
-                                () -> testObject.resolve(InterfaceCircularRight.class));
-    }
-
-    @Test
-    public void resolve_WhenCanOmitCircularDependencies_ThenInstanceIsResolved()
-    {
-        String string = "String";
-
-        testObject.registerInstance(String.class, string)
-                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class)
-                  .registerType(InterfaceCircularLeft.class, ClassCircularLeft.class)
-                  .registerType(InterfaceCircularRight.class, ClassCircularRight.class)
-                  .registerType(InterfaceCircularDependency.class, ClassCircularDependency.class);
-
-        InterfaceCircularDependency result = testObject.resolve(InterfaceCircularDependency.class);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getNonCircularObject());
-        Assertions.assertNull(result.getCircularObject());
-        Assertions.assertNotNull(result.getNonCircularObject().getString());
-        Assertions.assertEquals(string, result.getNonCircularObject().getString());
-        Assertions.assertTrue(result instanceof ClassCircularDependency);
     }
 
     // endregion
@@ -555,21 +305,21 @@ public class DIContainerTest
     public void resolve_WhenDependencySetterHasReturnType_ThenIncorrectDependencySetterException()
     {
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(ClassSetterIncorrect1.class));
+                                () -> testObject.resolve(ClassSetterIncorrectReturnType.class));
     }
 
     @Test
     public void resolve_WhenDependencySetterHasNoParameters_ThenIncorrectDependencySetterException()
     {
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(ClassSetterIncorrect2.class));
+                                () -> testObject.resolve(ClassSetterWithoutParameters.class));
     }
 
     @Test
     public void resolve_WhenDependencySetterNameDoesNotStartWithSet_ThenIncorrectDependencySetterException()
     {
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(ClassSetterIncorrect3.class));
+                                () -> testObject.resolve(ClassSetterIncorrectName.class));
     }
 
     @Test
@@ -599,39 +349,13 @@ public class DIContainerTest
     }
 
     @Test
-    public void resolve_WhenComplexDependency_ThenInstanceIsResolved()
-    {
-        String string = "string";
-
-        testObject.registerType(InterfaceBasicComplexDependency.class,
-                                ClassBasicComplexDependency.class)
-                  .registerType(InterfaceBasic.class, ClassConstructorDefault.class)
-                  .registerType(InterfaceDiamondTop.class, ClassDiamondTop.class)
-                  .registerType(InterfaceDiamondLeft.class, ClassDiamondLeft.class)
-                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class);
-
-        testObject.registerInstance(String.class, string);
-
-        InterfaceBasicComplexDependency result =
-                testObject.resolve(InterfaceBasicComplexDependency.class);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getBasicObject());
-        Assertions.assertNotNull(result.getFirstObject());
-        Assertions.assertNotNull(result.getSecondObject());
-        Assertions.assertNotNull(result.getFirstObject().getObject());
-        Assertions.assertNotNull(result.getSecondObject().getString());
-        Assertions.assertEquals(string, result.getSecondObject().getString());
-        Assertions.assertTrue(result instanceof ClassBasicComplexDependency);
-    }
-
-    @Test
     public void resolve_WhenDoubleDependencySetter_ThenIncorrectDependencySetterException()
     {
-        testObject.registerType(InterfaceSetterDouble.class, ClassSetterDouble.class);
+        testObject.registerType(InterfaceSetterMultipleParameters.class,
+                                ClassSetterMultipleParameters.class);
 
         Assertions.assertThrows(IncorrectDependencySetterException.class,
-                                () -> testObject.resolve(InterfaceSetterDouble.class));
+                                () -> testObject.resolve(InterfaceSetterMultipleParameters.class));
     }
 
     @Test
@@ -656,174 +380,6 @@ public class DIContainerTest
     }
 
     // endregion
-    // region resolve (@Register and @SelfRegister)
-
-    @Test
-    public void resolve_WhenAnnotatedInterface_ThenInstanceIsResolved()
-    {
-        InterfaceRegister result1 = testObject.resolve(InterfaceRegister.class);
-        InterfaceRegister result2 = testObject.resolve(InterfaceRegister.class);
-
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertTrue(result1 instanceof ClassRegisterInterface);
-        Assertions.assertTrue(result2 instanceof ClassRegisterInterface);
-        Assertions.assertNotSame(result1, result2);
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedAbstractClass_ThenInstanceIsResolved()
-    {
-        ClassRegisterAbstract result1 = testObject.resolve(ClassRegisterAbstract.class);
-        ClassRegisterAbstract result2 = testObject.resolve(ClassRegisterAbstract.class);
-
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertTrue(result2 instanceof ClassRegisterBase);
-        Assertions.assertTrue(result1 instanceof ClassRegisterBase);
-        Assertions.assertNotSame(result1, result2);
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedConcreteClass_ThenInstanceIsResolved()
-    {
-        ClassRegisterBase result1 = testObject.resolve(ClassRegisterBase.class);
-        ClassRegisterBase result2 = testObject.resolve(ClassRegisterBase.class);
-
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertTrue(result1 instanceof ClassRegisterDerived);
-        Assertions.assertTrue(result2 instanceof ClassRegisterDerived);
-        Assertions.assertNotSame(result1, result2);
-    }
-
-    @Test
-    public void resolve_WhenSelfAnnotatedConcreteClass_ThenInstanceIsResolved()
-    {
-        ClassRegisterSelf1 result1 = testObject.resolve(ClassRegisterSelf1.class);
-        ClassRegisterSelf1 result2 = testObject.resolve(ClassRegisterSelf1.class);
-
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertNotSame(result1, result2);
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedConcreteClassAsItself_ThenInstanceIsResolved()
-    {
-        ClassRegisterSelf2 result1 = testObject.resolve(ClassRegisterSelf2.class);
-        ClassRegisterSelf2 result2 = testObject.resolve(ClassRegisterSelf2.class);
-
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertNotSame(result1, result2);
-    }
-
-    @Test
-    public void resolve_WhenSelfAnnotatedInterface_ThenAbstractTypeException()
-    {
-        Assertions.assertThrows(AbstractTypeException.class,
-                                () -> testObject.resolve(InterfaceRegisterSelfIncorrect.class));
-    }
-
-    @Test
-    public void resolve_WhenSelfAnnotatedAbstractClass_ThenAbstractTypeException()
-    {
-        Assertions.assertThrows(AbstractTypeException.class,
-                                () -> testObject.resolve(ClassRegisterSelfAbstractIncorrect.class));
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedAbstractClassAsItself_ThenAbstractTypeException()
-    {
-        Assertions.assertThrows(AbstractTypeException.class,
-                                () -> testObject.resolve(ClassRegisterAbstractIncorrect.class));
-    }
-
-    @Test
-    public void resolve_WhenInterfaceAnnotatedClassNotImplementing_ThenNotDerivedTypeException()
-    {
-        Assertions.assertThrows(NotDerivedTypeException.class,
-                                () -> testObject.resolve(InterfaceRegisterIncorrect.class));
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedClassRegistersInterface_ThenNotDerivedTypeException()
-    {
-        Assertions.assertThrows(NotDerivedTypeException.class,
-                                () -> testObject.resolve(ClassRegisterInterfaceIncorrect.class));
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedClassRegistersNotDerivedClass_ThenNotDerivedTypeException()
-    {
-        Assertions.assertThrows(NotDerivedTypeException.class,
-                                () -> testObject.resolve(ClassRegisterIncorrect1.class));
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedClassRegistersAbstractSuperclass_ThenNotDerivedTypeException()
-    {
-        Assertions.assertThrows(NotDerivedTypeException.class,
-                                () -> testObject.resolve(ClassRegisterIncorrect2.class));
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedClassRegistersAbstractConcreteSuperclass_ThenNotDerivedTypeException()
-    {
-        Assertions.assertThrows(NotDerivedTypeException.class,
-                                () -> testObject.resolve(ClassRegisterIncorrect3.class));
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedInterfaceSingleton_ThenSameInstances()
-    {
-        InterfaceRegisterSingleton result1 = testObject.resolve(InterfaceRegisterSingleton.class);
-        InterfaceRegisterSingleton result2 = testObject.resolve(InterfaceRegisterSingleton.class);
-
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertTrue(result1 instanceof ClassRegisterSingletonBase);
-        Assertions.assertTrue(result2 instanceof ClassRegisterSingletonBase);
-        Assertions.assertSame(result1, result2);
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedConcreteClassSingleton_ThenSameInstances()
-    {
-        ClassRegisterSingletonBase result1 = testObject.resolve(ClassRegisterSingletonBase.class);
-        ClassRegisterSingletonBase result2 = testObject.resolve(ClassRegisterSingletonBase.class);
-
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertTrue(result1 instanceof ClassRegisterSingletonDerived);
-        Assertions.assertTrue(result2 instanceof ClassRegisterSingletonDerived);
-        Assertions.assertSame(result1, result2);
-    }
-
-    @Test
-    public void resolve_WhenSelfAnnotatedConcreteClassSingleton_ThenSameInstances()
-    {
-        ClassRegisterSelfSingleton1 result1 = testObject.resolve(ClassRegisterSelfSingleton1.class);
-        ClassRegisterSelfSingleton1 result2 = testObject.resolve(ClassRegisterSelfSingleton1.class);
-
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertSame(result1, result2);
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedConcreteClassAsItselfSingleton_ThenSameInstances()
-    {
-        ClassRegisterSelfSingleton2 result1 = testObject.resolve(ClassRegisterSelfSingleton2.class);
-        ClassRegisterSelfSingleton2 result2 = testObject.resolve(ClassRegisterSelfSingleton2.class);
-
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertSame(result1, result2);
-    }
-
-    // endregion
     // region buildUp
 
     @Test
@@ -845,7 +401,7 @@ public class DIContainerTest
     @Test
     public void buildUp_WhenDoubleDependencySetter_ThenIncorrectDependencySetterException()
     {
-        InterfaceSetterDouble instance = new ClassSetterDouble();
+        InterfaceSetterMultipleParameters instance = new ClassSetterMultipleParameters();
 
         Assertions.assertThrows(IncorrectDependencySetterException.class,
                                 () -> testObject.buildUp(instance));

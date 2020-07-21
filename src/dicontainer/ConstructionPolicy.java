@@ -2,5 +2,10 @@ package dicontainer;
 
 public enum ConstructionPolicy
 {
-    CONSTRUCT, SINGLETON
+    CONSTRUCT, SINGLETON;
+
+    public static ConstructionPolicy getDefault()
+    {
+        return CONSTRUCT;
+    }
 }

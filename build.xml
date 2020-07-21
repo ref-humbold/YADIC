@@ -4,8 +4,8 @@
     <format property="date.version" pattern="yyMMdd" locale="en,GB" />
   </tstamp>
 
-  <property name="major.version" value="2" />
-  <property name="minor.version" value="2" />
+  <property name="major.version" value="3" />
+  <property name="minor.version" value="0" />
   <property name="spec.version" value="${major.version}.${minor.version}" />
   <property name="jar.version" value="${major.version}.${minor.version}.${date.version}" />
   <property name="vendor" value="Rafał Kaleta" />
@@ -86,7 +86,7 @@
 
   <target name="test">
     <mkdir dir="${junit.result.dir}" />
-    <junitlauncher printsummary="true">
+    <junitlauncher printsummary="true" failureproperty="junit.failure">
       <classpath refid="project.classpath" />
       <testclasses outputdir="${junit.result.dir}">
         <fileset dir="${build.dir}" includes="**/*Test.class" />
@@ -98,6 +98,7 @@
       <fileset dir="${junit.result.dir}" includes="TEST-*.xml" />
       <report format="frames" todir="${junit.report.dir}" />
     </junitreport>
+    <fail if="junit.failure" message="JUnit test(s) failed" />
   </target>
 
   <target name="docs">
