@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import dicontainer.annotation.Dependency;
 import dicontainer.auxiliary.comparator.ClassComparatorConstructor;
 
-class ConstructorComparatorTest
+public class ConstructorComparatorTest
 {
     private ConstructorComparator testObject;
 

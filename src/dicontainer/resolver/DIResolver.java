@@ -23,8 +23,8 @@ public class DIResolver
     <T> T resolveWithPath(Class<T> type, Stack<Class<?>> path)
     {
         T object = constructorResolver.resolve(type, path);
-        setterResolver.resolve(object, path);
 
+        object = setterResolver.resolve(object, path);
         return object;
     }
 }

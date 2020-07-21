@@ -99,7 +99,7 @@ public class DIContainerTest
     }
 
     // endregion
-    // region registerType (inheritance)
+    // region registerType [inheritance]
 
     @Test
     public void register_WhenInheritanceFromInterface_ThenDifferentInstances()

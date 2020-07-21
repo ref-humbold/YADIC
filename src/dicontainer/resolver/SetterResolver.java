@@ -1,6 +1,5 @@
 package dicontainer.resolver;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +21,7 @@ class SetterResolver
         this.resolver = resolver;
     }
 
-    <T> void resolve(T object, Stack<Class<?>> path)
+    <T> T resolve(T object, Stack<Class<?>> path)
     {
         List<Method> dependencySetters = Arrays.stream(object.getClass().getMethods())
                                                .filter(this::hasAnnotation)
@@ -31,6 +30,8 @@ class SetterResolver
 
         for(Method setter : dependencySetters)
             invoke(object, setter, path);
+
+        return object;
     }
 
     private <T> void invoke(T object, Method setter, Stack<Class<?>> path)
@@ -52,7 +53,7 @@ class SetterResolver
         {
             setter.invoke(object, parameters.toArray());
         }
-        catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+        catch(Exception e)
         {
             throw new SetterInvocationException(
                     String.format("Could not invoke setter '%s' due to an error: %s",
