@@ -11,9 +11,4 @@ public class NoSuitableConstructorException
     {
         super(s);
     }
-
-    public NoSuitableConstructorException(String s, Throwable t)
-    {
-        super(s, t);
-    }
 }
