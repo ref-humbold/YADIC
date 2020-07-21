@@ -1,4 +1,6 @@
-package dicontainer.exception;
+package dicontainer.dictionary.exception;
+
+import dicontainer.DIException;
 
 public class NotDerivedTypeException
         extends DIException

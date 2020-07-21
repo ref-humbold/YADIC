@@ -1,4 +1,4 @@
-package dicontainer.exception;
+package dicontainer;
 
 public class DIException
         extends RuntimeException

@@ -4,7 +4,6 @@ import java.lang.reflect.Modifier;
 
 import dicontainer.annotation.Register;
 import dicontainer.annotation.SelfRegister;
-import dicontainer.exception.NullInstanceException;
 
 public final class TypesUtils
 {

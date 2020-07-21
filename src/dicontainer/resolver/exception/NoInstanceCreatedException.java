@@ -1,4 +1,6 @@
-package dicontainer.exception;
+package dicontainer.resolver.exception;
+
+import dicontainer.DIException;
 
 public class NoInstanceCreatedException
         extends DIException

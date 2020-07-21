@@ -12,11 +12,11 @@ import dicontainer.auxiliary.diamond.ClassDiamondTop;
 import dicontainer.auxiliary.diamond.InterfaceDiamondLeft;
 import dicontainer.auxiliary.diamond.InterfaceDiamondTop;
 import dicontainer.auxiliary.setter.*;
-import dicontainer.exception.AbstractTypeException;
-import dicontainer.exception.IncorrectDependencySetterException;
-import dicontainer.exception.NullInstanceException;
-import dicontainer.resolver.MultipleAnnotatedConstructorsException;
-import dicontainer.resolver.NoSuitableConstructorException;
+import dicontainer.commons.NullInstanceException;
+import dicontainer.dictionary.exception.AbstractTypeException;
+import dicontainer.resolver.exception.IncorrectDependencySetterException;
+import dicontainer.resolver.exception.MultipleAnnotatedConstructorsException;
+import dicontainer.resolver.exception.NoSuitableConstructorException;
 
 public class DIContainerTest
 {

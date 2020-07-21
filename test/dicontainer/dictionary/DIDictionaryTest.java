@@ -13,9 +13,12 @@ import dicontainer.auxiliary.basic.ClassBasicStringGetter;
 import dicontainer.auxiliary.basic.InterfaceBasic;
 import dicontainer.auxiliary.register.*;
 import dicontainer.commons.Instance;
-import dicontainer.exception.AbstractTypeException;
-import dicontainer.exception.NotDerivedTypeException;
-import dicontainer.exception.NullInstanceException;
+import dicontainer.commons.NullInstanceException;
+import dicontainer.dictionary.exception.AbstractTypeException;
+import dicontainer.dictionary.exception.AnnotatedTypeRegistrationException;
+import dicontainer.dictionary.exception.MixingPoliciesException;
+import dicontainer.dictionary.exception.NotDerivedTypeException;
+import dicontainer.dictionary.exception.RegistrationException;
 
 public class DIDictionaryTest
 {

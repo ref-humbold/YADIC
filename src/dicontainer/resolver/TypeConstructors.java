@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import dicontainer.annotation.Dependency;
+import dicontainer.resolver.exception.MultipleAnnotatedConstructorsException;
+import dicontainer.resolver.exception.NoSuitableConstructorException;
 
 class TypeConstructors<T>
 {

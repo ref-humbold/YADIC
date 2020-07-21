@@ -1,6 +1,6 @@
-package dicontainer.dictionary;
+package dicontainer.dictionary.exception;
 
-import dicontainer.exception.DIException;
+import dicontainer.DIException;
 
 public class RegistrationException
         extends DIException

@@ -14,11 +14,9 @@ import dicontainer.auxiliary.diamond.*;
 import dicontainer.auxiliary.register.*;
 import dicontainer.auxiliary.setter.*;
 import dicontainer.dictionary.DIDictionary;
-import dicontainer.exception.AbstractTypeException;
-import dicontainer.exception.IncorrectDependencySetterException;
-import dicontainer.exception.MissingDependenciesException;
-import dicontainer.exception.NoInstanceCreatedException;
-import dicontainer.exception.NotDerivedTypeException;
+import dicontainer.dictionary.exception.AbstractTypeException;
+import dicontainer.dictionary.exception.NotDerivedTypeException;
+import dicontainer.resolver.exception.*;
 
 public class DIResolverTest
 {

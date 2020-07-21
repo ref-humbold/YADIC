@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import dicontainer.DIException;
 import dicontainer.commons.Instance;
-import dicontainer.exception.DIException;
-import dicontainer.exception.MissingDependenciesException;
-import dicontainer.exception.NoInstanceCreatedException;
+import dicontainer.resolver.exception.CircularDependenciesException;
+import dicontainer.resolver.exception.MissingDependenciesException;
+import dicontainer.resolver.exception.NoInstanceCreatedException;
 
 class ConstructorResolver
 {

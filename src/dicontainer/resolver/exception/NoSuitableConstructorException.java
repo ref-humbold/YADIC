@@ -1,6 +1,6 @@
-package dicontainer.resolver;
+package dicontainer.resolver.exception;
 
-import dicontainer.exception.DIException;
+import dicontainer.DIException;
 
 public class NoSuitableConstructorException
         extends DIException

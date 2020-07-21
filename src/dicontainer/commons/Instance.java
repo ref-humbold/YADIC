@@ -2,8 +2,6 @@ package dicontainer.commons;
 
 import java.util.Objects;
 
-import dicontainer.exception.NullInstanceException;
-
 public final class Instance<T>
 {
     private final T instance;

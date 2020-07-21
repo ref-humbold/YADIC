@@ -8,8 +8,9 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 import dicontainer.annotation.Dependency;
-import dicontainer.exception.IncorrectDependencySetterException;
-import dicontainer.exception.MissingDependenciesException;
+import dicontainer.resolver.exception.IncorrectDependencySetterException;
+import dicontainer.resolver.exception.MissingDependenciesException;
+import dicontainer.resolver.exception.SetterInvocationException;
 
 class SetterResolver
 {

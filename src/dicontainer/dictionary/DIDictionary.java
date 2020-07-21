@@ -3,6 +3,7 @@ package dicontainer.dictionary;
 import dicontainer.ConstructionPolicy;
 import dicontainer.commons.Instance;
 import dicontainer.commons.TypesUtils;
+import dicontainer.dictionary.exception.RegistrationException;
 
 public class DIDictionary
 {

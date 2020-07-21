@@ -2,7 +2,6 @@ package dicontainer;
 
 import dicontainer.annotation.Dependency;
 import dicontainer.dictionary.DIDictionary;
-import dicontainer.exception.DIException;
 import dicontainer.resolver.DIResolver;
 
 public final class DIContainer

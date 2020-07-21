@@ -8,9 +8,11 @@ import dicontainer.annotation.Register;
 import dicontainer.annotation.SelfRegister;
 import dicontainer.commons.Instance;
 import dicontainer.commons.TypesUtils;
-import dicontainer.exception.AbstractTypeException;
-import dicontainer.exception.MissingDependenciesException;
-import dicontainer.exception.NotDerivedTypeException;
+import dicontainer.dictionary.exception.AbstractTypeException;
+import dicontainer.dictionary.exception.AnnotatedTypeRegistrationException;
+import dicontainer.dictionary.exception.MixingPoliciesException;
+import dicontainer.dictionary.exception.NotDerivedTypeException;
+import dicontainer.resolver.exception.MissingDependenciesException;
 
 class TypesDictionary
 {
