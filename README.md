@@ -24,6 +24,7 @@ General:
 > libraries are automatically downloaded during build process
 
 + JUnit 5.+
++ AssertJ 3.+
 
 -----
 

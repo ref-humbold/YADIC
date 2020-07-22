@@ -2,8 +2,8 @@ package dicontainer.resolver;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,13 +34,13 @@ public class ConstructorComparatorTest
         // when
         Arrays.sort(constructors, testObject);
         // then
-        Assertions.assertTrue(constructors[0].isAnnotationPresent(Dependency.class));
-        Assertions.assertEquals(3, constructors[0].getParameterCount());
-        Assertions.assertEquals(5, constructors[1].getParameterCount());
-        Assertions.assertEquals(4, constructors[2].getParameterCount());
-        Assertions.assertEquals(2, constructors[3].getParameterCount());
-        Assertions.assertEquals(1, constructors[4].getParameterCount());
-        Assertions.assertEquals(0, constructors[5].getParameterCount());
+        Assertions.assertThat(constructors[0].isAnnotationPresent(Dependency.class)).isTrue();
+        Assertions.assertThat(constructors[0].getParameterCount()).isEqualTo(3);
+        Assertions.assertThat(constructors[1].getParameterCount()).isEqualTo(5);
+        Assertions.assertThat(constructors[2].getParameterCount()).isEqualTo(4);
+        Assertions.assertThat(constructors[3].getParameterCount()).isEqualTo(2);
+        Assertions.assertThat(constructors[4].getParameterCount()).isEqualTo(1);
+        Assertions.assertThat(constructors[5].getParameterCount()).isEqualTo(0);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class ConstructorComparatorTest
         // when
         int result = testObject.compare(constructors[3], constructors[4]);
         // then
-        Assertions.assertEquals(-1, result);
+        Assertions.assertThat(result).isEqualTo(-1);
     }
 
     @Test
@@ -66,6 +66,6 @@ public class ConstructorComparatorTest
         // when
         int result = testObject.compare(constructors[2], constructors[5]);
         // then
-        Assertions.assertEquals(1, result);
+        Assertions.assertThat(result).isEqualTo(1);
     }
 }
