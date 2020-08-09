@@ -1,10 +1,9 @@
 package dicontainer.dictionary;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import dicontainer.ConstructionPolicy;
 import dicontainer.auxiliary.basic.ClassBasicAbstract;
@@ -49,8 +48,8 @@ public class DIDictionaryTest
 
         SubtypeMapping<? extends InterfaceBasic> result = testObject.findType(type);
         // then
-        Assertions.assertEquals(subtype, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.SINGLETON, result.policy);
+        Assertions.assertThat(result.subtype).isEqualTo(subtype);
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.SINGLETON);
     }
 
     @Test
@@ -63,8 +62,8 @@ public class DIDictionaryTest
 
         SubtypeMapping<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
         // then
-        Assertions.assertEquals(type, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.SINGLETON, result.policy);
+        Assertions.assertThat(result.subtype).isEqualTo(type);
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.SINGLETON);
     }
 
     @Test
@@ -77,8 +76,8 @@ public class DIDictionaryTest
 
         SubtypeMapping<? extends ClassRegisterSelf> result = testObject.findType(type);
         // then
-        Assertions.assertEquals(type, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
+        Assertions.assertThat(result.subtype).isEqualTo(type);
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
     }
 
     @Test
@@ -91,8 +90,8 @@ public class DIDictionaryTest
 
         SubtypeMapping<? extends ClassRegisterConcrete> result = testObject.findType(type);
         // then
-        Assertions.assertEquals(ClassRegisterDerivedFromRegister.class, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
+        Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterDerivedFromRegister.class);
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
     }
 
     // endregion
@@ -102,70 +101,77 @@ public class DIDictionaryTest
     public void addType_WhenSingleInterface_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.addType(InterfaceBasic.class);
+        Throwable throwable =
+                Assertions.catchThrowable(() -> testObject.addType(InterfaceBasic.class));
         // then
-        Assertions.assertThrows(AbstractTypeException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void addType_WhenSingleAbstractClass_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.addType(ClassBasicAbstract.class);
+        Throwable throwable =
+                Assertions.catchThrowable(() -> testObject.addType(ClassBasicAbstract.class));
         // then
-        Assertions.assertThrows(AbstractTypeException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void addType_WhenRegisterAnnotatedTypeAndSubtype_ThenAnnotatedTypeRegistrationException()
     {
         // when
-        Executable executable = () -> testObject.addType(ClassRegisterConcrete.class,
-                                                         ClassRegisterDerivedFromRegister.class,
-                                                         ConstructionPolicy.getDefault());
+        Throwable throwable = Assertions.catchThrowable(
+                () -> testObject.addType(ClassRegisterConcrete.class,
+                                         ClassRegisterDerivedFromRegister.class,
+                                         ConstructionPolicy.getDefault()));
         // then
-        Assertions.assertThrows(AnnotatedTypeRegistrationException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(AnnotatedTypeRegistrationException.class);
     }
 
     @Test
     public void addType_WhenSelfRegisterAnnotatedTypeAndSubtype_ThenAnnotatedTypeRegistrationException()
     {
         // when
-        Executable executable = () -> testObject.addType(ClassRegisterSelf.class,
-                                                         ClassRegisterDerivedFromSelfRegister.class,
-                                                         ConstructionPolicy.getDefault());
+        Throwable throwable = Assertions.catchThrowable(
+                () -> testObject.addType(ClassRegisterSelf.class,
+                                         ClassRegisterDerivedFromSelfRegister.class,
+                                         ConstructionPolicy.getDefault()));
         // then
-        Assertions.assertThrows(AnnotatedTypeRegistrationException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(AnnotatedTypeRegistrationException.class);
     }
 
     @Test
     public void addType_WhenRegisterTypeAndNotSubtype_ThenNotDerivedTypeException()
     {
         // when
-        Executable executable = () -> testObject.addType(ClassRegisterIncorrectOtherClass.class,
-                                                         ConstructionPolicy.getDefault());
+        Throwable throwable = Assertions.catchThrowable(
+                () -> testObject.addType(ClassRegisterIncorrectOtherClass.class,
+                                         ConstructionPolicy.getDefault()));
         // then
-        Assertions.assertThrows(NotDerivedTypeException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(NotDerivedTypeException.class);
     }
 
     @Test
     public void addType_WhenRegisterTypeAndAbstract_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.addType(ClassRegisterAbstractIncorrect.class,
-                                                         ConstructionPolicy.getDefault());
+        Throwable throwable = Assertions.catchThrowable(
+                () -> testObject.addType(ClassRegisterAbstractIncorrect.class,
+                                         ConstructionPolicy.getDefault()));
         // then
-        Assertions.assertThrows(AbstractTypeException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void addType_WhenSelfRegisterAbstract_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.addType(ClassRegisterSelfAbstractIncorrect.class,
-                                                         ConstructionPolicy.getDefault());
+        Throwable throwable = Assertions.catchThrowable(
+                () -> testObject.addType(ClassRegisterSelfAbstractIncorrect.class,
+                                         ConstructionPolicy.getDefault()));
         // then
-        Assertions.assertThrows(AbstractTypeException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
@@ -178,18 +184,18 @@ public class DIDictionaryTest
 
         testObject.addInstance(type, instance);
         // when
-        Executable executable = () -> testObject.addType(type);
+        Throwable throwable = Assertions.catchThrowable(() -> testObject.addType(type));
         // then
-        Assertions.assertThrows(RegistrationException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(RegistrationException.class);
     }
 
     @Test
     public void addType_WhenPrimitiveType_ThenRegistrationException()
     {
         // when
-        Executable executable = () -> testObject.addType(boolean.class);
+        Throwable throwable = Assertions.catchThrowable(() -> testObject.addType(boolean.class));
         // then
-        Assertions.assertThrows(RegistrationException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(RegistrationException.class);
     }
 
     // endregion
@@ -207,9 +213,9 @@ public class DIDictionaryTest
         Instance<ClassBasicStringGetter> result =
                 testObject.findInstance(ClassBasicStringGetter.class);
         // then
-        Assertions.assertTrue(result.exists());
-        Assertions.assertSame(instance, result.extract());
-        Assertions.assertEquals(string, result.extract().getString());
+        Assertions.assertThat(result.exists()).isTrue();
+        Assertions.assertThat(result.extract()).isSameAs(instance);
+        Assertions.assertThat(result.extract().getString()).isEqualTo(string);
     }
 
     // endregion
@@ -225,28 +231,31 @@ public class DIDictionaryTest
 
         testObject.addType(type);
         // when
-        Executable executable = () -> testObject.addInstance(type, instance);
+        Throwable throwable =
+                Assertions.catchThrowable(() -> testObject.addInstance(type, instance));
         // then
-        Assertions.assertThrows(RegistrationException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(RegistrationException.class);
     }
 
     @Test
     public void addInstance_WhenAnnotatedType_ThenRegistrationException()
     {
         // when
-        Executable executable = () -> testObject.addInstance(ClassRegisterConcrete.class,
-                                                             new ClassRegisterConcrete());
+        Throwable throwable = Assertions.catchThrowable(
+                () -> testObject.addInstance(ClassRegisterConcrete.class,
+                                             new ClassRegisterConcrete()));
         // then
-        Assertions.assertThrows(RegistrationException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(RegistrationException.class);
     }
 
     @Test
     public void addInstance_WhenNullInstance_ThenNullInstanceException()
     {
         // when
-        Executable executable = () -> testObject.addInstance(ClassBasicAbstract.class, null);
+        Throwable throwable = Assertions.catchThrowable(
+                () -> testObject.addInstance(ClassBasicAbstract.class, null));
         // then
-        Assertions.assertThrows(NullInstanceException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(NullInstanceException.class);
     }
 
     // endregion
@@ -258,8 +267,8 @@ public class DIDictionaryTest
         // when
         SubtypeMapping<?> result = testObject.findType(double.class);
         // then
-        Assertions.assertEquals(double.class, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
+        Assertions.assertThat(result.subtype).isEqualTo(double.class);
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
     }
 
     @Test
@@ -273,8 +282,8 @@ public class DIDictionaryTest
         // when
         SubtypeMapping<? extends InterfaceBasic> result = testObject.findType(InterfaceBasic.class);
         // then
-        Assertions.assertEquals(ClassBasicInheritsFromAbstract.class, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
+        Assertions.assertThat(result.subtype).isEqualTo(ClassBasicInheritsFromAbstract.class);
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
     }
 
     @Test
@@ -285,8 +294,8 @@ public class DIDictionaryTest
         // when
         SubtypeMapping<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
         // then
-        Assertions.assertEquals(type, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
+        Assertions.assertThat(result.subtype).isEqualTo(type);
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
     }
 
     @Test
@@ -296,8 +305,8 @@ public class DIDictionaryTest
         SubtypeMapping<? extends ClassRegisterAbstract> result =
                 testObject.findType(ClassRegisterAbstract.class);
         // then
-        Assertions.assertEquals(ClassRegisterDerivedFromRegister.class, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
+        Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterDerivedFromRegister.class);
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
     }
 
     @Test
@@ -309,9 +318,10 @@ public class DIDictionaryTest
         testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
                            ConstructionPolicy.SINGLETON);
         // when
-        Executable executable = () -> testObject.findType(InterfaceBasic.class);
+        Throwable throwable =
+                Assertions.catchThrowable(() -> testObject.findType(InterfaceBasic.class));
         // then
-        Assertions.assertThrows(MixingPoliciesException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(MixingPoliciesException.class);
     }
 
     @Test
@@ -321,8 +331,8 @@ public class DIDictionaryTest
         SubtypeMapping<? extends ClassRegisterSelf> result =
                 testObject.findType(ClassRegisterSelf.class);
         // then
-        Assertions.assertEquals(ClassRegisterSelf.class, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.getDefault(), result.policy);
+        Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterSelf.class);
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
     }
 
     @Test
@@ -335,8 +345,8 @@ public class DIDictionaryTest
         // when
         SubtypeMapping<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
         // then
-        Assertions.assertEquals(type, result.subtype);
-        Assertions.assertEquals(ConstructionPolicy.SINGLETON, result.policy);
+        Assertions.assertThat(result.subtype).isEqualTo(type);
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.SINGLETON);
     }
 
     // endregion
@@ -349,7 +359,7 @@ public class DIDictionaryTest
         Instance<ClassBasicStringGetter> result =
                 testObject.findInstance(ClassBasicStringGetter.class);
         // then
-        Assertions.assertFalse(result.exists());
+        Assertions.assertThat(result.exists()).isFalse();
     }
 
     // endregion
@@ -363,7 +373,7 @@ public class DIDictionaryTest
         // when
         boolean result = testObject.contains(ClassBasicStringGetter.class);
         // then
-        Assertions.assertTrue(result);
+        Assertions.assertThat(result).isTrue();
     }
 
     @Test
@@ -372,7 +382,7 @@ public class DIDictionaryTest
         // when
         boolean result = testObject.contains(InterfaceBasic.class);
         // then
-        Assertions.assertFalse(result);
+        Assertions.assertThat(result).isFalse();
     }
 
     @Test
@@ -381,7 +391,7 @@ public class DIDictionaryTest
         // when
         boolean result = testObject.contains(ClassBasicInheritsFromAbstract.class);
         // then
-        Assertions.assertFalse(result);
+        Assertions.assertThat(result).isFalse();
     }
 
     @Test
@@ -390,7 +400,7 @@ public class DIDictionaryTest
         // when
         boolean result = testObject.contains(ClassRegisterConcrete.class);
         // then
-        Assertions.assertTrue(result);
+        Assertions.assertThat(result).isTrue();
     }
 
     @Test
@@ -403,7 +413,7 @@ public class DIDictionaryTest
         // when
         boolean result = testObject.contains(type);
         // then
-        Assertions.assertTrue(result);
+        Assertions.assertThat(result).isTrue();
     }
 
     @Test
@@ -416,7 +426,7 @@ public class DIDictionaryTest
         // when
         boolean result = testObject.contains(type);
         // then
-        Assertions.assertTrue(result);
+        Assertions.assertThat(result).isTrue();
     }
 
     @Test
@@ -425,7 +435,7 @@ public class DIDictionaryTest
         // when
         boolean result = testObject.contains(ClassRegisterSelfAbstractIncorrect.class);
         // then
-        Assertions.assertFalse(result);
+        Assertions.assertThat(result).isFalse();
     }
 
     // endregion
@@ -444,8 +454,8 @@ public class DIDictionaryTest
 
         Instance<ClassBasicAbstract> result = testObject.findInstance(ClassBasicAbstract.class);
         // then
-        Assertions.assertTrue(result.exists());
-        Assertions.assertSame(singleton, result.extract());
+        Assertions.assertThat(result.exists()).isTrue();
+        Assertions.assertThat(result.extract()).isSameAs(singleton);
     }
 
     @Test
@@ -461,7 +471,7 @@ public class DIDictionaryTest
 
         Instance<ClassBasicAbstract> result = testObject.findInstance(ClassBasicAbstract.class);
         // then
-        Assertions.assertFalse(result.exists());
+        Assertions.assertThat(result.exists()).isFalse();
     }
 
     @Test
@@ -474,7 +484,7 @@ public class DIDictionaryTest
 
         Instance<ClassBasicAbstract> result = testObject.findInstance(ClassBasicAbstract.class);
         // then
-        Assertions.assertFalse(result.exists());
+        Assertions.assertThat(result.exists()).isFalse();
     }
 
     // endregion
