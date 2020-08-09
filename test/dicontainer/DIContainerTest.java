@@ -1,10 +1,9 @@
 package dicontainer;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import dicontainer.auxiliary.basic.*;
 import dicontainer.auxiliary.constructor.*;
@@ -46,9 +45,9 @@ public class DIContainerTest
         ClassConstructorDefault result1 = testObject.resolve(ClassConstructorDefault.class);
         ClassConstructorDefault result2 = testObject.resolve(ClassConstructorDefault.class);
         // then
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertNotSame(result1, result2);
+        Assertions.assertThat(result1).isNotNull();
+        Assertions.assertThat(result2).isNotNull();
+        Assertions.assertThat(result2).isNotSameAs(result1);
     }
 
     @Test
@@ -60,9 +59,9 @@ public class DIContainerTest
         ClassConstructorDefault result1 = testObject.resolve(ClassConstructorDefault.class);
         ClassConstructorDefault result2 = testObject.resolve(ClassConstructorDefault.class);
         // then
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertSame(result1, result2);
+        Assertions.assertThat(result1).isNotNull();
+        Assertions.assertThat(result2).isNotNull();
+        Assertions.assertThat(result2).isSameAs(result1);
     }
 
     @Test
@@ -74,9 +73,9 @@ public class DIContainerTest
         ClassConstructorDefault result11 = testObject.resolve(ClassConstructorDefault.class);
         ClassConstructorDefault result12 = testObject.resolve(ClassConstructorDefault.class);
         // then 1
-        Assertions.assertNotNull(result11);
-        Assertions.assertNotNull(result12);
-        Assertions.assertSame(result11, result12);
+        Assertions.assertThat(result11).isNotNull();
+        Assertions.assertThat(result12).isNotNull();
+        Assertions.assertThat(result12).isSameAs(result11);
 
         // given 2
         testObject.registerType(ClassConstructorDefault.class, ConstructionPolicy.CONSTRUCT);
@@ -84,27 +83,29 @@ public class DIContainerTest
         ClassConstructorDefault result21 = testObject.resolve(ClassConstructorDefault.class);
         ClassConstructorDefault result22 = testObject.resolve(ClassConstructorDefault.class);
         // then 2
-        Assertions.assertNotNull(result21);
-        Assertions.assertNotNull(result22);
-        Assertions.assertNotSame(result21, result22);
+        Assertions.assertThat(result21).isNotNull();
+        Assertions.assertThat(result22).isNotNull();
+        Assertions.assertThat(result22).isNotSameAs(result21);
     }
 
     @Test
     public void register_WhenSingleClassIsInterface_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.registerType(InterfaceBasic.class);
+        Throwable throwable =
+                Assertions.catchThrowable(() -> testObject.registerType(InterfaceBasic.class));
         // then
-        Assertions.assertThrows(AbstractTypeException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void register_WhenSingleClassIsAbstractClass_ThenAbstractTypeException()
     {
         // when
-        Executable executable = () -> testObject.registerType(ClassBasicAbstract.class);
+        Throwable throwable =
+                Assertions.catchThrowable(() -> testObject.registerType(ClassBasicAbstract.class));
         // then
-        Assertions.assertThrows(AbstractTypeException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
     }
 
     // endregion
@@ -119,11 +120,11 @@ public class DIContainerTest
         InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
         InterfaceBasic result2 = testObject.resolve(InterfaceBasic.class);
         // then
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertNotSame(result1, result2);
-        Assertions.assertTrue(result1 instanceof ClassConstructorDefault);
-        Assertions.assertTrue(result2 instanceof ClassConstructorDefault);
+        Assertions.assertThat(result1).isNotNull();
+        Assertions.assertThat(result2).isNotNull();
+        Assertions.assertThat(result2).isNotSameAs(result1);
+        Assertions.assertThat(result1).isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result2).isInstanceOf(ClassConstructorDefault.class);
     }
 
     @Test
@@ -136,11 +137,11 @@ public class DIContainerTest
         InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
         InterfaceBasic result2 = testObject.resolve(InterfaceBasic.class);
         // then
-        Assertions.assertNotNull(result1);
-        Assertions.assertNotNull(result2);
-        Assertions.assertSame(result1, result2);
-        Assertions.assertTrue(result1 instanceof ClassConstructorDefault);
-        Assertions.assertTrue(result2 instanceof ClassConstructorDefault);
+        Assertions.assertThat(result1).isNotNull();
+        Assertions.assertThat(result2).isNotNull();
+        Assertions.assertThat(result2).isSameAs(result1);
+        Assertions.assertThat(result1).isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result2).isInstanceOf(ClassConstructorDefault.class);
     }
 
     @Test
@@ -153,11 +154,11 @@ public class DIContainerTest
         InterfaceBasic result11 = testObject.resolve(InterfaceBasic.class);
         InterfaceBasic result12 = testObject.resolve(InterfaceBasic.class);
         // then 1
-        Assertions.assertNotNull(result11);
-        Assertions.assertNotNull(result12);
-        Assertions.assertSame(result11, result12);
-        Assertions.assertTrue(result11 instanceof ClassConstructorDefault);
-        Assertions.assertTrue(result12 instanceof ClassConstructorDefault);
+        Assertions.assertThat(result11).isNotNull();
+        Assertions.assertThat(result12).isNotNull();
+        Assertions.assertThat(result12).isSameAs(result11);
+        Assertions.assertThat(result11).isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result12).isInstanceOf(ClassConstructorDefault.class);
 
         // given 2
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
@@ -166,11 +167,11 @@ public class DIContainerTest
         InterfaceBasic result21 = testObject.resolve(InterfaceBasic.class);
         InterfaceBasic result22 = testObject.resolve(InterfaceBasic.class);
         // then 2
-        Assertions.assertNotNull(result21);
-        Assertions.assertNotNull(result22);
-        Assertions.assertNotSame(result21, result22);
-        Assertions.assertTrue(result21 instanceof ClassConstructorDefault);
-        Assertions.assertTrue(result22 instanceof ClassConstructorDefault);
+        Assertions.assertThat(result21).isNotNull();
+        Assertions.assertThat(result22).isNotNull();
+        Assertions.assertThat(result22).isNotSameAs(result21);
+        Assertions.assertThat(result21).isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result22).isInstanceOf(ClassConstructorDefault.class);
     }
 
     @Test
@@ -181,8 +182,8 @@ public class DIContainerTest
         // when 1
         InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
         // then 1
-        Assertions.assertNotNull(result1);
-        Assertions.assertTrue(result1 instanceof ClassConstructorDefault);
+        Assertions.assertThat(result1).isNotNull();
+        Assertions.assertThat(result1).isInstanceOf(ClassConstructorDefault.class);
 
         // given 2
         testObject.registerType(InterfaceBasic.class,
@@ -190,8 +191,8 @@ public class DIContainerTest
         // when 2
         InterfaceBasic result3 = testObject.resolve(InterfaceBasic.class);
         // then 2
-        Assertions.assertNotNull(result3);
-        Assertions.assertTrue(result3 instanceof ClassConstructorDefaultAndParameterized);
+        Assertions.assertThat(result3).isNotNull();
+        Assertions.assertThat(result3).isInstanceOf(ClassConstructorDefaultAndParameterized.class);
     }
 
     @Test
@@ -202,8 +203,8 @@ public class DIContainerTest
         // when
         ClassBasicAbstract result = testObject.resolve(ClassBasicAbstract.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertTrue(result instanceof ClassBasicInheritsFromAbstract);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isInstanceOf(ClassBasicInheritsFromAbstract.class);
     }
 
     @Test
@@ -216,8 +217,8 @@ public class DIContainerTest
         ClassConstructorParameterized result =
                 testObject.resolve(ClassConstructorParameterized.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertTrue(result instanceof ClassConstructorSuperParameterized);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isInstanceOf(ClassConstructorSuperParameterized.class);
     }
 
     @Test
@@ -229,8 +230,8 @@ public class DIContainerTest
         // when
         InterfaceBasic result = testObject.resolve(InterfaceBasic.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertTrue(result instanceof ClassBasicInheritsFromAbstract);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isInstanceOf(ClassBasicInheritsFromAbstract.class);
     }
 
     // endregion
@@ -246,9 +247,9 @@ public class DIContainerTest
         // when
         InterfaceBasic result = testObject.resolve(InterfaceBasic.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertTrue(result instanceof ClassConstructorDefault);
-        Assertions.assertSame(instance, result);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result).isSameAs(instance);
     }
 
     @Test
@@ -261,9 +262,9 @@ public class DIContainerTest
         // when
         ClassBasicAbstract result = testObject.resolve(ClassBasicAbstract.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertTrue(result instanceof ClassBasicInheritsFromAbstract);
-        Assertions.assertSame(instance, result);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isInstanceOf(ClassBasicInheritsFromAbstract.class);
+        Assertions.assertThat(result).isSameAs(instance);
     }
 
     @Test
@@ -278,9 +279,9 @@ public class DIContainerTest
         ClassConstructorDefaultAndParameterized result =
                 testObject.resolve(ClassConstructorDefaultAndParameterized.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertSame(instance, result);
-        Assertions.assertEquals(instance.getText(), result.getText());
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isSameAs(instance);
+        Assertions.assertThat(result.getText()).isEqualTo(instance.getText());
     }
 
     @Test
@@ -294,21 +295,21 @@ public class DIContainerTest
         ClassConstructorParameterized result =
                 testObject.resolve(ClassConstructorParameterized.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertSame(instance, result);
-        Assertions.assertTrue(result instanceof ClassConstructorSuperParameterized);
-        Assertions.assertEquals(instance.getNumber(), result.getNumber());
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isSameAs(instance);
+        Assertions.assertThat(result).isInstanceOf(ClassConstructorSuperParameterized.class);
+        Assertions.assertThat(result.getNumber()).isEqualTo(instance.getNumber());
     }
 
     @Test
     public void registerInstance_WhenInstanceIsNull_ThenNullInstanceException()
     {
         // when
-        Executable executable =
+        Throwable throwable = Assertions.catchThrowable(
                 () -> testObject.registerInstance(ClassConstructorDefaultAndParameterized.class,
-                                                  null);
+                                                  null));
         // then
-        Assertions.assertThrows(NullInstanceException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(NullInstanceException.class);
     }
 
     // endregion
@@ -318,45 +319,50 @@ public class DIContainerTest
     public void resolve_WhenMultipleAnnotatedConstructors_ThenMultipleAnnotatedConstructorsException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorMultipleAnnotated.class);
+        Throwable throwable = Assertions.catchThrowable(
+                () -> testObject.resolve(ClassConstructorMultipleAnnotated.class));
         // then
-        Assertions.assertThrows(MultipleAnnotatedConstructorsException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(MultipleAnnotatedConstructorsException.class);
     }
 
     @Test
     public void resolve_WhenNoPublicConstructors_ThenNoSuitableConstructorException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassConstructorPrivate.class);
+        Throwable throwable =
+                Assertions.catchThrowable(() -> testObject.resolve(ClassConstructorPrivate.class));
         // then
-        Assertions.assertThrows(NoSuitableConstructorException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(NoSuitableConstructorException.class);
     }
 
     @Test
     public void resolve_WhenDependencySetterHasReturnType_ThenIncorrectDependencySetterException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassSetterIncorrectReturnType.class);
+        Throwable throwable = Assertions.catchThrowable(
+                () -> testObject.resolve(ClassSetterIncorrectReturnType.class));
         // then
-        Assertions.assertThrows(IncorrectDependencySetterException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
     public void resolve_WhenDependencySetterHasNoParameters_ThenIncorrectDependencySetterException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassSetterWithoutParameters.class);
+        Throwable throwable = Assertions.catchThrowable(
+                () -> testObject.resolve(ClassSetterWithoutParameters.class));
         // then
-        Assertions.assertThrows(IncorrectDependencySetterException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
     public void resolve_WhenDependencySetterNameDoesNotStartWithSet_ThenIncorrectDependencySetterException()
     {
         // when
-        Executable executable = () -> testObject.resolve(ClassSetterIncorrectName.class);
+        Throwable throwable =
+                Assertions.catchThrowable(() -> testObject.resolve(ClassSetterIncorrectName.class));
         // then
-        Assertions.assertThrows(IncorrectDependencySetterException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
@@ -368,9 +374,9 @@ public class DIContainerTest
         // when
         InterfaceSetter result = testObject.resolve(InterfaceSetter.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getBasicObject());
-        Assertions.assertTrue(result instanceof ClassSetterSingle);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getBasicObject()).isNotNull();
+        Assertions.assertThat(result).isInstanceOf(ClassSetterSingle.class);
     }
 
     @Test
@@ -382,9 +388,9 @@ public class DIContainerTest
         // when
         InterfaceSetter result = testObject.resolve(InterfaceSetter.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getBasicObject());
-        Assertions.assertTrue(result instanceof ClassSetterConstructor);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getBasicObject()).isNotNull();
+        Assertions.assertThat(result).isInstanceOf(ClassSetterConstructor.class);
     }
 
     @Test
@@ -394,9 +400,10 @@ public class DIContainerTest
         testObject.registerType(InterfaceSetterMultipleParameters.class,
                                 ClassSetterMultipleParameters.class);
         // when
-        Executable executable = () -> testObject.resolve(InterfaceSetterMultipleParameters.class);
+        Throwable throwable = Assertions.catchThrowable(
+                () -> testObject.resolve(InterfaceSetterMultipleParameters.class));
         // then
-        Assertions.assertThrows(IncorrectDependencySetterException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
@@ -412,12 +419,12 @@ public class DIContainerTest
         // when
         InterfaceSetterMultiple result = testObject.resolve(InterfaceSetterMultiple.class);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(result.getBasicObject());
-        Assertions.assertNotNull(result.getStringObject());
-        Assertions.assertNotNull(result.getStringObject().getString());
-        Assertions.assertEquals(string, result.getStringObject().getString());
-        Assertions.assertTrue(result instanceof ClassSetterMultiple);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getBasicObject()).isNotNull();
+        Assertions.assertThat(result.getStringObject()).isNotNull();
+        Assertions.assertThat(result.getStringObject().getString()).isNotNull();
+        Assertions.assertThat(result.getStringObject().getString()).isEqualTo(string);
+        Assertions.assertThat(result).isInstanceOf(ClassSetterMultiple.class);
     }
 
     // endregion
@@ -433,21 +440,22 @@ public class DIContainerTest
         // when
         InterfaceSetter result = testObject.buildUp(instance);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(instance);
-        Assertions.assertNotNull(result.getBasicObject());
-        Assertions.assertNotNull(instance.getBasicObject());
-        Assertions.assertSame(instance, result);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(instance).isNotNull();
+        Assertions.assertThat(result.getBasicObject()).isNotNull();
+        Assertions.assertThat(instance.getBasicObject()).isNotNull();
+        Assertions.assertThat(result).isSameAs(instance);
     }
 
     @Test
     public void buildUp_WhenDependencySetterHasMultipleParameters_ThenIncorrectDependencySetterException()
     {
+        // given
+        InterfaceSetterMultipleParameters instance = new ClassSetterMultipleParameters();
         // when
-        Executable executable = () -> testObject.buildUp(
-                (InterfaceSetterMultipleParameters)new ClassSetterMultipleParameters());
+        Throwable throwable = Assertions.catchThrowable(() -> testObject.buildUp(instance));
         // then
-        Assertions.assertThrows(IncorrectDependencySetterException.class, executable);
+        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
@@ -463,17 +471,17 @@ public class DIContainerTest
         // when
         InterfaceSetterMultiple result = testObject.buildUp(instance);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(instance);
-        Assertions.assertNotNull(result.getBasicObject());
-        Assertions.assertNotNull(instance.getBasicObject());
-        Assertions.assertNotNull(result.getStringObject());
-        Assertions.assertNotNull(instance.getStringObject());
-        Assertions.assertNotNull(result.getStringObject().getString());
-        Assertions.assertNotNull(instance.getStringObject().getString());
-        Assertions.assertEquals(string, result.getStringObject().getString());
-        Assertions.assertEquals(string, instance.getStringObject().getString());
-        Assertions.assertSame(instance, result);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(instance).isNotNull();
+        Assertions.assertThat(result.getBasicObject()).isNotNull();
+        Assertions.assertThat(instance.getBasicObject()).isNotNull();
+        Assertions.assertThat(result.getStringObject()).isNotNull();
+        Assertions.assertThat(instance.getStringObject()).isNotNull();
+        Assertions.assertThat(result.getStringObject().getString()).isNotNull();
+        Assertions.assertThat(instance.getStringObject().getString()).isNotNull();
+        Assertions.assertThat(result.getStringObject().getString()).isEqualTo(string);
+        Assertions.assertThat(instance.getStringObject().getString()).isEqualTo(string);
+        Assertions.assertThat(result).isSameAs(instance);
     }
 
     @Test
@@ -496,21 +504,21 @@ public class DIContainerTest
         // when
         InterfaceBasicComplexDependency result = testObject.buildUp(instance);
         // then
-        Assertions.assertNotNull(result);
-        Assertions.assertNotNull(instance);
-        Assertions.assertNotNull(result.getBasicObject());
-        Assertions.assertNotNull(instance.getBasicObject());
-        Assertions.assertNotNull(result.getFirstObject());
-        Assertions.assertNotNull(instance.getFirstObject());
-        Assertions.assertNotNull(result.getSecondObject());
-        Assertions.assertNotNull(instance.getSecondObject());
-        Assertions.assertNotNull(result.getFirstObject().getObject());
-        Assertions.assertNotNull(instance.getFirstObject().getObject());
-        Assertions.assertNotNull(result.getSecondObject().getString());
-        Assertions.assertNotNull(instance.getSecondObject().getString());
-        Assertions.assertEquals(string, result.getSecondObject().getString());
-        Assertions.assertEquals(string, instance.getSecondObject().getString());
-        Assertions.assertSame(instance, result);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(instance).isNotNull();
+        Assertions.assertThat(result.getBasicObject()).isNotNull();
+        Assertions.assertThat(instance.getBasicObject()).isNotNull();
+        Assertions.assertThat(result.getFirstObject()).isNotNull();
+        Assertions.assertThat(instance.getFirstObject()).isNotNull();
+        Assertions.assertThat(result.getSecondObject()).isNotNull();
+        Assertions.assertThat(instance.getSecondObject()).isNotNull();
+        Assertions.assertThat(result.getFirstObject().getObject()).isNotNull();
+        Assertions.assertThat(instance.getFirstObject().getObject()).isNotNull();
+        Assertions.assertThat(result.getSecondObject().getString()).isNotNull();
+        Assertions.assertThat(instance.getSecondObject().getString()).isNotNull();
+        Assertions.assertThat(result.getSecondObject().getString()).isEqualTo(string);
+        Assertions.assertThat(instance.getSecondObject().getString()).isEqualTo(string);
+        Assertions.assertThat(result).isSameAs(instance);
     }
 
     // endregion

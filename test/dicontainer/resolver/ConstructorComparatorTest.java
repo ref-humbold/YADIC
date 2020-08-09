@@ -2,6 +2,7 @@ package dicontainer.resolver;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,12 +36,10 @@ public class ConstructorComparatorTest
         Arrays.sort(constructors, testObject);
         // then
         Assertions.assertThat(constructors[0].isAnnotationPresent(Dependency.class)).isTrue();
-        Assertions.assertThat(constructors[0].getParameterCount()).isEqualTo(3);
-        Assertions.assertThat(constructors[1].getParameterCount()).isEqualTo(5);
-        Assertions.assertThat(constructors[2].getParameterCount()).isEqualTo(4);
-        Assertions.assertThat(constructors[3].getParameterCount()).isEqualTo(2);
-        Assertions.assertThat(constructors[4].getParameterCount()).isEqualTo(1);
-        Assertions.assertThat(constructors[5].getParameterCount()).isEqualTo(0);
+        Assertions.assertThat(Arrays.stream(constructors)
+                                    .map(Constructor::getParameterCount)
+                                    .collect(Collectors.toList()))
+                  .containsExactly(3, 5, 4, 2, 1, 0);
     }
 
     @Test
