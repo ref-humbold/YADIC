@@ -1,0 +1,37 @@
+version: 2.1
+
+jobs:
+  build-and-test:
+    working_directory: ~/DI-Container
+    docker:
+      - image: cimg/base:stable
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          name: APT Install Java
+          command: sudo apt-get update && sudo apt-get install openjdk-11-jdk
+      - run:
+          name: APT Install Apache ANT
+          command: sudo apt-get update && sudo apt-get install ant
+      - run:
+          name: Install JUnit5 for ANT
+          command: ./ci/install_ant_junit5.sh
+      - run:
+          name: Download Dependencies
+          command: ant -lib ./lib resolve
+      - run:
+          name: Build
+          command: ant -lib ./lib build
+      - run:
+          name: Test
+          command: ant -lib ./lib test
+      - store_test_results:
+          path: ./junit/result
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
