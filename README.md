@@ -1,5 +1,7 @@
 # DI-Container
-[![Build Status](https://travis-ci.org/ref-humbold/DI-Container.svg?branch=master)](https://travis-ci.org/ref-humbold/DI-Container)
+
+![GitHub Actions](https://github.com/ref-humbold/DI-Container/workflows/GitHub%20Actions/badge.svg?branch=master)
+[![CircleCI](https://circleci.com/gh/ref-humbold/DI-Container/tree/master.svg?style=shield)](https://circleci.com/gh/ref-humbold/DI-Container/tree/master)
 
 ![Release](https://img.shields.io/github/v/release/ref-humbold/DI-Container?style=plastic)
 ![License](https://img.shields.io/github/license/ref-humbold/DI-Container?style=plastic)
