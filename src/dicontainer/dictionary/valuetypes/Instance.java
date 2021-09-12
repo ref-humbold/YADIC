@@ -1,6 +1,7 @@
 package dicontainer.dictionary.valuetypes;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public final class Instance<T>
 {
@@ -11,6 +12,16 @@ public final class Instance<T>
     {
         this.instance = instance;
         this.exception = exception;
+    }
+
+    public static <T> Instance<T> of(T instance)
+    {
+        return instance == null ? none() : new Instance<>(instance, null);
+    }
+
+    public static <T> Instance<T> of(T instance, RuntimeException exception)
+    {
+        return instance == null ? none(exception) : new Instance<>(instance, null);
     }
 
     public static <T> Instance<T> none()
@@ -24,25 +35,10 @@ public final class Instance<T>
         return new Instance<>(null, exception);
     }
 
-    public static <T> Instance<T> of(T instance)
-    {
-        return instance == null ? none() : new Instance<>(instance, null);
-    }
-
-    public static <T> Instance<T> of(T instance, RuntimeException exception)
-    {
-        return instance == null ? none(exception) : new Instance<>(instance, null);
-    }
-
     @SuppressWarnings("unchecked")
     public static <T> Instance<T> cast(Instance<?> mapping)
     {
         return mapping == null ? none() : (Instance<T>)mapping;
-    }
-
-    public RuntimeException getException()
-    {
-        return exception;
     }
 
     public boolean exists()
@@ -50,11 +46,18 @@ public final class Instance<T>
         return instance != null;
     }
 
+    public Instance<T> or(Supplier<Instance<T>> supplier)
+    {
+        return exists() ? this : supplier.get();
+    }
+
     public T extract()
     {
-        if(!exists())
-            throw exception;
+        return extract(() -> { throw exception; });
+    }
 
-        return instance;
+    public T extract(Supplier<T> supplier)
+    {
+        return exists() ? instance : supplier.get();
     }
 }

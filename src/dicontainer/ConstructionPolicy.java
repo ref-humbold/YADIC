@@ -4,8 +4,5 @@ public enum ConstructionPolicy
 {
     CONSTRUCT, SINGLETON;
 
-    public static ConstructionPolicy getDefault()
-    {
-        return CONSTRUCT;
-    }
+    public static final ConstructionPolicy defaultPolicy = CONSTRUCT;
 }

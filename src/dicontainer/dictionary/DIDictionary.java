@@ -13,7 +13,7 @@ public class DIDictionary
     public <T> void addType(Class<T> type)
     {
         validateRegisteredType(type);
-        typesDictionary.insert(type, ConstructionPolicy.getDefault());
+        typesDictionary.insert(type, ConstructionPolicy.defaultPolicy);
     }
 
     public <T> void addType(Class<T> type, ConstructionPolicy policy)
@@ -25,7 +25,7 @@ public class DIDictionary
     public <T> void addType(Class<T> type, Class<? extends T> subtype)
     {
         validateRegisteredType(type);
-        typesDictionary.insert(type, subtype, ConstructionPolicy.getDefault());
+        typesDictionary.insert(type, subtype, ConstructionPolicy.defaultPolicy);
     }
 
     public <T> void addType(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
@@ -50,9 +50,7 @@ public class DIDictionary
 
     public <T> Instance<T> findInstance(Class<T> type)
     {
-        Instance<T> instance = instancesDictionary.get(type);
-
-        return instance.exists() ? instance : typesDictionary.getSingleton(type);
+        return instancesDictionary.get(type).or(() -> typesDictionary.getSingleton(type));
     }
 
     public boolean contains(Class<?> type)

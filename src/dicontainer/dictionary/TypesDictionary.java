@@ -74,7 +74,7 @@ class TypesDictionary
     <T> Subtype<? extends T> get(Class<T> type)
     {
         if(TypesUtils.isAnnotatedType(type) && !subtypes.containsKey(type))
-            insert(type, ConstructionPolicy.getDefault());
+            insert(type, ConstructionPolicy.defaultPolicy);
 
         Subtype<? extends T> mapping = (Subtype<? extends T>)subtypes.get(type);
 
@@ -86,7 +86,7 @@ class TypesDictionary
                     String.format("Abstract type %s has no registered concrete subclass",
                                   type.getName()));
 
-        return new Subtype<>(type, ConstructionPolicy.getDefault());
+        return new Subtype<>(type, ConstructionPolicy.defaultPolicy);
     }
 
     <T> Subtype<? extends T> find(Class<T> type)

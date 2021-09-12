@@ -78,7 +78,7 @@ public class DIDictionaryTest
         Subtype<? extends ClassRegisterSelf> result = testObject.findType(type);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(type);
-        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class DIDictionaryTest
         Subtype<? extends ClassRegisterConcrete> result = testObject.findType(type);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterDerivedFromRegister.class);
-        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
     }
 
     // endregion
@@ -125,7 +125,7 @@ public class DIDictionaryTest
         Throwable throwable = Assertions.catchThrowable(
                 () -> testObject.addType(ClassRegisterConcrete.class,
                                          ClassRegisterDerivedFromRegister.class,
-                                         ConstructionPolicy.getDefault()));
+                                         ConstructionPolicy.defaultPolicy));
         // then
         Assertions.assertThat(throwable).isInstanceOf(AnnotatedTypeRegistrationException.class);
     }
@@ -137,7 +137,7 @@ public class DIDictionaryTest
         Throwable throwable = Assertions.catchThrowable(
                 () -> testObject.addType(ClassRegisterSelf.class,
                                          ClassRegisterDerivedFromSelfRegister.class,
-                                         ConstructionPolicy.getDefault()));
+                                         ConstructionPolicy.defaultPolicy));
         // then
         Assertions.assertThat(throwable).isInstanceOf(AnnotatedTypeRegistrationException.class);
     }
@@ -148,7 +148,7 @@ public class DIDictionaryTest
         // when
         Throwable throwable = Assertions.catchThrowable(
                 () -> testObject.addType(ClassRegisterIncorrectOtherClass.class,
-                                         ConstructionPolicy.getDefault()));
+                                         ConstructionPolicy.defaultPolicy));
         // then
         Assertions.assertThat(throwable).isInstanceOf(NotDerivedTypeException.class);
     }
@@ -159,7 +159,7 @@ public class DIDictionaryTest
         // when
         Throwable throwable = Assertions.catchThrowable(
                 () -> testObject.addType(ClassRegisterAbstractIncorrect.class,
-                                         ConstructionPolicy.getDefault()));
+                                         ConstructionPolicy.defaultPolicy));
         // then
         Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
     }
@@ -170,7 +170,7 @@ public class DIDictionaryTest
         // when
         Throwable throwable = Assertions.catchThrowable(
                 () -> testObject.addType(ClassRegisterSelfAbstractIncorrect.class,
-                                         ConstructionPolicy.getDefault()));
+                                         ConstructionPolicy.defaultPolicy));
         // then
         Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
     }
@@ -269,7 +269,7 @@ public class DIDictionaryTest
         Subtype<?> result = testObject.findType(double.class);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(double.class);
-        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
     }
 
     @Test
@@ -277,14 +277,14 @@ public class DIDictionaryTest
     {
         // given
         testObject.addType(InterfaceBasic.class, ClassBasicAbstract.class,
-                           ConstructionPolicy.getDefault());
+                           ConstructionPolicy.defaultPolicy);
         testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
-                           ConstructionPolicy.getDefault());
+                           ConstructionPolicy.defaultPolicy);
         // when
         Subtype<? extends InterfaceBasic> result = testObject.findType(InterfaceBasic.class);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassBasicInheritsFromAbstract.class);
-        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
     }
 
     @Test
@@ -296,7 +296,7 @@ public class DIDictionaryTest
         Subtype<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(type);
-        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
     }
 
     @Test
@@ -307,7 +307,7 @@ public class DIDictionaryTest
                 testObject.findType(ClassRegisterAbstract.class);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterDerivedFromRegister.class);
-        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
     }
 
     @Test
@@ -332,7 +332,7 @@ public class DIDictionaryTest
         Subtype<? extends ClassRegisterSelf> result = testObject.findType(ClassRegisterSelf.class);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterSelf.class);
-        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
+        Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
     }
 
     @Test

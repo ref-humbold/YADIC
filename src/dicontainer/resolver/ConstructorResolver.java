@@ -32,16 +32,12 @@ class ConstructorResolver
 
     private <T> T resolveType(Class<T> type, Stack<Class<?>> path)
     {
-        Instance<T> instance = resolver.dictionary.findInstance(type);
-
-        if(instance.exists())
-            return instance.extract();
-
-        Class<? extends T> subtype = resolver.dictionary.findType(type).subtype;
-        T object = construct(new TypeConstructors<>(subtype), path);
-        resolver.dictionary.addSingleton(type, object);
-
-        return object;
+        return resolver.dictionary.findInstance(type).extract(() -> {
+            Class<? extends T> subtype = resolver.dictionary.findType(type).subtype;
+            T object = construct(new TypeConstructors<>(subtype), path);
+            resolver.dictionary.addSingleton(type, object);
+            return object;
+        });
     }
 
     private <T> T construct(TypeConstructors<T> constructors, Stack<Class<?>> path)
@@ -50,12 +46,16 @@ class ConstructorResolver
         {
             Instance<T> instance = invoke(constructors.annotatedConstructor, path);
 
-            if(!instance.exists())
+            try
+            {
+                return instance.extract();
+            }
+            catch(Exception e)
+            {
                 throw new NoInstanceCreatedException(String.format(
                         "Dependency constructor could not produce an instance for type %s",
-                        constructors.typename), instance.getException());
-
-            return instance.extract();
+                        constructors.typename), e);
+            }
         }
 
         Instance<T> instance = Instance.none();
