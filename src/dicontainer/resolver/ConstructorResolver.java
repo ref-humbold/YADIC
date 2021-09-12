@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Stack;
 
 import dicontainer.DIException;
-import dicontainer.commons.Instance;
+import dicontainer.dictionary.valuetypes.Instance;
 import dicontainer.resolver.exception.CircularDependenciesException;
 import dicontainer.resolver.exception.MissingDependenciesException;
 import dicontainer.resolver.exception.NoInstanceCreatedException;

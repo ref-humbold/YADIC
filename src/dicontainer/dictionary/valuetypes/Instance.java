@@ -1,4 +1,4 @@
-package dicontainer.commons;
+package dicontainer.dictionary.valuetypes;
 
 import java.util.Objects;
 

@@ -6,17 +6,17 @@ import java.util.Map;
 import dicontainer.ConstructionPolicy;
 import dicontainer.annotation.Register;
 import dicontainer.annotation.SelfRegister;
-import dicontainer.commons.Instance;
-import dicontainer.commons.TypesUtils;
 import dicontainer.dictionary.exception.AbstractTypeException;
 import dicontainer.dictionary.exception.AnnotatedTypeRegistrationException;
 import dicontainer.dictionary.exception.MixingPoliciesException;
 import dicontainer.dictionary.exception.NotDerivedTypeException;
+import dicontainer.dictionary.valuetypes.Instance;
+import dicontainer.dictionary.valuetypes.Subtype;
 import dicontainer.resolver.exception.MissingDependenciesException;
 
 class TypesDictionary
 {
-    private final Map<Class<?>, SubtypeMapping<?>> subtypes = new HashMap<>();
+    private final Map<Class<?>, Subtype<?>> subtypes = new HashMap<>();
     private final Map<Class<?>, Instance<?>> singletons = new HashMap<>();
 
     TypesDictionary()
@@ -32,14 +32,14 @@ class TypesDictionary
         {
             Register annotation = type.getAnnotation(Register.class);
 
-            doInsert(type, new SubtypeMapping<>((Class<? extends T>)annotation.value(),
-                                                annotation.policy()));
+            doInsert(type,
+                     new Subtype<>((Class<? extends T>)annotation.value(), annotation.policy()));
         }
         else if(type.isAnnotationPresent(SelfRegister.class))
         {
             SelfRegister annotation = type.getAnnotation(SelfRegister.class);
 
-            doInsert(type, new SubtypeMapping<>(type, annotation.policy()));
+            doInsert(type, new Subtype<>(type, annotation.policy()));
         }
         else
         {
@@ -47,7 +47,7 @@ class TypesDictionary
                 throw new AbstractTypeException(
                         String.format("Cannot register abstract type %s", type.getName()));
 
-            doInsert(type, new SubtypeMapping<>(type, policy));
+            doInsert(type, new Subtype<>(type, policy));
         }
     }
 
@@ -57,7 +57,7 @@ class TypesDictionary
             throw new AnnotatedTypeRegistrationException(
                     String.format("Cannot register type for annotated type %s", type.getName()));
 
-        doInsert(type, new SubtypeMapping<>(subtype, policy));
+        doInsert(type, new Subtype<>(subtype, policy));
     }
 
     boolean contains(Class<?> type)
@@ -75,12 +75,12 @@ class TypesDictionary
     }
 
     @SuppressWarnings("unchecked")
-    <T> SubtypeMapping<? extends T> get(Class<T> type)
+    <T> Subtype<? extends T> get(Class<T> type)
     {
         if(TypesUtils.isAnnotatedType(type) && !subtypes.containsKey(type))
             insert(type, ConstructionPolicy.getDefault());
 
-        SubtypeMapping<? extends T> mapping = (SubtypeMapping<? extends T>)subtypes.get(type);
+        Subtype<? extends T> mapping = (Subtype<? extends T>)subtypes.get(type);
 
         if(mapping != null)
             return mapping;
@@ -90,12 +90,12 @@ class TypesDictionary
                     String.format("Abstract type %s has no registered concrete subclass",
                                   type.getName()));
 
-        return new SubtypeMapping<>(type, ConstructionPolicy.getDefault());
+        return new Subtype<>(type, ConstructionPolicy.getDefault());
     }
 
-    <T> SubtypeMapping<? extends T> find(Class<T> type)
+    <T> Subtype<? extends T> find(Class<T> type)
     {
-        SubtypeMapping<? extends T> mapping = get(type);
+        Subtype<? extends T> mapping = get(type);
         ConstructionPolicy desiredPolicy = mapping.policy;
         Class<?> supertype = type;
 
@@ -116,7 +116,7 @@ class TypesDictionary
 
     <T> void insertSingleton(Class<T> type, T instance)
     {
-        SubtypeMapping<?> mapping = subtypes.get(type);
+        Subtype<?> mapping = subtypes.get(type);
 
         if(mapping == null || mapping.policy != ConstructionPolicy.SINGLETON)
             return;
@@ -130,7 +130,7 @@ class TypesDictionary
         return (Instance<T>)Instance.cast(singletons.get(type));
     }
 
-    private <T> void doInsert(Class<T> type, SubtypeMapping<? extends T> mapping)
+    private <T> void doInsert(Class<T> type, Subtype<? extends T> mapping)
     {
         subtypes.put(type, mapping);
         singletons.remove(type);

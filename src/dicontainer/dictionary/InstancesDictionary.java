@@ -3,8 +3,7 @@ package dicontainer.dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
-import dicontainer.commons.Instance;
-import dicontainer.commons.TypesUtils;
+import dicontainer.dictionary.valuetypes.Instance;
 
 class InstancesDictionary
 {

@@ -1,9 +1,9 @@
 package dicontainer.dictionary;
 
 import dicontainer.ConstructionPolicy;
-import dicontainer.commons.Instance;
-import dicontainer.commons.TypesUtils;
 import dicontainer.dictionary.exception.RegistrationException;
+import dicontainer.dictionary.valuetypes.Instance;
+import dicontainer.dictionary.valuetypes.Subtype;
 
 public class DIDictionary
 {
@@ -40,10 +40,10 @@ public class DIDictionary
         instancesDictionary.insert(type, instance);
     }
 
-    public <T> SubtypeMapping<? extends T> findType(Class<T> type)
+    public <T> Subtype<? extends T> findType(Class<T> type)
     {
         if(instancesDictionary.contains(type))
-            return new SubtypeMapping<>(type, ConstructionPolicy.SINGLETON);
+            return new Subtype<>(type, ConstructionPolicy.SINGLETON);
 
         return typesDictionary.find(type);
     }

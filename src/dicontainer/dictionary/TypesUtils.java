@@ -1,13 +1,14 @@
-package dicontainer.commons;
+package dicontainer.dictionary;
 
 import java.lang.reflect.Modifier;
 
 import dicontainer.annotation.Register;
 import dicontainer.annotation.SelfRegister;
+import dicontainer.dictionary.valuetypes.NullInstanceException;
 
-public final class TypesUtils
+final class TypesUtils
 {
-    public static boolean isAbstractReferenceType(Class<?> type)
+    static boolean isAbstractReferenceType(Class<?> type)
     {
         if(type.isPrimitive())
             return false;
@@ -15,13 +16,13 @@ public final class TypesUtils
         return type.isInterface() || Modifier.isAbstract(type.getModifiers());
     }
 
-    public static boolean isAnnotatedType(Class<?> type)
+    static boolean isAnnotatedType(Class<?> type)
     {
         return type.isAnnotationPresent(Register.class) || type.isAnnotationPresent(
                 SelfRegister.class);
     }
 
-    public static <T> void requireNonNull(T instance)
+    static <T> void requireNonNull(T instance)
     {
         if(instance == null)
             throw new NullInstanceException("Instance is null");

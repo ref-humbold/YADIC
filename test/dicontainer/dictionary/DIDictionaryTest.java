@@ -11,13 +11,14 @@ import dicontainer.auxiliary.basic.ClassBasicInheritsFromAbstract;
 import dicontainer.auxiliary.basic.ClassBasicStringGetter;
 import dicontainer.auxiliary.basic.InterfaceBasic;
 import dicontainer.auxiliary.register.*;
-import dicontainer.commons.Instance;
-import dicontainer.commons.NullInstanceException;
 import dicontainer.dictionary.exception.AbstractTypeException;
 import dicontainer.dictionary.exception.AnnotatedTypeRegistrationException;
 import dicontainer.dictionary.exception.MixingPoliciesException;
 import dicontainer.dictionary.exception.NotDerivedTypeException;
 import dicontainer.dictionary.exception.RegistrationException;
+import dicontainer.dictionary.valuetypes.Instance;
+import dicontainer.dictionary.valuetypes.NullInstanceException;
+import dicontainer.dictionary.valuetypes.Subtype;
 
 public class DIDictionaryTest
 {
@@ -46,7 +47,7 @@ public class DIDictionaryTest
         // when
         testObject.addType(type, subtype, ConstructionPolicy.SINGLETON);
 
-        SubtypeMapping<? extends InterfaceBasic> result = testObject.findType(type);
+        Subtype<? extends InterfaceBasic> result = testObject.findType(type);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(subtype);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.SINGLETON);
@@ -60,7 +61,7 @@ public class DIDictionaryTest
         // when
         testObject.addType(type, ConstructionPolicy.SINGLETON);
 
-        SubtypeMapping<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
+        Subtype<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(type);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.SINGLETON);
@@ -74,7 +75,7 @@ public class DIDictionaryTest
         // when
         testObject.addType(type);
 
-        SubtypeMapping<? extends ClassRegisterSelf> result = testObject.findType(type);
+        Subtype<? extends ClassRegisterSelf> result = testObject.findType(type);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(type);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
@@ -88,7 +89,7 @@ public class DIDictionaryTest
         // when
         testObject.addType(type);
 
-        SubtypeMapping<? extends ClassRegisterConcrete> result = testObject.findType(type);
+        Subtype<? extends ClassRegisterConcrete> result = testObject.findType(type);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterDerivedFromRegister.class);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
@@ -265,7 +266,7 @@ public class DIDictionaryTest
     public void findType_WhenPrimitive_ThenFoundMapping()
     {
         // when
-        SubtypeMapping<?> result = testObject.findType(double.class);
+        Subtype<?> result = testObject.findType(double.class);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(double.class);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
@@ -280,7 +281,7 @@ public class DIDictionaryTest
         testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
                            ConstructionPolicy.getDefault());
         // when
-        SubtypeMapping<? extends InterfaceBasic> result = testObject.findType(InterfaceBasic.class);
+        Subtype<? extends InterfaceBasic> result = testObject.findType(InterfaceBasic.class);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassBasicInheritsFromAbstract.class);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
@@ -292,7 +293,7 @@ public class DIDictionaryTest
         // given
         Class<ClassBasicInheritsFromAbstract> type = ClassBasicInheritsFromAbstract.class;
         // when
-        SubtypeMapping<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
+        Subtype<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(type);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
@@ -302,7 +303,7 @@ public class DIDictionaryTest
     public void findType_WhenAnnotatedClass_ThenMappingFromAnnotation()
     {
         // when
-        SubtypeMapping<? extends ClassRegisterAbstract> result =
+        Subtype<? extends ClassRegisterAbstract> result =
                 testObject.findType(ClassRegisterAbstract.class);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterDerivedFromRegister.class);
@@ -328,8 +329,7 @@ public class DIDictionaryTest
     public void findType_WhenSelfRegisterClass_ThenMapping()
     {
         // when
-        SubtypeMapping<? extends ClassRegisterSelf> result =
-                testObject.findType(ClassRegisterSelf.class);
+        Subtype<? extends ClassRegisterSelf> result = testObject.findType(ClassRegisterSelf.class);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterSelf.class);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.getDefault());
@@ -343,7 +343,7 @@ public class DIDictionaryTest
 
         testObject.addInstance(type, new ClassBasicInheritsFromAbstract());
         // when
-        SubtypeMapping<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
+        Subtype<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
         // then
         Assertions.assertThat(result.subtype).isEqualTo(type);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.SINGLETON);
