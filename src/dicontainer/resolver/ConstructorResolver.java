@@ -95,10 +95,10 @@ class ConstructorResolver
 
         try
         {
-            return Instance.make(constructor.newInstance(parameters.toArray()),
-                                 new NoInstanceCreatedException(String.format(
-                                         "Constructor could not produce an instance of type %s",
-                                         typename)));
+            return Instance.of(constructor.newInstance(parameters.toArray()),
+                               new NoInstanceCreatedException(String.format(
+                                       "Constructor could not produce an instance of type %s",
+                                       typename)));
         }
         catch(Exception e)
         {

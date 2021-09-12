@@ -9,14 +9,10 @@ class InstancesDictionary
 {
     private final Map<Class<?>, Instance<?>> instances = new HashMap<>();
 
-    InstancesDictionary()
-    {
-    }
-
     <T> void insert(Class<T> type, T instance)
     {
         TypesUtils.requireNonNull(instance);
-        instances.put(type, Instance.make(instance));
+        instances.put(type, Instance.of(instance));
     }
 
     boolean contains(Class<?> type)
@@ -24,9 +20,8 @@ class InstancesDictionary
         return instances.containsKey(type);
     }
 
-    @SuppressWarnings("unchecked")
     <T> Instance<T> get(Class<T> type)
     {
-        return Instance.cast((Instance<T>)instances.get(type));
+        return Instance.cast(instances.get(type));
     }
 }

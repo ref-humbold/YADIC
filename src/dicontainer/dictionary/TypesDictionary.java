@@ -19,10 +19,6 @@ class TypesDictionary
     private final Map<Class<?>, Subtype<?>> subtypes = new HashMap<>();
     private final Map<Class<?>, Instance<?>> singletons = new HashMap<>();
 
-    TypesDictionary()
-    {
-    }
-
     @SuppressWarnings("unchecked")
     <T> void insert(Class<T> type, ConstructionPolicy policy)
     {
@@ -121,13 +117,12 @@ class TypesDictionary
         if(mapping == null || mapping.policy != ConstructionPolicy.SINGLETON)
             return;
 
-        singletons.putIfAbsent(type, Instance.make(instance));
+        singletons.putIfAbsent(type, Instance.of(instance));
     }
 
-    @SuppressWarnings("unchecked")
     <T> Instance<T> getSingleton(Class<T> type)
     {
-        return (Instance<T>)Instance.cast(singletons.get(type));
+        return Instance.cast(singletons.get(type));
     }
 
     private <T> void doInsert(Class<T> type, Subtype<? extends T> mapping)

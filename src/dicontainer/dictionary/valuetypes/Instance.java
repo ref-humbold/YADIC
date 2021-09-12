@@ -24,19 +24,20 @@ public final class Instance<T>
         return new Instance<>(null, exception);
     }
 
-    public static <T> Instance<T> make(T instance)
+    public static <T> Instance<T> of(T instance)
     {
         return instance == null ? none() : new Instance<>(instance, null);
     }
 
-    public static <T> Instance<T> make(T instance, RuntimeException exception)
+    public static <T> Instance<T> of(T instance, RuntimeException exception)
     {
         return instance == null ? none(exception) : new Instance<>(instance, null);
     }
 
-    public static <T> Instance<T> cast(Instance<T> mapping)
+    @SuppressWarnings("unchecked")
+    public static <T> Instance<T> cast(Instance<?> mapping)
     {
-        return mapping == null ? none() : mapping;
+        return mapping == null ? none() : (Instance<T>)mapping;
     }
 
     public RuntimeException getException()
