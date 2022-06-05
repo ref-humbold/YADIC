@@ -36,8 +36,8 @@ General:
 
 ## How to build?
 
-DI\_Container can be built with **Apache ANT** using **Apache Ivy** to resolve all dependencies. Ivy
-and all libraries are downloaded during build, so make sure your Internet connection is working!
+DI\_Container can be built with **Apache ANT** using **Apache Ivy** to resolve all dependencies.
+Ivy and all libraries are downloaded during build, so make sure your Internet connection is working!
 
 Possible ANT targets are:
 
