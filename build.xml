@@ -5,23 +5,26 @@
   </tstamp>
 
   <property name="major.version" value="3" />
-  <property name="minor.version" value="0" />
+  <property name="minor.version" value="1" />
   <property name="spec.version" value="${major.version}.${minor.version}" />
   <property name="jar.version" value="${major.version}.${minor.version}.${date.version}" />
   <property name="vendor" value="Rafał Kaleta" />
 
   <property name="main.package" value="dicontainer" />
-  <property name="src.dir" value="src" />
-  <property name="test.dir" value="test" />
-  <property name="build.dir" value="bin" />
-  <property name="dist.dir" value="dist" />
-  <property name="junit.output.dir" value="junit" />
+  <property name="src.dir" value="src/main/java" />
+  <property name="resources.dir" value="src/main/resources" />
+  <property name="test.dir" value="src/test/java" />
+  <property name="test.resources.dir" value="src/test/resources" />
+  <property name="ant.output.dir" value="antBuild" />
+  <property name="build.dir" value="${ant.output.dir}/bin" />
+  <property name="dist.dir" value="${ant.output.dir}/dist" />
+  <property name="junit.output.dir" value="${ant.output.dir}/junit" />
   <property name="junit.result.dir" value="${junit.output.dir}/result" />
   <property name="junit.report.dir" value="${junit.output.dir}/report" />
-  <property name="javadoc.output.dir" value="docs" />
+  <property name="javadoc.output.dir" value="${ant.output.dir}/docs" />
   <property name="jar.file" value="${main.package}-${jar.version}.jar" />
 
-  <property name="ivy.lib.dir" value="lib" />
+  <property name="ivy.lib.dir" value="ivyLib" />
   <property name="ivy.install.version" value="2.5.0" />
 
   <path id="project.classpath">
@@ -47,17 +50,14 @@
   </target>
 
   <target name="clean">
-    <delete dir="${build.dir}" />
-    <delete dir="${dist.dir}" />
-    <delete dir="${junit.output.dir}" />
-    <delete dir="${javadoc.output.dir}" />
+    <delete dir="${ant.output.dir}" />
   </target>
 
   <target name="init">
     <mkdir dir="${build.dir}" />
-    <copy todir="${build.dir}" includeemptydirs="false">
-      <fileset dir="${src.dir}" excludes="**/*.java" />
-      <fileset dir="${test.dir}" excludes="**/*.java" />
+    <copy includeemptydirs="false" todir="${build.dir}">
+      <fileset dir="${resources.dir}" erroronmissingdir="false" />
+      <fileset dir="${test.resources.dir}" erroronmissingdir="false" />
     </copy>
   </target>
 
@@ -110,15 +110,13 @@
 
   <target name="build" depends="jar" />
 
-  <target name="rebuild" depends="resolve, build" />
-
   <target name="main" depends="build, test" />
 
   <target name="all" depends="resolve, main" />
 
-  <target name="refresh" depends="clean, build" />
+  <target name="rebuild" depends="clean, build" />
 
-  <target name="refresh-main" depends="clean, main" />
+  <target name="rebuild-main" depends="clean, main" />
 
-  <target name="refresh-all" depends="clean, all" />
+  <target name="rebuild-all" depends="clean, all" />
 </project>
