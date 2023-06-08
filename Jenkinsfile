@@ -5,6 +5,7 @@ pipeline {
 
   parameters {
     booleanParam(name: "archive", description: "Should artifacts be archived?", defaultValue: false)
+    booleanParam(name: "javadoc", description: "Should generate Javadoc?", defaultValue: false)
   }
 
   options {
@@ -66,6 +67,13 @@ pipeline {
     }
 
     stage("Javadoc") {
+      when {
+        beforeAgent true
+        expression {
+          params.javadoc
+        }
+      }
+
       steps {
         echo "#INFO: Publish Javadoc"
         withAnt(installation: "Ant", jdk: "Open JDK") {
