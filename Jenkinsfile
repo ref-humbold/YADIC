@@ -27,7 +27,7 @@ pipeline {
     stage("Build") {
       steps {
         echo "#INFO: Building project"
-        withAnt("Ant", "Open JDK") {
+        withAnt(installation: "Ant", jdk: "Open JDK") {
           sh "ant main"
         }
       }
@@ -36,7 +36,7 @@ pipeline {
     stage("Unit tests") {
       steps {
         echo "#INFO: Running unit tests"
-        withAnt("Ant", "Open JDK") {
+        withAnt(installation: "Ant", jdk: "Open JDK") {
           sh "ant test"
         }
       }
@@ -68,14 +68,14 @@ pipeline {
     stage("Javadoc") {
       steps {
         echo "#INFO: Publish Javadoc"
-        withAnt("Ant", "Open JDK") {
+        withAnt(installation: "Ant", jdk: "Open JDK") {
           sh "ant docs"
         }
       }
 
       post {
         always {
-          javadoc("antBuild/docs")
+          javadoc(javadocDir: "antBuild/docs", keepAll: false)
         }
       }
     }
