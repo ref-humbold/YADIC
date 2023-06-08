@@ -70,7 +70,7 @@
     </javac>
   </target>
 
-  <target name="jar" depends="compile">
+  <target name="jar">
     <jar destfile="${dist.dir}/${jar.file}" basedir="${build.dir}" excludes="**/*Test.class">
       <manifest>
         <attribute name="Built-By" value="${vendor}" />
@@ -108,11 +108,11 @@
     </javadoc>
   </target>
 
-  <target name="build" depends="jar" />
+  <target name="build" depends="compile, jar" />
 
-  <target name="main" depends="build, test" />
+  <target name="main" depends="resolve, build" />
 
-  <target name="all" depends="resolve, main" />
+  <target name="all" depends="main, test" />
 
   <target name="rebuild" depends="clean, build" />
 
