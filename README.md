@@ -43,12 +43,12 @@ Possible ANT targets are:
 
 + `ant`, `ant all` - resolve dependencies & compile source files & create jar & run all tests
 + `ant build` - compile source files & create jar
-+ `ant main` - compile source files & create jar & run all tests
++ `ant main` - resolve dependencies & compile source files & create jar
 + `ant test` - run all tests
 + `ant docs` - generate Javadoc
 + `ant rebuild` - remove additional build files & compile source files & create jar
-+ `ant rebuild-main` - remove additional build files & compile source files & create jar & run all
-  tests
++ `ant rebuild-main` - remove additional build files & resolve dependencies & compile source files &
+  create jar
 + `ant rebuild-all` - remove additional build files & resolve dependencies & compile source files &
   create jar & run all tests
 
