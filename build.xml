@@ -62,6 +62,7 @@
   </target>
 
   <target name="compile" depends="init">
+    <echo level="info" message="Java version is ${ant.java.version}" />
     <javac destdir="${build.dir}" includeantruntime="false">
       <src path="${src.dir}" />
       <src path="${test.dir}" />

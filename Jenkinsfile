@@ -8,6 +8,12 @@ pipeline {
     booleanParam(name: "javadoc", description: "Should generate Javadoc?", defaultValue: false)
   }
 
+  environment {
+    JDK_NAME = "Open JDK"
+    ANT_NAME = "Ant"
+    ANT_OUTPUT_DIR = "antBuild"
+  }
+
   options {
     skipDefaultCheckout(true)
     timeout(time: 20, unit: "MINUTES")
@@ -28,7 +34,7 @@ pipeline {
     stage("Build") {
       steps {
         echo "#INFO: Building project"
-        withAnt(installation: "Ant", jdk: "Open JDK") {
+        withAnt(installation: "${env.ANT_NAME}", jdk: "${env.JDK_NAME}") {
           sh "ant main"
         }
       }
@@ -37,7 +43,7 @@ pipeline {
     stage("Unit tests") {
       steps {
         echo "#INFO: Running unit tests"
-        withAnt(installation: "Ant", jdk: "Open JDK") {
+        withAnt(installation: "${env.ANT_NAME}", jdk: "${env.JDK_NAME}") {
           sh "ant test"
         }
       }
@@ -45,7 +51,7 @@ pipeline {
       post {
         always {
           junit(
-            testResults: "antBuild/junit/result/TEST-*.xml",
+            testResults: "${env.ANT_OUTPUT_DIR}/junit/result/TEST-*.xml",
             healthScaleFactor: 1.0,
             skipPublishingChecks: true
           )
@@ -62,7 +68,7 @@ pipeline {
       }
 
       steps {
-        archiveArtifacts(artifacts: "antBuild/dist/*.jar", onlyIfSuccessful: true)
+        archiveArtifacts(artifacts: "${env.ANT_OUTPUT_DIR}/dist/*.jar", onlyIfSuccessful: true)
       }
     }
 
@@ -76,14 +82,14 @@ pipeline {
 
       steps {
         echo "#INFO: Publish Javadoc"
-        withAnt(installation: "Ant", jdk: "Open JDK") {
+        withAnt(installation: "${env.ANT_NAME}", jdk: "${env.JDK_NAME}") {
           sh "ant docs"
         }
       }
 
       post {
         always {
-          javadoc(javadocDir: "antBuild/docs", keepAll: false)
+          javadoc(javadocDir: "${env.ANT_OUTPUT_DIR}/docs", keepAll: false)
         }
       }
     }

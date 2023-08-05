@@ -21,7 +21,7 @@ General:
 + Operating system \
   *((Debian testing))*
 + [Java](https://www.oracle.com/technetwork/java/javase/overview/index.html) \
-  *((APT package `openjdk-11-jdk`, version 11 SE))*
+  *((APT package `openjdk-17-jdk`, version 17 SE))*
 + [Apache ANT](http://ant.apache.org/) \
   *((APT package `ant`, version 1.10.+))*
 
