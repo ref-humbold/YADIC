@@ -12,7 +12,7 @@ jobs:
       - checkout
       - run:
           name: APT Install Java
-          command: sudo apt-get update && sudo apt-get install openjdk-11-jdk
+          command: sudo apt-get update && sudo apt-get install openjdk-17-jdk
       - run:
           name: APT Install Apache ANT
           command: sudo apt-get update && sudo apt-get install ant
