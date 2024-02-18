@@ -1,9 +1,9 @@
 package dicontainer.resolver.exception;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 
 public class NoInstanceCreatedException
-        extends DIException
+        extends DiException
 {
     private static final long serialVersionUID = 810031827582865450L;
 

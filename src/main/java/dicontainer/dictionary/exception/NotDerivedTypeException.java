@@ -1,9 +1,9 @@
 package dicontainer.dictionary.exception;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 
 public class NotDerivedTypeException
-        extends DIException
+        extends DiException
 {
     private static final long serialVersionUID = -3180961583302361880L;
 

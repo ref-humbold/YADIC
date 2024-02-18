@@ -1,9 +1,9 @@
 package dicontainer.resolver.exception;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 
 public class MissingDependenciesException
-        extends DIException
+        extends DiException
 {
     private static final long serialVersionUID = 7265031467533657162L;
 

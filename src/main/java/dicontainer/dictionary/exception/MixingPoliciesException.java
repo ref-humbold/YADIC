@@ -1,9 +1,9 @@
 package dicontainer.dictionary.exception;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 
 public class MixingPoliciesException
-        extends DIException
+        extends DiException
 {
     private static final long serialVersionUID = 7409446718002438943L;
 

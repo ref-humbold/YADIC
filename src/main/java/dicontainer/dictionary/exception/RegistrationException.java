@@ -1,9 +1,9 @@
 package dicontainer.dictionary.exception;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 
 public class RegistrationException
-        extends DIException
+        extends DiException
 {
     private static final long serialVersionUID = 2937758897207647321L;
 

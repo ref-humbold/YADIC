@@ -18,14 +18,14 @@ import dicontainer.resolver.exception.IncorrectDependencySetterException;
 import dicontainer.resolver.exception.MultipleAnnotatedConstructorsException;
 import dicontainer.resolver.exception.NoSuitableConstructorException;
 
-public class DIContainerTest
+public class DiContainerTest
 {
-    private DIContainer testObject;
+    private DiContainer testObject;
 
     @BeforeEach
     public void setUp()
     {
-        testObject = new DIContainer();
+        testObject = new DiContainer();
     }
 
     @AfterEach

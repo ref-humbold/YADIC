@@ -5,7 +5,7 @@ import dicontainer.dictionary.exception.RegistrationException;
 import dicontainer.dictionary.valuetypes.Instance;
 import dicontainer.dictionary.valuetypes.Subtype;
 
-public class DIDictionary
+public class DiDictionary
 {
     private final TypesDictionary typesDictionary = new TypesDictionary();
     private final InstancesDictionary instancesDictionary = new InstancesDictionary();

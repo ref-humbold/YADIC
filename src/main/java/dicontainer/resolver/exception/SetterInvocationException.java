@@ -1,9 +1,9 @@
 package dicontainer.resolver.exception;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 
 public class SetterInvocationException
-        extends DIException
+        extends DiException
 {
     private static final long serialVersionUID = 3175636363176361357L;
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 import dicontainer.dictionary.valuetypes.Instance;
 import dicontainer.resolver.exception.CircularDependenciesException;
 import dicontainer.resolver.exception.MissingDependenciesException;
@@ -13,9 +13,9 @@ import dicontainer.resolver.exception.NoInstanceCreatedException;
 
 class ConstructorResolver
 {
-    private final DIResolver resolver;
+    private final DiResolver resolver;
 
-    ConstructorResolver(DIResolver resolver)
+    ConstructorResolver(DiResolver resolver)
     {
         this.resolver = resolver;
     }
@@ -65,7 +65,7 @@ class ConstructorResolver
             {
                 instance = invoke(constructors.parameterizedConstructors.get(i), path);
             }
-            catch(DIException e)
+            catch(DiException e)
             {
                 instance = Instance.none(e);
             }

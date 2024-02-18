@@ -1,9 +1,9 @@
 package dicontainer.dictionary.exception;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 
 public class AbstractTypeException
-        extends DIException
+        extends DiException
 {
     private static final long serialVersionUID = 5573956461991224741L;
 

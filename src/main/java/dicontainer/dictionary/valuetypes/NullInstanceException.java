@@ -1,9 +1,9 @@
 package dicontainer.dictionary.valuetypes;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 
 public class NullInstanceException
-        extends DIException
+        extends DiException
 {
     private static final long serialVersionUID = -2453276089439956670L;
 

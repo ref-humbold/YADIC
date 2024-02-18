@@ -1,9 +1,9 @@
 package dicontainer.dictionary.exception;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 
 public class AnnotatedTypeRegistrationException
-        extends DIException
+        extends DiException
 {
     private static final long serialVersionUID = 4583310501511173747L;
 

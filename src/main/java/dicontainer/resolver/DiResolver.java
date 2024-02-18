@@ -2,15 +2,15 @@ package dicontainer.resolver;
 
 import java.util.Stack;
 
-import dicontainer.dictionary.DIDictionary;
+import dicontainer.dictionary.DiDictionary;
 
-public class DIResolver
+public class DiResolver
 {
-    final DIDictionary dictionary;
+    final DiDictionary dictionary;
     private final ConstructorResolver constructorResolver = new ConstructorResolver(this);
     private final SetterResolver setterResolver = new SetterResolver(this);
 
-    public DIResolver(DIDictionary dictionary)
+    public DiResolver(DiDictionary dictionary)
     {
         this.dictionary = dictionary;
     }

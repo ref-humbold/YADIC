@@ -1,9 +1,9 @@
 package dicontainer.resolver.exception;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 
 public class IncorrectDependencySetterException
-        extends DIException
+        extends DiException
 {
     private static final long serialVersionUID = 3707239480399538423L;
 

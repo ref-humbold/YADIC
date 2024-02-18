@@ -12,21 +12,21 @@ import dicontainer.auxiliary.constructor.*;
 import dicontainer.auxiliary.diamond.*;
 import dicontainer.auxiliary.register.*;
 import dicontainer.auxiliary.setter.*;
-import dicontainer.dictionary.DIDictionary;
+import dicontainer.dictionary.DiDictionary;
 import dicontainer.dictionary.exception.AbstractTypeException;
 import dicontainer.dictionary.exception.NotDerivedTypeException;
 import dicontainer.resolver.exception.*;
 
-public class DIResolverTest
+public class DiResolverTest
 {
-    private DIDictionary dictionary;
-    private DIResolver testObject;
+    private DiDictionary dictionary;
+    private DiResolver testObject;
 
     @BeforeEach
     public void setUp()
     {
-        dictionary = new DIDictionary();
-        testObject = new DIResolver(dictionary);
+        dictionary = new DiDictionary();
+        testObject = new DiResolver(dictionary);
     }
 
     @AfterEach

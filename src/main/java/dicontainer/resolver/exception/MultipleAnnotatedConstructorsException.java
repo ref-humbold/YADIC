@@ -1,9 +1,9 @@
 package dicontainer.resolver.exception;
 
-import dicontainer.DIException;
+import dicontainer.DiException;
 
 public class MultipleAnnotatedConstructorsException
-        extends DIException
+        extends DiException
 {
     private static final long serialVersionUID = 9149838622398855405L;
 

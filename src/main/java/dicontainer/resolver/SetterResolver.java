@@ -15,9 +15,9 @@ import dicontainer.resolver.exception.SetterInvocationException;
 class SetterResolver
 {
     private static final String SETTER_NAME_REGEX = "^set[a-z]?[A-Z](\\w|\\d)*";
-    private final DIResolver resolver;
+    private final DiResolver resolver;
 
-    SetterResolver(DIResolver resolver)
+    SetterResolver(DiResolver resolver)
     {
         this.resolver = resolver;
     }
@@ -79,6 +79,6 @@ class SetterResolver
     private boolean isSetter(Method method)
     {
         return method.getReturnType() == void.class && method.getName().matches(SETTER_NAME_REGEX)
-                && method.getParameterCount() == 1;
+                       && method.getParameterCount() == 1;
     }
 }

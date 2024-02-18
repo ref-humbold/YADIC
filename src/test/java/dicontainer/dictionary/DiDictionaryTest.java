@@ -20,14 +20,14 @@ import dicontainer.dictionary.valuetypes.Instance;
 import dicontainer.dictionary.valuetypes.NullInstanceException;
 import dicontainer.dictionary.valuetypes.Subtype;
 
-public class DIDictionaryTest
+public class DiDictionaryTest
 {
-    private DIDictionary testObject;
+    private DiDictionary testObject;
 
     @BeforeEach
     public void setUp()
     {
-        testObject = new DIDictionary();
+        testObject = new DiDictionary();
     }
 
     @AfterEach
