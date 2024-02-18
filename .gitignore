@@ -1,6 +1,9 @@
 antBuild/
 ivyLib/
 
+.gradle
+build/
+
 .vscode
 *.code-workspace
 

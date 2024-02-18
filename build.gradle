@@ -1,0 +1,56 @@
+plugins {
+  id 'java-library'
+}
+
+ext {
+  majorVersion = 4
+  minorVersion = 0
+  dateVersion = new Date().format('yyMMdd')
+  specVersion = "${majorVersion}.${minorVersion}"
+  jarVersion = "${majorVersion}.${minorVersion}.${dateVersion}"
+  vendor = 'Rafał Kaleta'
+  mainPackage = 'dicontainer'
+}
+
+version = project.jarVersion
+archivesBaseName = project.mainPackage
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.+'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.+'
+  testImplementation 'org.junit.platform:junit-platform-commons:1.+'
+  testImplementation 'org.junit.platform:junit-platform-engine:1.+'
+  testImplementation 'org.junit.platform:junit-platform-launcher:1.+'
+  testImplementation 'org.assertj:assertj-core:3.+'
+}
+
+tasks.jar {
+  manifest {
+    attributes(
+        'Built-By': project.vendor,
+        'Specification-Title': 'Dependency Injection Container',
+        'Specification-Version': project.specVersion,
+        'Specification-Vendor': project.vendor,
+        'Implementation-Title': project.mainPackage,
+        'Implementation-Version': project.jarVersion,
+        'Implementation-Vendor': project.vendor
+    )
+  }
+}
+
+tasks.test {
+  useJUnitPlatform()
+}
+
+task rebuild {
+  group 'build'
+  description 'Deletes the build directory, assembles and tests this project.'
+  dependsOn 'clean', 'build'
+  tasks.findByName('build').mustRunAfter('clean')
+}
+
+javadoc.options.addStringOption('Xdoclint:none', '-quiet')
