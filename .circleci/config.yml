@@ -21,13 +21,13 @@ jobs:
           command: ./ci/install_ant_junit5.sh
       - run:
           name: Download Dependencies
-          command: ant -lib ./lib resolve
+          command: ant resolve
       - run:
           name: Build
-          command: ant -lib ./lib build
+          command: ant jar
       - run:
           name: Test
-          command: ant -lib ./lib test
+          command: ant test
       - store_test_results:
           path: ./junit/result
 

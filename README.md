@@ -34,24 +34,40 @@ General:
 
 -----
 
-## How to build?
+## How to build with ANT?
 
 DI\_Container can be built with **Apache ANT** using **Apache Ivy** to resolve all dependencies.
-Ivy and all libraries are downloaded during build, so make sure your Internet connection is working!
+Ivy itself and all dependencies are downloaded during build, so make sure your Internet
+connection is working!
 
 Possible ANT targets are:
 
-+ `ant`, `ant all` - resolve dependencies & compile source files & create jar & run all tests
-+ `ant build` - compile source files & create jar
-+ `ant main` - resolve dependencies & compile source files & create jar
++ `ant`, `ant build` - resolve dependencies & compile source files & create jar & run all tests
++ `ant resolve` - resolve dependencies
++ `ant jar` - compile source files & create jar
 + `ant test` - run all tests
 + `ant docs` - generate Javadoc
-+ `ant rebuild` - remove additional build files & compile source files & create jar
-+ `ant rebuild-main` - remove additional build files & resolve dependencies & compile source files &
-  create jar
-+ `ant rebuild-all` - remove additional build files & resolve dependencies & compile source files &
++ `ant clean` - remove additional build files
++ `ant rebuild` - remove additional build files & resolve dependencies & compile source files &
+  create jar & run all tests
+
+## How to build with Gradle?
+
+DI\_Container can be built with **Gradle**. All dependencies are downloaded during build, so
+make sure your Internet connection is working!
+
+Possible Gradle tasks are:
+
++ `gradle build` - resolve dependencies & compile source files & create jar & run all tests
++ `gradle jar` - resolve dependencies & compile source files & create jar
++ `gradle test` - run all tests
++ `gradle javadoc` - generate Javadoc
++ `gradle rebuild` - remove additional build files & resolve dependencies & compile source files &
   create jar & run all tests
 
 ## How to include it?
 
-Simply add the *jar* file from the `dist` directory to your classpath.
+Simply add the *jar* file to your classpath from the directory:
+
++ `antBuild/dist` for ANT builds
++ `build/libs` for Gradle builds

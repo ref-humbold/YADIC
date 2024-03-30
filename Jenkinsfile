@@ -4,8 +4,16 @@ pipeline {
   }
 
   parameters {
-    booleanParam(name: "archive", description: "Should artifacts be archived?", defaultValue: false)
-    booleanParam(name: "javadoc", description: "Should generate Javadoc?", defaultValue: false)
+    booleanParam(
+      name: "archive",
+      description: "Should artifacts be archived?",
+      defaultValue: false
+    )
+    booleanParam(
+      name: "javadoc",
+      description: "Should generate Javadoc?",
+      defaultValue: false
+    )
   }
 
   environment {
@@ -18,7 +26,7 @@ pipeline {
   options {
     skipDefaultCheckout true
     timeout(time: 20, unit: "MINUTES")
-    buildDiscarder(logRotator(numToKeepStr: "10", artifactNumToKeepStr: "5"))
+    buildDiscarder logRotator(numToKeepStr: "10", artifactNumToKeepStr: "5")
     timestamps()
   }
 
@@ -36,7 +44,7 @@ pipeline {
       steps {
         echo "#INFO: Building project"
         // withAnt(installation: "${env.ANT_NAME}", jdk: "${env.JDK_NAME}") {
-        //   sh "ant main"
+        //   sh "ant resolve jar"
         // }
         withGradle {
           sh "gradle jar"
