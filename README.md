@@ -10,24 +10,20 @@ Simple dependency injection container in Java
 
 -----
 
-## Dependencies
+## System requirements
 
-### Standard build & run
-
-> *versions used by the author are in double parentheses and italic*
-
-General:
+> versions used by the author are in italics
 
 + Operating system \
-  *((Debian testing))*
+  *Debian testing*
 + [Java](https://www.oracle.com/technetwork/java/javase/overview/index.html) \
-  *((APT package `openjdk-17-jdk`, version 17 SE))*
+  *APT package `openjdk-17-jdk`, version 17 SE*
 + [Apache ANT](http://ant.apache.org/) \
-  *((APT package `ant`, version 1.10.+))*
+  *APT package `ant`, version 1.10.+*
 
-### Unit testing
+## Dependencies
 
-> libraries are automatically downloaded during build process
+> dependencies are automatically downloaded during build process
 
 + JUnit 5.+
 + AssertJ 3.+
