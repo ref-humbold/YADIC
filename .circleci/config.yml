@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build-and-test:
+  ant-build-and-test:
     working_directory: ~/DI-Container
     docker:
       - image: cimg/base:stable
@@ -29,9 +29,9 @@ jobs:
           name: Test
           command: ant test
       - store_test_results:
-          path: ./junit/result
+          path: ./antBuild/junit/result
 
 workflows:
   main:
     jobs:
-      - build-and-test
+      - ant-build-and-test

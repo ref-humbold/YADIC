@@ -3,7 +3,7 @@ name: GitHub Actions
 on: [ push, pull_request ]
 
 jobs:
-  build-and-test:
+  ant-build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

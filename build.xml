@@ -45,7 +45,7 @@
       <fileset dir="${ivy.lib.dir}" includes="*.jar" />
     </path>
     <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant"
-             classpathref="ivy.lib.path" />
+      classpathref="ivy.lib.path" />
     <ivy:retrieve />
   </target>
 
@@ -73,6 +73,7 @@
 
   <target name="jar" depends="compile" description="Compile source files &amp; Create jar">
     <jar destfile="${dist.dir}/${jar.file}" basedir="${build.dir}" excludes="**/*Test.class">
+      <zipgroupfileset dir="${ivy.lib.dir}" includes="*.jar" />
       <manifest>
         <attribute name="Built-By" value="${vendor}" />
         <attribute name="Specification-Title" value="Dependency Injection Container" />
@@ -104,14 +105,16 @@
 
   <target name="docs" description="Generate Javadoc">
     <mkdir dir="${javadoc.output.dir}" />
-    <javadoc sourcepath="${src.dir}" destdir="${javadoc.output.dir}" access="public">
+    <javadoc sourcepath="${src.dir}" destdir="${javadoc.output.dir}" access="public"
+      classpathref="project.classpath">
       <package name="${main.package}.*" />
+      <arg value="-Xdoclint:none" />
     </javadoc>
   </target>
 
   <target name="build" depends="resolve, jar, test"
-          description="Resolve dependencies &amp; Compile source files &amp; Create jar &amp; Run all tests" />
+    description="Resolve dependencies &amp; Compile source files &amp; Create jar &amp; Run all tests" />
 
   <target name="rebuild" depends="clean, build"
-          description="Remove additional build files &amp; Resolve dependencies &amp; Compile source files &amp; Create jar &amp; Run all tests" />
+    description="Remove additional build files &amp; Resolve dependencies &amp; Compile source files &amp; Create jar &amp; Run all tests" />
 </project>
