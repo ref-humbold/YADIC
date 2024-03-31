@@ -30,8 +30,29 @@ jobs:
           command: ant test
       - store_test_results:
           path: ./antBuild/junit/result
+  gradle-build-and-test:
+    working_directory: ~/DI-Container
+    docker:
+      - image: cimg/base:stable
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          name: APT Install Java
+          command: sudo apt-get update && sudo apt-get install openjdk-17-jdk
+      - run:
+          name: Build
+          command: ./gradlew jar
+      - run:
+          name: Test
+          command: ./gradlew test
+      - store_test_results:
+          path: ./build/test-results/test
 
 workflows:
   main:
     jobs:
       - ant-build-and-test
+      - gradle-build-and-test
