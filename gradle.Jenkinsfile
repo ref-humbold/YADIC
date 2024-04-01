@@ -17,9 +17,6 @@ pipeline {
   }
 
   environment {
-    JDK_NAME = "Open JDK"
-    ANT_NAME = "Ant"
-    ANT_OUTPUT_DIR = "antBuild"
     GRADLE_OUTPUT_DIR = "build"
   }
 
@@ -43,9 +40,6 @@ pipeline {
     stage("Build") {
       steps {
         echo "#INFO: Building project"
-        // withAnt(installation: "${env.ANT_NAME}", jdk: "${env.JDK_NAME}") {
-        //   sh "ant resolve jar"
-        // }
         withGradle {
           sh "gradle jar"
         }
@@ -55,9 +49,6 @@ pipeline {
     stage("Unit tests") {
       steps {
         echo "#INFO: Running unit tests"
-        // withAnt(installation: "${env.ANT_NAME}", jdk: "${env.JDK_NAME}") {
-        //   sh "ant test"
-        // }
         withGradle {
           sh "gradle test"
         }
@@ -66,7 +57,6 @@ pipeline {
       post {
         always {
           junit(
-            // testResults: "${env.ANT_OUTPUT_DIR}/junit/result/TEST-*.xml",
             testResults: "${env.GRADLE_OUTPUT_DIR}/test-results/test/TEST-*.xml",
             healthScaleFactor: 1.0,
             skipPublishingChecks: true
@@ -84,7 +74,6 @@ pipeline {
       }
 
       steps {
-        // archiveArtifacts(artifacts: "${env.ANT_OUTPUT_DIR}/dist/*.jar", onlyIfSuccessful: true)
         archiveArtifacts(artifacts: "${env.GRADLE_OUTPUT_DIR}/libs/*.jar", onlyIfSuccessful: true)
       }
     }
@@ -99,9 +88,6 @@ pipeline {
 
       steps {
         echo "#INFO: Publish Javadoc"
-        // withAnt(installation: "${env.ANT_NAME}", jdk: "${env.JDK_NAME}") {
-        //   sh "ant docs"
-        // }
         withGradle {
           sh "gradle javadoc"
         }
@@ -109,7 +95,6 @@ pipeline {
 
       post {
         always {
-          // javadoc(javadocDir: "${env.ANT_OUTPUT_DIR}/docs", keepAll: false)
           javadoc(javadocDir: "${env.GRADLE_OUTPUT_DIR}/docs/javadoc", keepAll: false)
         }
       }
