@@ -53,4 +53,4 @@ task rebuild {
   tasks.findByName('build').mustRunAfter('clean')
 }
 
-javadoc.options.addStringOption('Xdoclint:none', '-quiet')
+javadoc.options.addStringOption('Xdoclint:none')
