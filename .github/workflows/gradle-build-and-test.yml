@@ -1,9 +1,9 @@
 name: GitHub Actions
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
-  build-and-test:
+  gradle-build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -11,19 +11,11 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install openjdk-17-jdk
           sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
-      - name: APT Install Apache ANT
-        run: sudo apt-get update && sudo apt-get install ant
-      - name: Install JUnit5 for ANT
-        run: ./ci/install_ant_junit5.sh
-      - name: Download Dependencies
-        run: |
-          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-          ant -lib ./lib resolve
       - name: Build
         run: |
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-          ant -lib ./lib build
+          ./gradlew jar
       - name: Test
         run: |
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-          ant -lib ./lib test
+          ./gradlew test

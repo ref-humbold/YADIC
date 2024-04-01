@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="DI-Container" basedir="." default="all">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="DI-Container" basedir="." default="build">
   <tstamp>
     <format property="date.version" pattern="yyMMdd" locale="en,GB" />
   </tstamp>
 
-  <property name="major.version" value="3" />
-  <property name="minor.version" value="1" />
+  <property name="major.version" value="4" />
+  <property name="minor.version" value="0" />
   <property name="spec.version" value="${major.version}.${minor.version}" />
   <property name="jar.version" value="${major.version}.${minor.version}.${date.version}" />
   <property name="vendor" value="Rafał Kaleta" />
@@ -25,7 +25,7 @@
   <property name="jar.file" value="${main.package}-${jar.version}.jar" />
 
   <property name="ivy.lib.dir" value="ivyLib" />
-  <property name="ivy.install.version" value="2.5.0" />
+  <property name="ivy.install.version" value="2.5.2" />
 
   <path id="project.classpath">
     <fileset dir="${basedir}/${ivy.lib.dir}" includes="*.jar" />
@@ -40,16 +40,16 @@
       dest="${ivy.lib.dir}/ivy-${ivy.install.version}.jar" usetimestamp="true" />
   </target>
 
-  <target name="resolve" depends="download-ivy">
+  <target name="resolve" depends="download-ivy" description="Resolve dependencies">
     <path id="ivy.lib.path">
       <fileset dir="${ivy.lib.dir}" includes="*.jar" />
     </path>
     <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant"
-             classpathref="ivy.lib.path" />
+      classpathref="ivy.lib.path" />
     <ivy:retrieve />
   </target>
 
-  <target name="clean">
+  <target name="clean" description="Remove additional build files">
     <delete dir="${ant.output.dir}" />
   </target>
 
@@ -71,8 +71,9 @@
     </javac>
   </target>
 
-  <target name="jar">
+  <target name="jar" depends="compile" description="Compile source files &amp; Create jar">
     <jar destfile="${dist.dir}/${jar.file}" basedir="${build.dir}" excludes="**/*Test.class">
+      <zipgroupfileset dir="${ivy.lib.dir}" includes="*.jar" />
       <manifest>
         <attribute name="Built-By" value="${vendor}" />
         <attribute name="Specification-Title" value="Dependency Injection Container" />
@@ -85,7 +86,7 @@
     </jar>
   </target>
 
-  <target name="test">
+  <target name="test" description="Run all tests">
     <mkdir dir="${junit.result.dir}" />
     <junitlauncher printsummary="true" failureproperty="junit.failure">
       <classpath refid="project.classpath" />
@@ -102,22 +103,18 @@
     <fail if="junit.failure" message="JUnit test(s) failed" />
   </target>
 
-  <target name="docs">
+  <target name="docs" description="Generate Javadoc">
     <mkdir dir="${javadoc.output.dir}" />
-    <javadoc sourcepath="${src.dir}" destdir="${javadoc.output.dir}" access="public">
+    <javadoc sourcepath="${src.dir}" destdir="${javadoc.output.dir}" access="public"
+      classpathref="project.classpath">
       <package name="${main.package}.*" />
+      <arg value="-Xdoclint:none" />
     </javadoc>
   </target>
 
-  <target name="build" depends="compile, jar" />
+  <target name="build" depends="resolve, jar, test"
+    description="Resolve dependencies &amp; Compile source files &amp; Create jar &amp; Run all tests" />
 
-  <target name="main" depends="resolve, build" />
-
-  <target name="all" depends="main, test" />
-
-  <target name="rebuild" depends="clean, build" />
-
-  <target name="rebuild-main" depends="clean, main" />
-
-  <target name="rebuild-all" depends="clean, all" />
+  <target name="rebuild" depends="clean, build"
+    description="Remove additional build files &amp; Resolve dependencies &amp; Compile source files &amp; Create jar &amp; Run all tests" />
 </project>
