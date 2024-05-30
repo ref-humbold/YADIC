@@ -37,7 +37,7 @@ public class DiContainerTest
     // region registerType (single class)
 
     @Test
-    public void register_WhenSingleClass_ThenDifferentInstances()
+    public void registerType_WhenSingleClass_ThenDifferentInstances()
     {
         // given
         testObject.registerType(ClassConstructorDefault.class);
@@ -51,7 +51,7 @@ public class DiContainerTest
     }
 
     @Test
-    public void register_WhenSingleClassAsSingleton_ThenSameInstance()
+    public void registerType_WhenSingleClassAsSingleton_ThenSameInstance()
     {
         // given
         testObject.registerType(ClassConstructorDefault.class, ConstructionPolicy.SINGLETON);
@@ -65,7 +65,7 @@ public class DiContainerTest
     }
 
     @Test
-    public void register_WhenSingleClassChangesSingleton_ThenChangesInstances()
+    public void registerType_WhenSingleClassChangesSingleton_ThenChangesInstances()
     {
         // given 1
         testObject.registerType(ClassConstructorDefault.class, ConstructionPolicy.SINGLETON);
@@ -89,30 +89,24 @@ public class DiContainerTest
     }
 
     @Test
-    public void register_WhenSingleClassIsInterface_ThenAbstractTypeException()
+    public void registerType_WhenSingleClassIsInterface_ThenAbstractTypeException()
     {
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.registerType(InterfaceBasic.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
+        Assertions.assertThatThrownBy(() -> testObject.registerType(InterfaceBasic.class))
+                  .isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
-    public void register_WhenSingleClassIsAbstractClass_ThenAbstractTypeException()
+    public void registerType_WhenSingleClassIsAbstractClass_ThenAbstractTypeException()
     {
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.registerType(ClassBasicAbstract.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
+        Assertions.assertThatThrownBy(() -> testObject.registerType(ClassBasicAbstract.class))
+                  .isInstanceOf(AbstractTypeException.class);
     }
 
     // endregion
     // region registerType [inheritance]
 
     @Test
-    public void register_WhenInheritanceFromInterface_ThenDifferentInstances()
+    public void registerType_WhenInheritanceFromInterface_ThenDifferentInstances()
     {
         // given
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class);
@@ -128,7 +122,7 @@ public class DiContainerTest
     }
 
     @Test
-    public void register_WhenInheritanceFromInterfaceAsSingleton_ThenSameInstances()
+    public void registerType_WhenInheritanceFromInterfaceAsSingleton_ThenSameInstances()
     {
         // given
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
@@ -145,7 +139,7 @@ public class DiContainerTest
     }
 
     @Test
-    public void register_WhenInheritanceFromInterfaceChangesSingleton_ThenChangeInstances()
+    public void registerType_WhenInheritanceFromInterfaceChangesSingleton_ThenChangeInstances()
     {
         // given 1
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
@@ -175,7 +169,7 @@ public class DiContainerTest
     }
 
     @Test
-    public void register_WhenInheritanceFromInterfaceChangesClass_ThenInstanceIsDerived()
+    public void registerType_WhenInheritanceFromInterfaceChangesClass_ThenInstanceIsDerived()
     {
         // given 1
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class);
@@ -196,7 +190,7 @@ public class DiContainerTest
     }
 
     @Test
-    public void register_WhenInheritanceFromAbstractClass_ThenInstanceIsDerived()
+    public void registerType_WhenInheritanceFromAbstractClass_ThenInstanceIsDerived()
     {
         // given
         testObject.registerType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class);
@@ -208,7 +202,7 @@ public class DiContainerTest
     }
 
     @Test
-    public void register_WhenInheritanceFromConcreteClass_ThenInstanceIsDerived()
+    public void registerType_WhenInheritanceFromConcreteClass_ThenInstanceIsDerived()
     {
         // given
         testObject.registerType(ClassConstructorParameterized.class,
@@ -222,7 +216,7 @@ public class DiContainerTest
     }
 
     @Test
-    public void register_WhenTwoStepsOfHierarchy_ThenInstanceIsDerived()
+    public void registerType_WhenTwoStepsOfHierarchy_ThenInstanceIsDerived()
     {
         // given
         testObject.registerType(InterfaceBasic.class, ClassBasicAbstract.class)
@@ -304,12 +298,9 @@ public class DiContainerTest
     @Test
     public void registerInstance_WhenInstanceIsNull_ThenNullInstanceException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
+        Assertions.assertThatThrownBy(
                 () -> testObject.registerInstance(ClassConstructorDefaultAndParameterized.class,
-                                                  null));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(NullInstanceException.class);
+                                                  null)).isInstanceOf(NullInstanceException.class);
     }
 
     // endregion
@@ -318,51 +309,38 @@ public class DiContainerTest
     @Test
     public void resolve_WhenMultipleAnnotatedConstructors_ThenMultipleAnnotatedConstructorsException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.resolve(ClassConstructorMultipleAnnotated.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(MultipleAnnotatedConstructorsException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.resolve(ClassConstructorMultipleAnnotated.class))
+                  .isInstanceOf(MultipleAnnotatedConstructorsException.class);
     }
 
     @Test
     public void resolve_WhenNoPublicConstructors_ThenNoSuitableConstructorException()
     {
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.resolve(ClassConstructorPrivate.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(NoSuitableConstructorException.class);
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassConstructorPrivate.class))
+                  .isInstanceOf(NoSuitableConstructorException.class);
     }
 
     @Test
     public void resolve_WhenDependencySetterHasReturnType_ThenIncorrectDependencySetterException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.resolve(ClassSetterIncorrectReturnType.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.resolve(ClassSetterIncorrectReturnType.class))
+                  .isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
     public void resolve_WhenDependencySetterHasNoParameters_ThenIncorrectDependencySetterException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.resolve(ClassSetterWithoutParameters.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassSetterWithoutParameters.class))
+                  .isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
     public void resolve_WhenDependencySetterNameDoesNotStartWithSet_ThenIncorrectDependencySetterException()
     {
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.resolve(ClassSetterIncorrectName.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassSetterIncorrectName.class))
+                  .isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
@@ -399,11 +377,10 @@ public class DiContainerTest
         // given
         testObject.registerType(InterfaceSetterMultipleParameters.class,
                                 ClassSetterMultipleParameters.class);
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.resolve(InterfaceSetterMultipleParameters.class));
         // then
-        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.resolve(InterfaceSetterMultipleParameters.class))
+                  .isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
@@ -452,10 +429,8 @@ public class DiContainerTest
     {
         // given
         InterfaceSetterMultipleParameters instance = new ClassSetterMultipleParameters();
-        // when
-        Throwable throwable = Assertions.catchThrowable(() -> testObject.buildUp(instance));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
+        Assertions.assertThatThrownBy(() -> testObject.buildUp(instance))
+                  .isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test

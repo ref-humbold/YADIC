@@ -46,11 +46,11 @@ tasks.test {
   useJUnitPlatform()
 }
 
-task rebuild {
+tasks.register('rebuild') {
   group 'build'
   description 'Deletes the build directory, assembles and tests this project.'
   dependsOn 'clean', 'build'
-  tasks.findByName('build').mustRunAfter('clean')
+  tasks.named('build').get().mustRunAfter('clean')
 }
 
 javadoc.options.addStringOption('Xdoclint:none')

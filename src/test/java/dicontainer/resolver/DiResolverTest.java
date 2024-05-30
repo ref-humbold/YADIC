@@ -69,11 +69,9 @@ public class DiResolverTest
     @Test
     public void construct_WhenClassHasParameterConstructorWithoutRegisteredParameter_ThenMissingDependenciesException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassConstructorParameterized.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(MissingDependenciesException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassConstructorParameterized.class))
+                  .isInstanceOf(MissingDependenciesException.class);
     }
 
     @Test
@@ -98,11 +96,9 @@ public class DiResolverTest
         Integer number = 10;
 
         dictionary.addInstance(Integer.class, number);
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassConstructorParameterized.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(MissingDependenciesException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassConstructorParameterized.class))
+                  .isInstanceOf(MissingDependenciesException.class);
     }
 
     @Test
@@ -118,60 +114,45 @@ public class DiResolverTest
     @Test
     public void construct_WhenInterface_ThenMissingDependenciesException()
     {
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.construct(InterfaceBasic.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(MissingDependenciesException.class);
+        Assertions.assertThatThrownBy(() -> testObject.construct(InterfaceBasic.class))
+                  .isInstanceOf(MissingDependenciesException.class);
     }
 
     @Test
     public void construct_WhenAbstractClass_ThenMissingDependenciesException()
     {
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.construct(ClassBasicAbstract.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(MissingDependenciesException.class);
+        Assertions.assertThatThrownBy(() -> testObject.construct(ClassBasicAbstract.class))
+                  .isInstanceOf(MissingDependenciesException.class);
     }
 
     @Test
     public void construct_WhenClassConstructorThrowsException_ThenNoInstanceCreatedException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassConstructorExceptionThrown.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(NoInstanceCreatedException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassConstructorExceptionThrown.class))
+                  .isInstanceOf(NoInstanceCreatedException.class);
     }
 
     @Test
     public void construct_WhenPrimitiveType_ThenNoSuitableConstructorException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(() -> testObject.construct(double.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(NoSuitableConstructorException.class);
+        Assertions.assertThatThrownBy(() -> testObject.construct(double.class))
+                  .isInstanceOf(NoSuitableConstructorException.class);
     }
 
     @Test
     public void construct_WhenMultipleAnnotatedConstructors_ThenMultipleAnnotatedConstructorsException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassConstructorMultipleAnnotated.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(MultipleAnnotatedConstructorsException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassConstructorMultipleAnnotated.class))
+                  .isInstanceOf(MultipleAnnotatedConstructorsException.class);
     }
 
     @Test
     public void construct_WhenNoPublicConstructors_ThenNoSuitableConstructorException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassConstructorPrivate.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(NoSuitableConstructorException.class);
+        Assertions.assertThatThrownBy(() -> testObject.construct(ClassConstructorPrivate.class))
+                  .isInstanceOf(NoSuitableConstructorException.class);
     }
 
     // endregion
@@ -180,51 +161,39 @@ public class DiResolverTest
     @Test
     public void construct_WhenDependencySetterHasReturnType_ThenIncorrectDependencySetterException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassSetterIncorrectReturnType.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassSetterIncorrectReturnType.class))
+                  .isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
     public void construct_WhenDependencySetterHasNoParameters_ThenIncorrectDependencySetterException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassSetterWithoutParameters.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassSetterWithoutParameters.class))
+                  .isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
     public void construct_WhenDependencySetterHasIncorrectName_ThenIncorrectDependencySetterException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassSetterIncorrectName.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
+        Assertions.assertThatThrownBy(() -> testObject.construct(ClassSetterIncorrectName.class))
+                  .isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
     public void construct_WhenDependencySetterHasMultipleParameters_ThenIncorrectDependencySetterException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassSetterMultipleParameters.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(IncorrectDependencySetterException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassSetterMultipleParameters.class))
+                  .isInstanceOf(IncorrectDependencySetterException.class);
     }
 
     @Test
     public void construct_WhenMissingDependency_ThenMissingDependenciesException()
     {
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.construct(ClassSetterSingle.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(MissingDependenciesException.class);
+        Assertions.assertThatThrownBy(() -> testObject.construct(ClassSetterSingle.class))
+                  .isInstanceOf(MissingDependenciesException.class);
     }
 
     @Test
@@ -232,11 +201,8 @@ public class DiResolverTest
     {
         // given
         dictionary.addInstance(String.class, "string");
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.construct(ClassSetterThrows.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(SetterInvocationException.class);
+        Assertions.assertThatThrownBy(() -> testObject.construct(ClassSetterThrows.class))
+                  .isInstanceOf(SetterInvocationException.class);
     }
 
     @Test
@@ -398,11 +364,8 @@ public class DiResolverTest
                            ConstructionPolicy.defaultPolicy);
         dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
                            ConstructionPolicy.defaultPolicy);
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.construct(InterfaceDiamondBottom.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(MissingDependenciesException.class);
+        Assertions.assertThatThrownBy(() -> testObject.construct(InterfaceDiamondBottom.class))
+                  .isInstanceOf(MissingDependenciesException.class);
     }
 
     @Test
@@ -463,11 +426,8 @@ public class DiResolverTest
                            ConstructionPolicy.defaultPolicy);
         dictionary.addType(InterfaceCircularRight.class, ClassCircularRight.class,
                            ConstructionPolicy.defaultPolicy);
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.construct(InterfaceCircularRight.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(CircularDependenciesException.class);
+        Assertions.assertThatThrownBy(() -> testObject.construct(InterfaceCircularRight.class))
+                  .isInstanceOf(CircularDependenciesException.class);
     }
 
     @Test
@@ -600,71 +560,56 @@ public class DiResolverTest
     @Test
     public void construct_WhenSelfAnnotatedInterface_ThenAbstractTypeException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(InterfaceRegisterSelfIncorrect.class));
-        //then
-        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(InterfaceRegisterSelfIncorrect.class))
+                  .isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void construct_WhenSelfAnnotatedAbstractClass_ThenAbstractTypeException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassRegisterSelfAbstractIncorrect.class));
-        //then
-        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassRegisterSelfAbstractIncorrect.class))
+                  .isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void construct_WhenAnnotatedAbstractClassAsItself_ThenAbstractTypeException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassRegisterAbstractIncorrect.class));
-        //then
-        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassRegisterAbstractIncorrect.class))
+                  .isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void construct_WhenInterfaceAnnotatedClassNotImplementing_ThenNotDerivedTypeException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(InterfaceRegisterIncorrect.class));
-        //then
-        Assertions.assertThat(throwable).isInstanceOf(NotDerivedTypeException.class);
+        Assertions.assertThatThrownBy(() -> testObject.construct(InterfaceRegisterIncorrect.class))
+                  .isInstanceOf(NotDerivedTypeException.class);
     }
 
     @Test
     public void construct_WhenAnnotatedClassRegistersInterface_ThenNotDerivedTypeException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassRegisterInterfaceIncorrect.class));
-        //then
-        Assertions.assertThat(throwable).isInstanceOf(NotDerivedTypeException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassRegisterInterfaceIncorrect.class))
+                  .isInstanceOf(NotDerivedTypeException.class);
     }
 
     @Test
     public void construct_WhenAnnotatedClassRegistersNotDerivedClass_ThenNotDerivedTypeException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassRegisterIncorrectOtherClass.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(NotDerivedTypeException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassRegisterIncorrectOtherClass.class))
+                  .isInstanceOf(NotDerivedTypeException.class);
     }
 
     @Test
     public void construct_WhenAnnotatedClassRegistersAbstractConcreteSuperclass_ThenNotDerivedTypeException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.construct(ClassRegisterIncorrectSuperClass.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(NotDerivedTypeException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.construct(ClassRegisterIncorrectSuperClass.class))
+                  .isInstanceOf(NotDerivedTypeException.class);
     }
 
     @Test

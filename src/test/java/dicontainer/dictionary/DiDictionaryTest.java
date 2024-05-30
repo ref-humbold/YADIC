@@ -101,78 +101,59 @@ public class DiDictionaryTest
     @Test
     public void addType_WhenSingleInterface_ThenAbstractTypeException()
     {
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.addType(InterfaceBasic.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
+        Assertions.assertThatThrownBy(() -> testObject.addType(InterfaceBasic.class))
+                  .isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void addType_WhenSingleAbstractClass_ThenAbstractTypeException()
     {
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.addType(ClassBasicAbstract.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
+        Assertions.assertThatThrownBy(() -> testObject.addType(ClassBasicAbstract.class))
+                  .isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void addType_WhenRegisterAnnotatedTypeAndSubtype_ThenAnnotatedTypeRegistrationException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.addType(ClassRegisterConcrete.class,
-                                         ClassRegisterDerivedFromRegister.class,
-                                         ConstructionPolicy.defaultPolicy));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(AnnotatedTypeRegistrationException.class);
+        Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterConcrete.class,
+                                                               ClassRegisterDerivedFromRegister.class,
+                                                               ConstructionPolicy.defaultPolicy))
+                  .isInstanceOf(AnnotatedTypeRegistrationException.class);
     }
 
     @Test
     public void addType_WhenSelfRegisterAnnotatedTypeAndSubtype_ThenAnnotatedTypeRegistrationException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.addType(ClassRegisterSelf.class,
-                                         ClassRegisterDerivedFromSelfRegister.class,
-                                         ConstructionPolicy.defaultPolicy));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(AnnotatedTypeRegistrationException.class);
+        Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterSelf.class,
+                                                               ClassRegisterDerivedFromSelfRegister.class,
+                                                               ConstructionPolicy.defaultPolicy))
+                  .isInstanceOf(AnnotatedTypeRegistrationException.class);
     }
 
     @Test
     public void addType_WhenRegisterTypeAndNotSubtype_ThenNotDerivedTypeException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.addType(ClassRegisterIncorrectOtherClass.class,
-                                         ConstructionPolicy.defaultPolicy));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(NotDerivedTypeException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.addType(ClassRegisterIncorrectOtherClass.class,
+                                                   ConstructionPolicy.defaultPolicy))
+                  .isInstanceOf(NotDerivedTypeException.class);
     }
 
     @Test
     public void addType_WhenRegisterTypeAndAbstract_ThenAbstractTypeException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.addType(ClassRegisterAbstractIncorrect.class,
-                                         ConstructionPolicy.defaultPolicy));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
+        Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterAbstractIncorrect.class,
+                                                               ConstructionPolicy.defaultPolicy))
+                  .isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void addType_WhenSelfRegisterAbstract_ThenAbstractTypeException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.addType(ClassRegisterSelfAbstractIncorrect.class,
-                                         ConstructionPolicy.defaultPolicy));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(AbstractTypeException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.addType(ClassRegisterSelfAbstractIncorrect.class,
+                                                   ConstructionPolicy.defaultPolicy))
+                  .isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
@@ -184,19 +165,15 @@ public class DiDictionaryTest
         ClassBasicStringGetter instance = new ClassBasicStringGetter(string);
 
         testObject.addInstance(type, instance);
-        // when
-        Throwable throwable = Assertions.catchThrowable(() -> testObject.addType(type));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(RegistrationException.class);
+        Assertions.assertThatThrownBy(() -> testObject.addType(type))
+                  .isInstanceOf(RegistrationException.class);
     }
 
     @Test
     public void addType_WhenPrimitiveType_ThenRegistrationException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(() -> testObject.addType(boolean.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(RegistrationException.class);
+        Assertions.assertThatThrownBy(() -> testObject.addType(boolean.class))
+                  .isInstanceOf(RegistrationException.class);
     }
 
     // endregion
@@ -231,32 +208,23 @@ public class DiDictionaryTest
         ClassBasicStringGetter instance = new ClassBasicStringGetter(string);
 
         testObject.addType(type);
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.addInstance(type, instance));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(RegistrationException.class);
+        Assertions.assertThatThrownBy(() -> testObject.addInstance(type, instance))
+                  .isInstanceOf(RegistrationException.class);
     }
 
     @Test
     public void addInstance_WhenAnnotatedType_ThenRegistrationException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.addInstance(ClassRegisterConcrete.class,
-                                             new ClassRegisterConcrete()));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(RegistrationException.class);
+        Assertions.assertThatThrownBy(() -> testObject.addInstance(ClassRegisterConcrete.class,
+                                                                   new ClassRegisterConcrete()))
+                  .isInstanceOf(RegistrationException.class);
     }
 
     @Test
     public void addInstance_WhenNullInstance_ThenNullInstanceException()
     {
-        // when
-        Throwable throwable = Assertions.catchThrowable(
-                () -> testObject.addInstance(ClassBasicAbstract.class, null));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(NullInstanceException.class);
+        Assertions.assertThatThrownBy(() -> testObject.addInstance(ClassBasicAbstract.class, null))
+                  .isInstanceOf(NullInstanceException.class);
     }
 
     // endregion
@@ -318,11 +286,8 @@ public class DiDictionaryTest
                            ConstructionPolicy.CONSTRUCT);
         testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
                            ConstructionPolicy.SINGLETON);
-        // when
-        Throwable throwable =
-                Assertions.catchThrowable(() -> testObject.findType(InterfaceBasic.class));
-        // then
-        Assertions.assertThat(throwable).isInstanceOf(MixingPoliciesException.class);
+        Assertions.assertThatThrownBy(() -> testObject.findType(InterfaceBasic.class))
+                  .isInstanceOf(MixingPoliciesException.class);
     }
 
     @Test
