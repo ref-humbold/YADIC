@@ -6,15 +6,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dicontainer.ConstructionPolicy;
-import dicontainer.auxiliary.basic.*;
-import dicontainer.auxiliary.circular.*;
-import dicontainer.auxiliary.constructor.*;
-import dicontainer.auxiliary.diamond.*;
-import dicontainer.auxiliary.register.*;
-import dicontainer.auxiliary.setter.*;
 import dicontainer.dictionary.DiDictionary;
 import dicontainer.dictionary.exception.AbstractTypeException;
 import dicontainer.dictionary.exception.NotDerivedTypeException;
+import dicontainer.models.basic.*;
+import dicontainer.models.circular.*;
+import dicontainer.models.constructor.*;
+import dicontainer.models.diamond.*;
+import dicontainer.models.register.*;
+import dicontainer.models.setter.*;
 import dicontainer.resolver.exception.*;
 
 public class DiResolverTest
@@ -96,6 +96,7 @@ public class DiResolverTest
         Integer number = 10;
 
         dictionary.addInstance(Integer.class, number);
+        // then
         Assertions.assertThatThrownBy(
                           () -> testObject.construct(ClassConstructorParameterized.class))
                   .isInstanceOf(MissingDependenciesException.class);
@@ -201,6 +202,7 @@ public class DiResolverTest
     {
         // given
         dictionary.addInstance(String.class, "string");
+        // then
         Assertions.assertThatThrownBy(() -> testObject.construct(ClassSetterThrows.class))
                   .isInstanceOf(SetterInvocationException.class);
     }
@@ -233,8 +235,7 @@ public class DiResolverTest
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getBasicObject()).isNotNull();
         Assertions.assertThat(result.getStringObject()).isNotNull();
-        Assertions.assertThat(result.getStringObject().getString()).isNotNull();
-        Assertions.assertThat(result.getStringObject().getString()).isEqualTo(string);
+        Assertions.assertThat(result.getStringObject().getString()).isNotNull().isEqualTo(string);
     }
 
     // endregion
@@ -262,14 +263,13 @@ public class DiResolverTest
         InterfaceBasicSimpleDependency result =
                 testObject.construct(InterfaceBasicSimpleDependency.class);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isInstanceOf(ClassConstructorNotAnnotatedWithDependency.class);
         Assertions.assertThat(result.getFirstObject()).isNotNull();
         Assertions.assertThat(result.getSecondObject()).isNotNull();
         Assertions.assertThat(result.getFirstObject().getObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isEqualTo(string);
-        Assertions.assertThat(result)
-                  .isInstanceOf(ClassConstructorNotAnnotatedWithDependency.class);
+        Assertions.assertThat(result.getSecondObject().getString()).isNotNull().isEqualTo(string);
     }
 
     @Test
@@ -291,14 +291,13 @@ public class DiResolverTest
         InterfaceBasicSimpleDependency result =
                 testObject.construct(InterfaceBasicSimpleDependency.class);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isInstanceOf(ClassConstructorNotAnnotatedWithDependency.class);
         Assertions.assertThat(result.getFirstObject()).isNotNull();
         Assertions.assertThat(result.getSecondObject()).isNotNull();
         Assertions.assertThat(result.getFirstObject().getObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isEqualTo("");
-        Assertions.assertThat(result)
-                  .isInstanceOf(ClassConstructorNotAnnotatedWithDependency.class);
+        Assertions.assertThat(result.getSecondObject().getString()).isNotNull().isEqualTo("");
     }
 
     @Test
@@ -318,12 +317,12 @@ public class DiResolverTest
         InterfaceBasicSimpleDependency result =
                 testObject.construct(InterfaceBasicSimpleDependency.class);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isInstanceOf(ClassConstructorNotAnnotatedWithDependency.class);
         Assertions.assertThat(result.getFirstObject()).isNotNull();
         Assertions.assertThat(result.getSecondObject()).isNull();
         Assertions.assertThat(result.getFirstObject().getObject()).isNotNull();
-        Assertions.assertThat(result)
-                  .isInstanceOf(ClassConstructorNotAnnotatedWithDependency.class);
     }
 
     @Test
@@ -345,13 +344,13 @@ public class DiResolverTest
         InterfaceBasicSimpleDependency result =
                 testObject.construct(InterfaceBasicSimpleDependency.class);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isInstanceOf(ClassConstructorAnnotatedWithDependency.class);
         Assertions.assertThat(result.getFirstObject()).isNotNull();
         Assertions.assertThat(result.getSecondObject()).isNotNull();
         Assertions.assertThat(result.getFirstObject().getObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isEqualTo("");
-        Assertions.assertThat(result).isInstanceOf(ClassConstructorAnnotatedWithDependency.class);
+        Assertions.assertThat(result.getSecondObject().getString()).isNotNull().isEqualTo("");
     }
 
     @Test
@@ -364,6 +363,7 @@ public class DiResolverTest
                            ConstructionPolicy.defaultPolicy);
         dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
                            ConstructionPolicy.defaultPolicy);
+        // then
         Assertions.assertThatThrownBy(() -> testObject.construct(InterfaceDiamondBottom.class))
                   .isInstanceOf(MissingDependenciesException.class);
     }
@@ -383,14 +383,13 @@ public class DiResolverTest
         // when
         InterfaceDiamondBottom result = testObject.construct(InterfaceDiamondBottom.class);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassDiamondBottom.class);
         Assertions.assertThat(result.getDiamond1()).isNotNull();
         Assertions.assertThat(result.getDiamond2()).isNotNull();
         Assertions.assertThat(result.getDiamond1().getObject()).isNotNull();
         Assertions.assertThat(result.getDiamond2().getObject()).isNotNull();
         Assertions.assertThat(result.getDiamond1().getObject())
                   .isNotSameAs(result.getDiamond2().getObject());
-        Assertions.assertThat(result).isInstanceOf(ClassDiamondBottom.class);
     }
 
     @Test
@@ -408,14 +407,13 @@ public class DiResolverTest
         // when
         InterfaceDiamondBottom result = testObject.construct(InterfaceDiamondBottom.class);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassDiamondBottom.class);
         Assertions.assertThat(result.getDiamond1()).isNotNull();
         Assertions.assertThat(result.getDiamond2()).isNotNull();
         Assertions.assertThat(result.getDiamond1().getObject()).isNotNull();
-        Assertions.assertThat(result.getDiamond2().getObject()).isNotNull();
         Assertions.assertThat(result.getDiamond2().getObject())
+                  .isNotNull()
                   .isSameAs(result.getDiamond1().getObject());
-        Assertions.assertThat(result).isInstanceOf(ClassDiamondBottom.class);
     }
 
     @Test
@@ -426,6 +424,7 @@ public class DiResolverTest
                            ConstructionPolicy.defaultPolicy);
         dictionary.addType(InterfaceCircularRight.class, ClassCircularRight.class,
                            ConstructionPolicy.defaultPolicy);
+        // then
         Assertions.assertThatThrownBy(() -> testObject.construct(InterfaceCircularRight.class))
                   .isInstanceOf(CircularDependenciesException.class);
     }
@@ -449,12 +448,12 @@ public class DiResolverTest
         InterfaceCircularDependency result =
                 testObject.construct(InterfaceCircularDependency.class);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassCircularDependency.class);
         Assertions.assertThat(result.getNonCircularObject()).isNotNull();
         Assertions.assertThat(result.getCircularObject()).isNull();
-        Assertions.assertThat(result.getNonCircularObject().getString()).isNotNull();
-        Assertions.assertThat(result.getNonCircularObject().getString()).isEqualTo(string);
-        Assertions.assertThat(result).isInstanceOf(ClassCircularDependency.class);
+        Assertions.assertThat(result.getNonCircularObject().getString())
+                  .isNotNull()
+                  .isEqualTo(string);
     }
 
     @Test
@@ -478,14 +477,12 @@ public class DiResolverTest
         InterfaceBasicComplexDependency result =
                 testObject.construct(InterfaceBasicComplexDependency.class);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassBasicComplexDependency.class);
         Assertions.assertThat(result.getBasicObject()).isNotNull();
         Assertions.assertThat(result.getFirstObject()).isNotNull();
         Assertions.assertThat(result.getSecondObject()).isNotNull();
         Assertions.assertThat(result.getFirstObject().getObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isEqualTo(string);
-        Assertions.assertThat(result).isInstanceOf(ClassBasicComplexDependency.class);
+        Assertions.assertThat(result.getSecondObject().getString()).isNotNull().isEqualTo(string);
     }
 
     // endregion
@@ -498,11 +495,11 @@ public class DiResolverTest
         InterfaceRegister result1 = testObject.construct(InterfaceRegister.class);
         InterfaceRegister result2 = testObject.construct(InterfaceRegister.class);
         // then
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result1).isInstanceOf(ClassRegisterInterface.class);
-        Assertions.assertThat(result2).isInstanceOf(ClassRegisterInterface.class);
-        Assertions.assertThat(result2).isNotSameAs(result1);
+        Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassRegisterInterface.class);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isInstanceOf(ClassRegisterInterface.class)
+                  .isNotSameAs(result1);
     }
 
     @Test
@@ -512,11 +509,11 @@ public class DiResolverTest
         ClassRegisterAbstract result1 = testObject.construct(ClassRegisterAbstract.class);
         ClassRegisterAbstract result2 = testObject.construct(ClassRegisterAbstract.class);
         // then
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result2).isInstanceOf(ClassRegisterConcrete.class);
-        Assertions.assertThat(result1).isInstanceOf(ClassRegisterConcrete.class);
-        Assertions.assertThat(result2).isNotSameAs(result1);
+        Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassRegisterConcrete.class);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isInstanceOf(ClassRegisterConcrete.class)
+                  .isNotSameAs(result1);
     }
 
     @Test
@@ -526,11 +523,13 @@ public class DiResolverTest
         ClassRegisterConcrete result1 = testObject.construct(ClassRegisterConcrete.class);
         ClassRegisterConcrete result2 = testObject.construct(ClassRegisterConcrete.class);
         // then
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result1).isInstanceOf(ClassRegisterDerivedFromRegister.class);
-        Assertions.assertThat(result2).isInstanceOf(ClassRegisterDerivedFromRegister.class);
-        Assertions.assertThat(result2).isNotSameAs(result1);
+        Assertions.assertThat(result1)
+                  .isNotNull()
+                  .isInstanceOf(ClassRegisterDerivedFromRegister.class);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isInstanceOf(ClassRegisterDerivedFromRegister.class)
+                  .isNotSameAs(result1);
     }
 
     @Test
@@ -541,8 +540,7 @@ public class DiResolverTest
         ClassRegisterSelf result2 = testObject.construct(ClassRegisterSelf.class);
         // then
         Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result2).isNotSameAs(result1);
+        Assertions.assertThat(result2).isNotNull().isNotSameAs(result1);
     }
 
     @Test
@@ -553,8 +551,7 @@ public class DiResolverTest
         ClassRegisterSelfAsSubtype result2 = testObject.construct(ClassRegisterSelfAsSubtype.class);
         // then
         Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result2).isNotSameAs(result1);
+        Assertions.assertThat(result2).isNotNull().isNotSameAs(result1);
     }
 
     @Test
@@ -619,11 +616,11 @@ public class DiResolverTest
         InterfaceRegisterSingleton result1 = testObject.construct(InterfaceRegisterSingleton.class);
         InterfaceRegisterSingleton result2 = testObject.construct(InterfaceRegisterSingleton.class);
         // then
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result1).isInstanceOf(ClassRegisterSingletonBase.class);
-        Assertions.assertThat(result2).isInstanceOf(ClassRegisterSingletonBase.class);
-        Assertions.assertThat(result2).isSameAs(result1);
+        Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassRegisterSingletonBase.class);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isInstanceOf(ClassRegisterSingletonBase.class)
+                  .isSameAs(result1);
     }
 
     @Test
@@ -633,11 +630,13 @@ public class DiResolverTest
         ClassRegisterSingletonBase result1 = testObject.construct(ClassRegisterSingletonBase.class);
         ClassRegisterSingletonBase result2 = testObject.construct(ClassRegisterSingletonBase.class);
         // then
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result1).isInstanceOf(ClassRegisterSingletonDerived.class);
-        Assertions.assertThat(result2).isInstanceOf(ClassRegisterSingletonDerived.class);
-        Assertions.assertThat(result2).isSameAs(result1);
+        Assertions.assertThat(result1)
+                  .isNotNull()
+                  .isInstanceOf(ClassRegisterSingletonDerived.class);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isInstanceOf(ClassRegisterSingletonDerived.class)
+                  .isSameAs(result1);
     }
 
     @Test
@@ -648,8 +647,7 @@ public class DiResolverTest
         ClassRegisterSelfSingleton result2 = testObject.construct(ClassRegisterSelfSingleton.class);
         // then
         Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result2).isSameAs(result1);
+        Assertions.assertThat(result2).isNotNull().isSameAs(result1);
     }
 
     @Test
@@ -662,8 +660,7 @@ public class DiResolverTest
                 testObject.construct(ClassRegisterSelfAsSubtypeSingleton.class);
         // then
         Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result2).isSameAs(result1);
+        Assertions.assertThat(result2).isNotNull().isSameAs(result1);
     }
 
     // endregion
@@ -685,8 +682,8 @@ public class DiResolverTest
         Assertions.assertThat(result).isSameAs(instance);
         Assertions.assertThat(result.getBasicObject()).isNotNull();
         Assertions.assertThat(result.getStringObject()).isNotNull();
-        Assertions.assertThat(result.getStringObject().getString()).isNotNull();
-        Assertions.assertThat(result.getStringObject().getString()).isEqualTo(string);
+        Assertions.assertThat(result.getStringObject().getString()).isNotNull().isEqualTo(string);
     }
+
     // endregion
 }

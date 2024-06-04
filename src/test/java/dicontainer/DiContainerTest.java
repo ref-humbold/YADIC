@@ -5,15 +5,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dicontainer.auxiliary.basic.*;
-import dicontainer.auxiliary.constructor.*;
-import dicontainer.auxiliary.diamond.ClassDiamondLeft;
-import dicontainer.auxiliary.diamond.ClassDiamondTop;
-import dicontainer.auxiliary.diamond.InterfaceDiamondLeft;
-import dicontainer.auxiliary.diamond.InterfaceDiamondTop;
-import dicontainer.auxiliary.setter.*;
 import dicontainer.dictionary.exception.AbstractTypeException;
 import dicontainer.dictionary.valuetypes.NullInstanceException;
+import dicontainer.models.basic.*;
+import dicontainer.models.constructor.*;
+import dicontainer.models.diamond.ClassDiamondLeft;
+import dicontainer.models.diamond.ClassDiamondTop;
+import dicontainer.models.diamond.InterfaceDiamondLeft;
+import dicontainer.models.diamond.InterfaceDiamondTop;
+import dicontainer.models.setter.*;
 import dicontainer.resolver.exception.IncorrectDependencySetterException;
 import dicontainer.resolver.exception.MultipleAnnotatedConstructorsException;
 import dicontainer.resolver.exception.NoSuitableConstructorException;
@@ -46,8 +46,7 @@ public class DiContainerTest
         ClassConstructorDefault result2 = testObject.resolve(ClassConstructorDefault.class);
         // then
         Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result2).isNotSameAs(result1);
+        Assertions.assertThat(result2).isNotNull().isNotSameAs(result1);
     }
 
     @Test
@@ -60,8 +59,7 @@ public class DiContainerTest
         ClassConstructorDefault result2 = testObject.resolve(ClassConstructorDefault.class);
         // then
         Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result2).isSameAs(result1);
+        Assertions.assertThat(result2).isNotNull().isSameAs(result1);
     }
 
     @Test
@@ -74,8 +72,7 @@ public class DiContainerTest
         ClassConstructorDefault result12 = testObject.resolve(ClassConstructorDefault.class);
         // then 1
         Assertions.assertThat(result11).isNotNull();
-        Assertions.assertThat(result12).isNotNull();
-        Assertions.assertThat(result12).isSameAs(result11);
+        Assertions.assertThat(result12).isNotNull().isSameAs(result11);
 
         // given 2
         testObject.registerType(ClassConstructorDefault.class, ConstructionPolicy.CONSTRUCT);
@@ -84,8 +81,7 @@ public class DiContainerTest
         ClassConstructorDefault result22 = testObject.resolve(ClassConstructorDefault.class);
         // then 2
         Assertions.assertThat(result21).isNotNull();
-        Assertions.assertThat(result22).isNotNull();
-        Assertions.assertThat(result22).isNotSameAs(result21);
+        Assertions.assertThat(result22).isNotNull().isNotSameAs(result21);
     }
 
     @Test
@@ -114,11 +110,11 @@ public class DiContainerTest
         InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
         InterfaceBasic result2 = testObject.resolve(InterfaceBasic.class);
         // then
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result2).isNotSameAs(result1);
-        Assertions.assertThat(result1).isInstanceOf(ClassConstructorDefault.class);
-        Assertions.assertThat(result2).isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isNotSameAs(result1)
+                  .isInstanceOf(ClassConstructorDefault.class);
     }
 
     @Test
@@ -131,11 +127,11 @@ public class DiContainerTest
         InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
         InterfaceBasic result2 = testObject.resolve(InterfaceBasic.class);
         // then
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull();
-        Assertions.assertThat(result2).isSameAs(result1);
-        Assertions.assertThat(result1).isInstanceOf(ClassConstructorDefault.class);
-        Assertions.assertThat(result2).isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isSameAs(result1)
+                  .isInstanceOf(ClassConstructorDefault.class);
     }
 
     @Test
@@ -148,11 +144,11 @@ public class DiContainerTest
         InterfaceBasic result11 = testObject.resolve(InterfaceBasic.class);
         InterfaceBasic result12 = testObject.resolve(InterfaceBasic.class);
         // then 1
-        Assertions.assertThat(result11).isNotNull();
-        Assertions.assertThat(result12).isNotNull();
-        Assertions.assertThat(result12).isSameAs(result11);
-        Assertions.assertThat(result11).isInstanceOf(ClassConstructorDefault.class);
-        Assertions.assertThat(result12).isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result11).isNotNull().isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result12)
+                  .isNotNull()
+                  .isSameAs(result11)
+                  .isInstanceOf(ClassConstructorDefault.class);
 
         // given 2
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
@@ -161,11 +157,11 @@ public class DiContainerTest
         InterfaceBasic result21 = testObject.resolve(InterfaceBasic.class);
         InterfaceBasic result22 = testObject.resolve(InterfaceBasic.class);
         // then 2
-        Assertions.assertThat(result21).isNotNull();
-        Assertions.assertThat(result22).isNotNull();
-        Assertions.assertThat(result22).isNotSameAs(result21);
-        Assertions.assertThat(result21).isInstanceOf(ClassConstructorDefault.class);
-        Assertions.assertThat(result22).isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result21).isNotNull().isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result22)
+                  .isNotNull()
+                  .isNotSameAs(result21)
+                  .isInstanceOf(ClassConstructorDefault.class);
     }
 
     @Test
@@ -176,8 +172,7 @@ public class DiContainerTest
         // when 1
         InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
         // then 1
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result1).isInstanceOf(ClassConstructorDefault.class);
+        Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassConstructorDefault.class);
 
         // given 2
         testObject.registerType(InterfaceBasic.class,
@@ -185,8 +180,9 @@ public class DiContainerTest
         // when 2
         InterfaceBasic result3 = testObject.resolve(InterfaceBasic.class);
         // then 2
-        Assertions.assertThat(result3).isNotNull();
-        Assertions.assertThat(result3).isInstanceOf(ClassConstructorDefaultAndParameterized.class);
+        Assertions.assertThat(result3)
+                  .isNotNull()
+                  .isInstanceOf(ClassConstructorDefaultAndParameterized.class);
     }
 
     @Test
@@ -197,8 +193,9 @@ public class DiContainerTest
         // when
         ClassBasicAbstract result = testObject.resolve(ClassBasicAbstract.class);
         // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result).isInstanceOf(ClassBasicInheritsFromAbstract.class);
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isInstanceOf(ClassBasicInheritsFromAbstract.class);
     }
 
     @Test
@@ -211,8 +208,9 @@ public class DiContainerTest
         ClassConstructorParameterized result =
                 testObject.resolve(ClassConstructorParameterized.class);
         // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result).isInstanceOf(ClassConstructorSuperParameterized.class);
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isInstanceOf(ClassConstructorSuperParameterized.class);
     }
 
     @Test
@@ -224,8 +222,9 @@ public class DiContainerTest
         // when
         InterfaceBasic result = testObject.resolve(InterfaceBasic.class);
         // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result).isInstanceOf(ClassBasicInheritsFromAbstract.class);
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isInstanceOf(ClassBasicInheritsFromAbstract.class);
     }
 
     // endregion
@@ -241,9 +240,10 @@ public class DiContainerTest
         // when
         InterfaceBasic result = testObject.resolve(InterfaceBasic.class);
         // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result).isInstanceOf(ClassConstructorDefault.class);
-        Assertions.assertThat(result).isSameAs(instance);
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isInstanceOf(ClassConstructorDefault.class)
+                  .isSameAs(instance);
     }
 
     @Test
@@ -256,9 +256,10 @@ public class DiContainerTest
         // when
         ClassBasicAbstract result = testObject.resolve(ClassBasicAbstract.class);
         // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result).isInstanceOf(ClassBasicInheritsFromAbstract.class);
-        Assertions.assertThat(result).isSameAs(instance);
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isInstanceOf(ClassBasicInheritsFromAbstract.class)
+                  .isSameAs(instance);
     }
 
     @Test
@@ -273,8 +274,7 @@ public class DiContainerTest
         ClassConstructorDefaultAndParameterized result =
                 testObject.resolve(ClassConstructorDefaultAndParameterized.class);
         // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result).isSameAs(instance);
+        Assertions.assertThat(result).isNotNull().isSameAs(instance);
         Assertions.assertThat(result.getText()).isEqualTo(instance.getText());
     }
 
@@ -289,9 +289,10 @@ public class DiContainerTest
         ClassConstructorParameterized result =
                 testObject.resolve(ClassConstructorParameterized.class);
         // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result).isSameAs(instance);
-        Assertions.assertThat(result).isInstanceOf(ClassConstructorSuperParameterized.class);
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isSameAs(instance)
+                  .isInstanceOf(ClassConstructorSuperParameterized.class);
         Assertions.assertThat(result.getNumber()).isEqualTo(instance.getNumber());
     }
 
@@ -352,9 +353,8 @@ public class DiContainerTest
         // when
         InterfaceSetter result = testObject.resolve(InterfaceSetter.class);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassSetterSingle.class);
         Assertions.assertThat(result.getBasicObject()).isNotNull();
-        Assertions.assertThat(result).isInstanceOf(ClassSetterSingle.class);
     }
 
     @Test
@@ -366,9 +366,8 @@ public class DiContainerTest
         // when
         InterfaceSetter result = testObject.resolve(InterfaceSetter.class);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassSetterConstructor.class);
         Assertions.assertThat(result.getBasicObject()).isNotNull();
-        Assertions.assertThat(result).isInstanceOf(ClassSetterConstructor.class);
     }
 
     @Test
@@ -396,12 +395,10 @@ public class DiContainerTest
         // when
         InterfaceSetterMultiple result = testObject.resolve(InterfaceSetterMultiple.class);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassSetterMultiple.class);
         Assertions.assertThat(result.getBasicObject()).isNotNull();
         Assertions.assertThat(result.getStringObject()).isNotNull();
-        Assertions.assertThat(result.getStringObject().getString()).isNotNull();
-        Assertions.assertThat(result.getStringObject().getString()).isEqualTo(string);
-        Assertions.assertThat(result).isInstanceOf(ClassSetterMultiple.class);
+        Assertions.assertThat(result.getStringObject().getString()).isNotNull().isEqualTo(string);
     }
 
     // endregion
@@ -417,11 +414,10 @@ public class DiContainerTest
         // when
         InterfaceSetter result = testObject.buildUp(instance);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isNotNull().isSameAs(instance);
         Assertions.assertThat(instance).isNotNull();
         Assertions.assertThat(result.getBasicObject()).isNotNull();
         Assertions.assertThat(instance.getBasicObject()).isNotNull();
-        Assertions.assertThat(result).isSameAs(instance);
     }
 
     @Test
@@ -429,6 +425,7 @@ public class DiContainerTest
     {
         // given
         InterfaceSetterMultipleParameters instance = new ClassSetterMultipleParameters();
+        // then
         Assertions.assertThatThrownBy(() -> testObject.buildUp(instance))
                   .isInstanceOf(IncorrectDependencySetterException.class);
     }
@@ -446,7 +443,7 @@ public class DiContainerTest
         // when
         InterfaceSetterMultiple result = testObject.buildUp(instance);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isNotNull().isSameAs(instance);
         Assertions.assertThat(instance).isNotNull();
         Assertions.assertThat(result.getBasicObject()).isNotNull();
         Assertions.assertThat(instance.getBasicObject()).isNotNull();
@@ -456,7 +453,6 @@ public class DiContainerTest
         Assertions.assertThat(instance.getStringObject().getString()).isNotNull();
         Assertions.assertThat(result.getStringObject().getString()).isEqualTo(string);
         Assertions.assertThat(instance.getStringObject().getString()).isEqualTo(string);
-        Assertions.assertThat(result).isSameAs(instance);
     }
 
     @Test
@@ -479,7 +475,7 @@ public class DiContainerTest
         // when
         InterfaceBasicComplexDependency result = testObject.buildUp(instance);
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isNotNull().isSameAs(instance);
         Assertions.assertThat(instance).isNotNull();
         Assertions.assertThat(result.getBasicObject()).isNotNull();
         Assertions.assertThat(instance.getBasicObject()).isNotNull();
@@ -493,7 +489,6 @@ public class DiContainerTest
         Assertions.assertThat(instance.getSecondObject().getString()).isNotNull();
         Assertions.assertThat(result.getSecondObject().getString()).isEqualTo(string);
         Assertions.assertThat(instance.getSecondObject().getString()).isEqualTo(string);
-        Assertions.assertThat(result).isSameAs(instance);
     }
 
     // endregion

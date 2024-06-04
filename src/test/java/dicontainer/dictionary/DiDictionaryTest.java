@@ -6,11 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dicontainer.ConstructionPolicy;
-import dicontainer.auxiliary.basic.ClassBasicAbstract;
-import dicontainer.auxiliary.basic.ClassBasicInheritsFromAbstract;
-import dicontainer.auxiliary.basic.ClassBasicStringGetter;
-import dicontainer.auxiliary.basic.InterfaceBasic;
-import dicontainer.auxiliary.register.*;
 import dicontainer.dictionary.exception.AbstractTypeException;
 import dicontainer.dictionary.exception.AnnotatedTypeRegistrationException;
 import dicontainer.dictionary.exception.MixingPoliciesException;
@@ -19,6 +14,11 @@ import dicontainer.dictionary.exception.RegistrationException;
 import dicontainer.dictionary.valuetypes.Instance;
 import dicontainer.dictionary.valuetypes.NullInstanceException;
 import dicontainer.dictionary.valuetypes.Subtype;
+import dicontainer.models.basic.ClassBasicAbstract;
+import dicontainer.models.basic.ClassBasicInheritsFromAbstract;
+import dicontainer.models.basic.ClassBasicStringGetter;
+import dicontainer.models.basic.InterfaceBasic;
+import dicontainer.models.register.*;
 
 public class DiDictionaryTest
 {
@@ -165,6 +165,7 @@ public class DiDictionaryTest
         ClassBasicStringGetter instance = new ClassBasicStringGetter(string);
 
         testObject.addInstance(type, instance);
+        // then
         Assertions.assertThatThrownBy(() -> testObject.addType(type))
                   .isInstanceOf(RegistrationException.class);
     }
@@ -208,6 +209,7 @@ public class DiDictionaryTest
         ClassBasicStringGetter instance = new ClassBasicStringGetter(string);
 
         testObject.addType(type);
+        // then
         Assertions.assertThatThrownBy(() -> testObject.addInstance(type, instance))
                   .isInstanceOf(RegistrationException.class);
     }
@@ -286,6 +288,7 @@ public class DiDictionaryTest
                            ConstructionPolicy.CONSTRUCT);
         testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
                            ConstructionPolicy.SINGLETON);
+        // then
         Assertions.assertThatThrownBy(() -> testObject.findType(InterfaceBasic.class))
                   .isInstanceOf(MixingPoliciesException.class);
     }

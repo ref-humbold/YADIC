@@ -2,14 +2,14 @@ package dicontainer.resolver;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.Comparator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dicontainer.annotation.Dependency;
-import dicontainer.auxiliary.comparator.ClassComparatorConstructor;
+import dicontainer.models.comparator.ClassComparatorConstructor;
 
 public class ConstructorComparatorTest
 {
@@ -36,9 +36,8 @@ public class ConstructorComparatorTest
         Arrays.sort(constructors, testObject);
         // then
         Assertions.assertThat(constructors[0].isAnnotationPresent(Dependency.class)).isTrue();
-        Assertions.assertThat(Arrays.stream(constructors)
-                                    .map(Constructor::getParameterCount)
-                                    .collect(Collectors.toList()))
+        Assertions.assertThat(
+                          Arrays.stream(constructors).map(Constructor::getParameterCount).toList())
                   .containsExactly(3, 5, 4, 2, 1, 0);
     }
 
@@ -47,8 +46,7 @@ public class ConstructorComparatorTest
     {
         // given
         Constructor<?>[] constructors = ClassComparatorConstructor.class.getConstructors();
-        Arrays.sort(constructors,
-                    (c1, c2) -> Integer.compare(c1.getParameterCount(), c2.getParameterCount()));
+        Arrays.sort(constructors, Comparator.comparingInt(Constructor::getParameterCount));
         // when
         int result = testObject.compare(constructors[3], constructors[4]);
         // then
@@ -60,8 +58,7 @@ public class ConstructorComparatorTest
     {
         // given
         Constructor<?>[] constructors = ClassComparatorConstructor.class.getConstructors();
-        Arrays.sort(constructors,
-                    (c1, c2) -> Integer.compare(c1.getParameterCount(), c2.getParameterCount()));
+        Arrays.sort(constructors, Comparator.comparingInt(Constructor::getParameterCount));
         // when
         int result = testObject.compare(constructors[2], constructors[5]);
         // then
