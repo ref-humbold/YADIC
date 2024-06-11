@@ -32,8 +32,10 @@ public class ConstructorComparatorTest
     {
         // given
         Constructor<?>[] constructors = ClassComparatorConstructor.class.getConstructors();
+
         // when
         Arrays.sort(constructors, testObject);
+
         // then
         Assertions.assertThat(constructors[0].isAnnotationPresent(Dependency.class)).isTrue();
         Assertions.assertThat(
@@ -47,8 +49,10 @@ public class ConstructorComparatorTest
         // given
         Constructor<?>[] constructors = ClassComparatorConstructor.class.getConstructors();
         Arrays.sort(constructors, Comparator.comparingInt(Constructor::getParameterCount));
+
         // when
         int result = testObject.compare(constructors[3], constructors[4]);
+
         // then
         Assertions.assertThat(result).isEqualTo(-1);
     }
@@ -59,8 +63,10 @@ public class ConstructorComparatorTest
         // given
         Constructor<?>[] constructors = ClassComparatorConstructor.class.getConstructors();
         Arrays.sort(constructors, Comparator.comparingInt(Constructor::getParameterCount));
+
         // when
         int result = testObject.compare(constructors[2], constructors[5]);
+
         // then
         Assertions.assertThat(result).isEqualTo(1);
     }

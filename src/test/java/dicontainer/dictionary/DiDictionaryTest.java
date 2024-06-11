@@ -44,10 +44,12 @@ public class DiDictionaryTest
         // given
         Class<ClassBasicAbstract> type = ClassBasicAbstract.class;
         Class<ClassBasicInheritsFromAbstract> subtype = ClassBasicInheritsFromAbstract.class;
+
         // when
         testObject.addType(type, subtype, ConstructionPolicy.SINGLETON);
 
         Subtype<? extends InterfaceBasic> result = testObject.findType(type);
+
         // then
         Assertions.assertThat(result.subtype).isEqualTo(subtype);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.SINGLETON);
@@ -58,10 +60,12 @@ public class DiDictionaryTest
     {
         // given
         Class<ClassBasicInheritsFromAbstract> type = ClassBasicInheritsFromAbstract.class;
+
         // when
         testObject.addType(type, ConstructionPolicy.SINGLETON);
 
         Subtype<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
+
         // then
         Assertions.assertThat(result.subtype).isEqualTo(type);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.SINGLETON);
@@ -72,10 +76,12 @@ public class DiDictionaryTest
     {
         // given
         Class<ClassRegisterSelf> type = ClassRegisterSelf.class;
+
         // when
         testObject.addType(type);
 
         Subtype<? extends ClassRegisterSelf> result = testObject.findType(type);
+
         // then
         Assertions.assertThat(result.subtype).isEqualTo(type);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
@@ -86,10 +92,12 @@ public class DiDictionaryTest
     {
         // given
         Class<ClassRegisterConcrete> type = ClassRegisterConcrete.class;
+
         // when
         testObject.addType(type);
 
         Subtype<? extends ClassRegisterConcrete> result = testObject.findType(type);
+
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterDerivedFromRegister.class);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
@@ -165,6 +173,7 @@ public class DiDictionaryTest
         ClassBasicStringGetter instance = new ClassBasicStringGetter(string);
 
         testObject.addInstance(type, instance);
+
         // then
         Assertions.assertThatThrownBy(() -> testObject.addType(type))
                   .isInstanceOf(RegistrationException.class);
@@ -186,11 +195,13 @@ public class DiDictionaryTest
         // given
         String string = "String";
         ClassBasicStringGetter instance = new ClassBasicStringGetter(string);
+
         // when
         testObject.addInstance(ClassBasicStringGetter.class, instance);
 
         Instance<ClassBasicStringGetter> result =
                 testObject.findInstance(ClassBasicStringGetter.class);
+
         // then
         Assertions.assertThat(result.exists()).isTrue();
         Assertions.assertThat(result.extract()).isSameAs(instance);
@@ -209,6 +220,7 @@ public class DiDictionaryTest
         ClassBasicStringGetter instance = new ClassBasicStringGetter(string);
 
         testObject.addType(type);
+
         // then
         Assertions.assertThatThrownBy(() -> testObject.addInstance(type, instance))
                   .isInstanceOf(RegistrationException.class);
@@ -237,6 +249,7 @@ public class DiDictionaryTest
     {
         // when
         Subtype<?> result = testObject.findType(double.class);
+
         // then
         Assertions.assertThat(result.subtype).isEqualTo(double.class);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
@@ -250,8 +263,10 @@ public class DiDictionaryTest
                            ConstructionPolicy.defaultPolicy);
         testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
                            ConstructionPolicy.defaultPolicy);
+
         // when
         Subtype<? extends InterfaceBasic> result = testObject.findType(InterfaceBasic.class);
+
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassBasicInheritsFromAbstract.class);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
@@ -262,8 +277,10 @@ public class DiDictionaryTest
     {
         // given
         Class<ClassBasicInheritsFromAbstract> type = ClassBasicInheritsFromAbstract.class;
+
         // when
         Subtype<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
+
         // then
         Assertions.assertThat(result.subtype).isEqualTo(type);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
@@ -275,6 +292,7 @@ public class DiDictionaryTest
         // when
         Subtype<? extends ClassRegisterAbstract> result =
                 testObject.findType(ClassRegisterAbstract.class);
+
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterDerivedFromRegister.class);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
@@ -288,6 +306,7 @@ public class DiDictionaryTest
                            ConstructionPolicy.CONSTRUCT);
         testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
                            ConstructionPolicy.SINGLETON);
+
         // then
         Assertions.assertThatThrownBy(() -> testObject.findType(InterfaceBasic.class))
                   .isInstanceOf(MixingPoliciesException.class);
@@ -298,6 +317,7 @@ public class DiDictionaryTest
     {
         // when
         Subtype<? extends ClassRegisterSelf> result = testObject.findType(ClassRegisterSelf.class);
+
         // then
         Assertions.assertThat(result.subtype).isEqualTo(ClassRegisterSelf.class);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.defaultPolicy);
@@ -310,8 +330,10 @@ public class DiDictionaryTest
         Class<ClassBasicInheritsFromAbstract> type = ClassBasicInheritsFromAbstract.class;
 
         testObject.addInstance(type, new ClassBasicInheritsFromAbstract());
+
         // when
         Subtype<? extends ClassBasicInheritsFromAbstract> result = testObject.findType(type);
+
         // then
         Assertions.assertThat(result.subtype).isEqualTo(type);
         Assertions.assertThat(result.policy).isEqualTo(ConstructionPolicy.SINGLETON);
@@ -326,6 +348,7 @@ public class DiDictionaryTest
         // when
         Instance<ClassBasicStringGetter> result =
                 testObject.findInstance(ClassBasicStringGetter.class);
+
         // then
         Assertions.assertThat(result.exists()).isFalse();
     }
@@ -338,8 +361,10 @@ public class DiDictionaryTest
     {
         // given
         testObject.addInstance(ClassBasicStringGetter.class, new ClassBasicStringGetter("String"));
+
         // when
         boolean result = testObject.contains(ClassBasicStringGetter.class);
+
         // then
         Assertions.assertThat(result).isTrue();
     }
@@ -349,6 +374,7 @@ public class DiDictionaryTest
     {
         // when
         boolean result = testObject.contains(InterfaceBasic.class);
+
         // then
         Assertions.assertThat(result).isFalse();
     }
@@ -358,6 +384,7 @@ public class DiDictionaryTest
     {
         // when
         boolean result = testObject.contains(ClassBasicInheritsFromAbstract.class);
+
         // then
         Assertions.assertThat(result).isFalse();
     }
@@ -367,6 +394,7 @@ public class DiDictionaryTest
     {
         // when
         boolean result = testObject.contains(ClassRegisterConcrete.class);
+
         // then
         Assertions.assertThat(result).isTrue();
     }
@@ -378,8 +406,10 @@ public class DiDictionaryTest
         Class<ClassRegisterConcrete> type = ClassRegisterConcrete.class;
 
         testObject.addType(type);
+
         // when
         boolean result = testObject.contains(type);
+
         // then
         Assertions.assertThat(result).isTrue();
     }
@@ -391,8 +421,10 @@ public class DiDictionaryTest
         Class<InterfaceBasic> type = InterfaceBasic.class;
 
         testObject.addType(type, ClassBasicAbstract.class);
+
         // when
         boolean result = testObject.contains(type);
+
         // then
         Assertions.assertThat(result).isTrue();
     }
@@ -402,6 +434,7 @@ public class DiDictionaryTest
     {
         // when
         boolean result = testObject.contains(ClassRegisterSelfAbstractIncorrect.class);
+
         // then
         Assertions.assertThat(result).isFalse();
     }
@@ -417,10 +450,12 @@ public class DiDictionaryTest
 
         testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
                            ConstructionPolicy.SINGLETON);
+
         // when
         testObject.addSingleton(ClassBasicAbstract.class, singleton);
 
         Instance<ClassBasicAbstract> result = testObject.findInstance(ClassBasicAbstract.class);
+
         // then
         Assertions.assertThat(result.exists()).isTrue();
         Assertions.assertThat(result.extract()).isSameAs(singleton);
@@ -434,10 +469,12 @@ public class DiDictionaryTest
 
         testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
                            ConstructionPolicy.CONSTRUCT);
+
         // when
         testObject.addSingleton(ClassBasicAbstract.class, singleton);
 
         Instance<ClassBasicAbstract> result = testObject.findInstance(ClassBasicAbstract.class);
+
         // then
         Assertions.assertThat(result.exists()).isFalse();
     }
@@ -447,10 +484,12 @@ public class DiDictionaryTest
     {
         // given
         ClassBasicInheritsFromAbstract singleton = new ClassBasicInheritsFromAbstract();
+
         // when
         testObject.addSingleton(ClassBasicAbstract.class, singleton);
 
         Instance<ClassBasicAbstract> result = testObject.findInstance(ClassBasicAbstract.class);
+
         // then
         Assertions.assertThat(result.exists()).isFalse();
     }

@@ -42,6 +42,7 @@ public class DiResolverTest
     {
         // when
         ClassConstructorDefault result = testObject.construct(ClassConstructorDefault.class);
+
         // then
         Assertions.assertThat(result).isNotNull();
     }
@@ -52,6 +53,7 @@ public class DiResolverTest
         // when
         ClassConstructorSuperParameterized result =
                 testObject.construct(ClassConstructorSuperParameterized.class);
+
         // then
         Assertions.assertThat(result).isNotNull();
     }
@@ -62,6 +64,7 @@ public class DiResolverTest
         // when
         ClassBasicInheritsFromAbstract result =
                 testObject.construct(ClassBasicInheritsFromAbstract.class);
+
         // then
         Assertions.assertThat(result).isNotNull();
     }
@@ -81,9 +84,11 @@ public class DiResolverTest
         int number = 10;
 
         dictionary.addInstance(int.class, number);
+
         // when
         ClassConstructorParameterized result =
                 testObject.construct(ClassConstructorParameterized.class);
+
         // then
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getNumber()).isEqualTo(number);
@@ -96,6 +101,7 @@ public class DiResolverTest
         Integer number = 10;
 
         dictionary.addInstance(Integer.class, number);
+
         // then
         Assertions.assertThatThrownBy(
                           () -> testObject.construct(ClassConstructorParameterized.class))
@@ -108,6 +114,7 @@ public class DiResolverTest
         // when
         ClassConstructorDefaultAndParameterized result =
                 testObject.construct(ClassConstructorDefaultAndParameterized.class);
+
         // then
         Assertions.assertThat(result).isNotNull();
     }
@@ -202,6 +209,7 @@ public class DiResolverTest
     {
         // given
         dictionary.addInstance(String.class, "string");
+
         // then
         Assertions.assertThatThrownBy(() -> testObject.construct(ClassSetterThrows.class))
                   .isInstanceOf(SetterInvocationException.class);
@@ -212,8 +220,10 @@ public class DiResolverTest
     {
         // given
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class);
+
         // when
         InterfaceSetter result = testObject.construct(ClassSetterSingle.class);
+
         // then
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getBasicObject()).isNotNull();
@@ -229,8 +239,10 @@ public class DiResolverTest
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class);
         dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class);
         dictionary.addInstance(String.class, string);
+
         // when
         InterfaceSetterMultiple result = testObject.construct(InterfaceSetterMultiple.class);
+
         // then
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.getBasicObject()).isNotNull();
@@ -259,9 +271,11 @@ public class DiResolverTest
         dictionary.addType(InterfaceBasicSimpleDependency.class,
                            ClassConstructorNotAnnotatedWithDependency.class,
                            ConstructionPolicy.defaultPolicy);
+
         // when
         InterfaceBasicSimpleDependency result =
                 testObject.construct(InterfaceBasicSimpleDependency.class);
+
         // then
         Assertions.assertThat(result)
                   .isNotNull()
@@ -287,9 +301,11 @@ public class DiResolverTest
         dictionary.addType(InterfaceBasicSimpleDependency.class,
                            ClassConstructorNotAnnotatedWithDependency.class,
                            ConstructionPolicy.defaultPolicy);
+
         // when
         InterfaceBasicSimpleDependency result =
                 testObject.construct(InterfaceBasicSimpleDependency.class);
+
         // then
         Assertions.assertThat(result)
                   .isNotNull()
@@ -313,9 +329,11 @@ public class DiResolverTest
         dictionary.addType(InterfaceBasicSimpleDependency.class,
                            ClassConstructorNotAnnotatedWithDependency.class,
                            ConstructionPolicy.defaultPolicy);
+
         // when
         InterfaceBasicSimpleDependency result =
                 testObject.construct(InterfaceBasicSimpleDependency.class);
+
         // then
         Assertions.assertThat(result)
                   .isNotNull()
@@ -340,9 +358,11 @@ public class DiResolverTest
         dictionary.addType(InterfaceBasicSimpleDependency.class,
                            ClassConstructorAnnotatedWithDependency.class,
                            ConstructionPolicy.defaultPolicy);
+
         // when
         InterfaceBasicSimpleDependency result =
                 testObject.construct(InterfaceBasicSimpleDependency.class);
+
         // then
         Assertions.assertThat(result)
                   .isNotNull()
@@ -363,6 +383,7 @@ public class DiResolverTest
                            ConstructionPolicy.defaultPolicy);
         dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
                            ConstructionPolicy.defaultPolicy);
+
         // then
         Assertions.assertThatThrownBy(() -> testObject.construct(InterfaceDiamondBottom.class))
                   .isInstanceOf(MissingDependenciesException.class);
@@ -380,8 +401,10 @@ public class DiResolverTest
                            ConstructionPolicy.defaultPolicy);
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
                            ConstructionPolicy.defaultPolicy);
+
         // when
         InterfaceDiamondBottom result = testObject.construct(InterfaceDiamondBottom.class);
+
         // then
         Assertions.assertThat(result).isNotNull().isInstanceOf(ClassDiamondBottom.class);
         Assertions.assertThat(result.getDiamond1()).isNotNull();
@@ -404,8 +427,10 @@ public class DiResolverTest
                            ConstructionPolicy.defaultPolicy);
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
                            ConstructionPolicy.SINGLETON);
+
         // when
         InterfaceDiamondBottom result = testObject.construct(InterfaceDiamondBottom.class);
+
         // then
         Assertions.assertThat(result).isNotNull().isInstanceOf(ClassDiamondBottom.class);
         Assertions.assertThat(result.getDiamond1()).isNotNull();
@@ -424,6 +449,7 @@ public class DiResolverTest
                            ConstructionPolicy.defaultPolicy);
         dictionary.addType(InterfaceCircularRight.class, ClassCircularRight.class,
                            ConstructionPolicy.defaultPolicy);
+
         // then
         Assertions.assertThatThrownBy(() -> testObject.construct(InterfaceCircularRight.class))
                   .isInstanceOf(CircularDependenciesException.class);
@@ -444,9 +470,11 @@ public class DiResolverTest
                            ConstructionPolicy.defaultPolicy);
         dictionary.addType(InterfaceCircularDependency.class, ClassCircularDependency.class,
                            ConstructionPolicy.defaultPolicy);
+
         // when
         InterfaceCircularDependency result =
                 testObject.construct(InterfaceCircularDependency.class);
+
         // then
         Assertions.assertThat(result).isNotNull().isInstanceOf(ClassCircularDependency.class);
         Assertions.assertThat(result.getNonCircularObject()).isNotNull();
@@ -473,9 +501,11 @@ public class DiResolverTest
         dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
                            ConstructionPolicy.defaultPolicy);
         dictionary.addInstance(String.class, string);
+
         // when
         InterfaceBasicComplexDependency result =
                 testObject.construct(InterfaceBasicComplexDependency.class);
+
         // then
         Assertions.assertThat(result).isNotNull().isInstanceOf(ClassBasicComplexDependency.class);
         Assertions.assertThat(result.getBasicObject()).isNotNull();
@@ -494,6 +524,7 @@ public class DiResolverTest
         // when
         InterfaceRegister result1 = testObject.construct(InterfaceRegister.class);
         InterfaceRegister result2 = testObject.construct(InterfaceRegister.class);
+
         // then
         Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassRegisterInterface.class);
         Assertions.assertThat(result2)
@@ -508,6 +539,7 @@ public class DiResolverTest
         // when
         ClassRegisterAbstract result1 = testObject.construct(ClassRegisterAbstract.class);
         ClassRegisterAbstract result2 = testObject.construct(ClassRegisterAbstract.class);
+
         // then
         Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassRegisterConcrete.class);
         Assertions.assertThat(result2)
@@ -522,6 +554,7 @@ public class DiResolverTest
         // when
         ClassRegisterConcrete result1 = testObject.construct(ClassRegisterConcrete.class);
         ClassRegisterConcrete result2 = testObject.construct(ClassRegisterConcrete.class);
+
         // then
         Assertions.assertThat(result1)
                   .isNotNull()
@@ -538,6 +571,7 @@ public class DiResolverTest
         // when
         ClassRegisterSelf result1 = testObject.construct(ClassRegisterSelf.class);
         ClassRegisterSelf result2 = testObject.construct(ClassRegisterSelf.class);
+
         // then
         Assertions.assertThat(result1).isNotNull();
         Assertions.assertThat(result2).isNotNull().isNotSameAs(result1);
@@ -549,6 +583,7 @@ public class DiResolverTest
         // when
         ClassRegisterSelfAsSubtype result1 = testObject.construct(ClassRegisterSelfAsSubtype.class);
         ClassRegisterSelfAsSubtype result2 = testObject.construct(ClassRegisterSelfAsSubtype.class);
+
         // then
         Assertions.assertThat(result1).isNotNull();
         Assertions.assertThat(result2).isNotNull().isNotSameAs(result1);
@@ -615,6 +650,7 @@ public class DiResolverTest
         // when
         InterfaceRegisterSingleton result1 = testObject.construct(InterfaceRegisterSingleton.class);
         InterfaceRegisterSingleton result2 = testObject.construct(InterfaceRegisterSingleton.class);
+
         // then
         Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassRegisterSingletonBase.class);
         Assertions.assertThat(result2)
@@ -629,6 +665,7 @@ public class DiResolverTest
         // when
         ClassRegisterSingletonBase result1 = testObject.construct(ClassRegisterSingletonBase.class);
         ClassRegisterSingletonBase result2 = testObject.construct(ClassRegisterSingletonBase.class);
+
         // then
         Assertions.assertThat(result1)
                   .isNotNull()
@@ -645,6 +682,7 @@ public class DiResolverTest
         // when
         ClassRegisterSelfSingleton result1 = testObject.construct(ClassRegisterSelfSingleton.class);
         ClassRegisterSelfSingleton result2 = testObject.construct(ClassRegisterSelfSingleton.class);
+
         // then
         Assertions.assertThat(result1).isNotNull();
         Assertions.assertThat(result2).isNotNull().isSameAs(result1);
@@ -658,6 +696,7 @@ public class DiResolverTest
                 testObject.construct(ClassRegisterSelfAsSubtypeSingleton.class);
         ClassRegisterSelfAsSubtypeSingleton result2 =
                 testObject.construct(ClassRegisterSelfAsSubtypeSingleton.class);
+
         // then
         Assertions.assertThat(result1).isNotNull();
         Assertions.assertThat(result2).isNotNull().isSameAs(result1);
@@ -676,8 +715,10 @@ public class DiResolverTest
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class);
         dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class);
         dictionary.addInstance(String.class, string);
+
         // when
         InterfaceSetterMultiple result = testObject.inject(instance);
+
         // then
         Assertions.assertThat(result).isSameAs(instance);
         Assertions.assertThat(result.getBasicObject()).isNotNull();
