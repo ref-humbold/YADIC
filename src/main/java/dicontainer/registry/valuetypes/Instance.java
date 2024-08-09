@@ -1,5 +1,6 @@
-package dicontainer.dictionary.valuetypes;
+package dicontainer.registry.valuetypes;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -26,13 +27,12 @@ public final class Instance<T>
 
     public static <T> Instance<T> none()
     {
-        return none(new NullInstanceException("No instance found"));
+        return none(new NoSuchElementException("No instance found"));
     }
 
     public static <T> Instance<T> none(RuntimeException exception)
     {
-        Objects.requireNonNull(exception);
-        return new Instance<>(null, exception);
+        return new Instance<>(null, Objects.requireNonNull(exception));
     }
 
     @SuppressWarnings("unchecked")

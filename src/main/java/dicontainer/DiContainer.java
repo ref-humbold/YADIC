@@ -1,29 +1,19 @@
 package dicontainer;
 
 import dicontainer.annotation.Dependency;
-import dicontainer.dictionary.DiDictionary;
-import dicontainer.resolver.DiResolver;
+import dicontainer.registry.DependencyRegistry;
+import dicontainer.resolver.TypesResolver;
 
 public final class DiContainer
+        implements DiResolver
 {
-    private final DiDictionary diDictionary;
-    private final DiResolver diResolver;
+    private final DependencyRegistry registry;
+    private final TypesResolver resolver;
 
     public DiContainer()
     {
-        diDictionary = new DiDictionary();
-        diResolver = new DiResolver(diDictionary);
-    }
-
-    /**
-     * Register concrete type class in the container.
-     * @param type type class
-     * @return {@code this} for method chaining
-     */
-    public <T> DiContainer registerType(Class<T> type)
-    {
-        diDictionary.addType(type);
-        return this;
+        registry = new DependencyRegistry();
+        resolver = new TypesResolver(registry);
     }
 
     /**
@@ -34,19 +24,7 @@ public final class DiContainer
      */
     public <T> DiContainer registerType(Class<T> type, ConstructionPolicy policy)
     {
-        diDictionary.addType(type, policy);
-        return this;
-    }
-
-    /**
-     * Register subtype class for its supertype.
-     * @param supertype supertype class
-     * @param subtype subtype class
-     * @return {@code this} for method chaining
-     */
-    public <T> DiContainer registerType(Class<T> supertype, Class<? extends T> subtype)
-    {
-        diDictionary.addType(supertype, subtype);
+        registry.addType(type, policy);
         return this;
     }
 
@@ -60,7 +38,7 @@ public final class DiContainer
     public <T> DiContainer registerType(
             Class<T> supertype, Class<? extends T> subtype, ConstructionPolicy policy)
     {
-        diDictionary.addType(supertype, subtype, policy);
+        registry.addType(supertype, subtype, policy);
         return this;
     }
 
@@ -72,7 +50,7 @@ public final class DiContainer
      */
     public <T> DiContainer registerInstance(Class<T> type, T instance)
     {
-        diDictionary.addInstance(type, instance);
+        registry.addInstance(type, instance);
         return this;
     }
 
@@ -82,19 +60,9 @@ public final class DiContainer
      * @return new instance
      * @throws DiException if type cannot be resolved
      */
+    @Override
     public <T> T resolve(Class<T> type)
     {
-        return diResolver.construct(type);
-    }
-
-    /**
-     * Resolve and inject all dependencies to given object using {@link Dependency} on setters.
-     * @param instance instance object
-     * @return resolved instance
-     * @throws DiException if instance cannot be built up
-     */
-    public <T> T buildUp(T instance)
-    {
-        return diResolver.inject(instance);
+        return resolver.resolve(type);
     }
 }

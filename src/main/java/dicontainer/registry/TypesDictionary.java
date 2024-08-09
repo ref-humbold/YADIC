@@ -1,4 +1,4 @@
-package dicontainer.dictionary;
+package dicontainer.registry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,18 +6,18 @@ import java.util.Map;
 import dicontainer.ConstructionPolicy;
 import dicontainer.annotation.Register;
 import dicontainer.annotation.SelfRegister;
-import dicontainer.dictionary.exception.AbstractTypeException;
-import dicontainer.dictionary.exception.AnnotatedTypeRegistrationException;
-import dicontainer.dictionary.exception.MixingPoliciesException;
-import dicontainer.dictionary.exception.NotDerivedTypeException;
-import dicontainer.dictionary.valuetypes.Instance;
-import dicontainer.dictionary.valuetypes.Subtype;
+import dicontainer.registry.exception.AbstractTypeException;
+import dicontainer.registry.exception.AnnotatedTypeRegistrationException;
+import dicontainer.registry.exception.MixingPoliciesException;
+import dicontainer.registry.exception.NotDerivedTypeException;
+import dicontainer.registry.valuetypes.Instance;
+import dicontainer.registry.valuetypes.TypeConstruction;
 import dicontainer.resolver.exception.MissingDependenciesException;
 
 class TypesDictionary
 {
-    private final Map<Class<?>, Subtype<?>> subtypes = new HashMap<>();
-    private final Map<Class<?>, Instance<?>> singletons = new HashMap<>();
+    private final Map<Class<?>, TypeConstruction<?>> typesMap = new HashMap<>();
+    private final Map<Class<?>, Instance<?>> singletonsMap = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     <T> void insert(Class<T> type, ConstructionPolicy policy)
@@ -28,14 +28,14 @@ class TypesDictionary
         {
             Register annotation = type.getAnnotation(Register.class);
 
-            doInsert(type,
-                     new Subtype<>((Class<? extends T>)annotation.value(), annotation.policy()));
+            doInsert(type, new TypeConstruction<>((Class<? extends T>)annotation.value(),
+                                                  annotation.policy()));
         }
         else if(type.isAnnotationPresent(SelfRegister.class))
         {
             SelfRegister annotation = type.getAnnotation(SelfRegister.class);
 
-            doInsert(type, new Subtype<>(type, annotation.policy()));
+            doInsert(type, new TypeConstruction<>(type, annotation.policy()));
         }
         else
         {
@@ -43,7 +43,7 @@ class TypesDictionary
                 throw new AbstractTypeException(
                         String.format("Cannot register abstract type %s", type.getName()));
 
-            doInsert(type, new Subtype<>(type, policy));
+            doInsert(type, new TypeConstruction<>(type, policy));
         }
     }
 
@@ -53,7 +53,7 @@ class TypesDictionary
             throw new AnnotatedTypeRegistrationException(
                     String.format("Cannot register type for annotated type %s", type.getName()));
 
-        doInsert(type, new Subtype<>(subtype, policy));
+        doInsert(type, new TypeConstruction<>(subtype, policy));
     }
 
     boolean contains(Class<?> type)
@@ -67,16 +67,52 @@ class TypesDictionary
             return false;
         }
 
-        return TypesUtils.isAnnotatedType(type) || subtypes.containsKey(type);
+        return TypesUtils.isAnnotatedType(type) || typesMap.containsKey(type);
+    }
+
+    <T> TypeConstruction<? extends T> find(Class<T> type)
+    {
+        TypeConstruction<? extends T> mapping = get(type);
+        ConstructionPolicy desiredPolicy = mapping.policy();
+        Class<?> supertype = type;
+
+        while(TypesUtils.isAbstractReferenceType(mapping.type())
+                || contains(mapping.type()) && !mapping.type().equals(supertype))
+        {
+            supertype = mapping.type();
+            mapping = get(mapping.type());
+
+            if(mapping.policy() != desiredPolicy)
+                throw new MixingPoliciesException(String.format(
+                        "Registered classes chain contains two different construction policies: expected %s, was %s",
+                        desiredPolicy.toString(), mapping.policy().toString()));
+        }
+
+        return mapping;
+    }
+
+    <T> void insertSingleton(Class<T> type, T instance)
+    {
+        TypeConstruction<?> mapping = typesMap.get(type);
+
+        if(mapping == null || mapping.policy() != ConstructionPolicy.SINGLETON)
+            return;
+
+        singletonsMap.putIfAbsent(type, Instance.of(instance));
+    }
+
+    <T> Instance<T> getSingleton(Class<T> type)
+    {
+        return Instance.cast(singletonsMap.get(type));
     }
 
     @SuppressWarnings("unchecked")
-    <T> Subtype<? extends T> get(Class<T> type)
+    private <T> TypeConstruction<? extends T> get(Class<T> type)
     {
-        if(TypesUtils.isAnnotatedType(type) && !subtypes.containsKey(type))
-            insert(type, ConstructionPolicy.defaultPolicy);
+        if(TypesUtils.isAnnotatedType(type) && !typesMap.containsKey(type))
+            insert(type, null);
 
-        Subtype<? extends T> mapping = (Subtype<? extends T>)subtypes.get(type);
+        TypeConstruction<? extends T> mapping = (TypeConstruction<? extends T>)typesMap.get(type);
 
         if(mapping != null)
             return mapping;
@@ -86,49 +122,13 @@ class TypesDictionary
                     String.format("Abstract type %s has no registered concrete subclass",
                                   type.getName()));
 
-        return new Subtype<>(type, ConstructionPolicy.defaultPolicy);
+        return new TypeConstruction<>(type, ConstructionPolicy.CONSTRUCTION);
     }
 
-    <T> Subtype<? extends T> find(Class<T> type)
+    private <T> void doInsert(Class<T> type, TypeConstruction<? extends T> mapping)
     {
-        Subtype<? extends T> mapping = get(type);
-        ConstructionPolicy desiredPolicy = mapping.policy;
-        Class<?> supertype = type;
-
-        while(TypesUtils.isAbstractReferenceType(mapping.subtype)
-                || contains(mapping.subtype) && !mapping.subtype.equals(supertype))
-        {
-            supertype = mapping.subtype;
-            mapping = get(mapping.subtype);
-
-            if(mapping.policy != desiredPolicy)
-                throw new MixingPoliciesException(String.format(
-                        "Registered classes chain contains two different construction policies: expected %s, was %s",
-                        desiredPolicy.toString(), mapping.policy.toString()));
-        }
-
-        return mapping;
-    }
-
-    <T> void insertSingleton(Class<T> type, T instance)
-    {
-        Subtype<?> mapping = subtypes.get(type);
-
-        if(mapping == null || mapping.policy != ConstructionPolicy.SINGLETON)
-            return;
-
-        singletons.putIfAbsent(type, Instance.of(instance));
-    }
-
-    <T> Instance<T> getSingleton(Class<T> type)
-    {
-        return Instance.cast(singletons.get(type));
-    }
-
-    private <T> void doInsert(Class<T> type, Subtype<? extends T> mapping)
-    {
-        subtypes.put(type, mapping);
-        singletons.remove(type);
+        typesMap.put(type, mapping);
+        singletonsMap.remove(type);
     }
 
     private void validateAnnotation(Class<?> type)

@@ -1,31 +1,19 @@
-package dicontainer.dictionary;
+package dicontainer.registry;
 
 import dicontainer.ConstructionPolicy;
-import dicontainer.dictionary.exception.RegistrationException;
-import dicontainer.dictionary.valuetypes.Instance;
-import dicontainer.dictionary.valuetypes.Subtype;
+import dicontainer.registry.exception.RegistrationException;
+import dicontainer.registry.valuetypes.Instance;
+import dicontainer.registry.valuetypes.TypeConstruction;
 
-public class DiDictionary
+public class DependencyRegistry
 {
     private final TypesDictionary typesDictionary = new TypesDictionary();
     private final InstancesDictionary instancesDictionary = new InstancesDictionary();
-
-    public <T> void addType(Class<T> type)
-    {
-        validateRegisteredType(type);
-        typesDictionary.insert(type, ConstructionPolicy.defaultPolicy);
-    }
 
     public <T> void addType(Class<T> type, ConstructionPolicy policy)
     {
         validateRegisteredType(type);
         typesDictionary.insert(type, policy);
-    }
-
-    public <T> void addType(Class<T> type, Class<? extends T> subtype)
-    {
-        validateRegisteredType(type);
-        typesDictionary.insert(type, subtype, ConstructionPolicy.defaultPolicy);
     }
 
     public <T> void addType(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
@@ -40,12 +28,11 @@ public class DiDictionary
         instancesDictionary.insert(type, instance);
     }
 
-    public <T> Subtype<? extends T> findType(Class<T> type)
+    public <T> TypeConstruction<? extends T> findType(Class<T> type)
     {
-        if(instancesDictionary.contains(type))
-            return new Subtype<>(type, ConstructionPolicy.SINGLETON);
-
-        return typesDictionary.find(type);
+        return instancesDictionary.contains(type)
+               ? new TypeConstruction<>(type, ConstructionPolicy.SINGLETON)
+               : typesDictionary.find(type);
     }
 
     public <T> Instance<T> findInstance(Class<T> type)

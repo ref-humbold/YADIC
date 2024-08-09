@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Stack;
 
 import dicontainer.DiException;
-import dicontainer.dictionary.valuetypes.Instance;
+import dicontainer.registry.valuetypes.Instance;
 import dicontainer.resolver.exception.CircularDependenciesException;
 import dicontainer.resolver.exception.MissingDependenciesException;
 import dicontainer.resolver.exception.NoInstanceCreatedException;
 
 class ConstructorResolver
 {
-    private final DiResolver resolver;
+    private final TypesResolver resolver;
 
-    ConstructorResolver(DiResolver resolver)
+    ConstructorResolver(TypesResolver resolver)
     {
         this.resolver = resolver;
     }
@@ -32,12 +32,15 @@ class ConstructorResolver
 
     private <T> T resolveType(Class<T> type, Stack<Class<?>> path)
     {
-        return resolver.dictionary.findInstance(type).extract(() -> {
-            Class<? extends T> subtype = resolver.dictionary.findType(type).subtype;
-            T object = construct(new TypeConstructors<>(subtype), path);
-            resolver.dictionary.addSingleton(type, object);
-            return object;
-        });
+        return resolver.registry.findInstance(type).extract(() -> createInstance(type, path));
+    }
+
+    private <T> T createInstance(Class<T> type, Stack<Class<?>> path)
+    {
+        Class<? extends T> subtype = resolver.registry.findType(type).type();
+        T object = construct(new TypeConstructors<>(subtype), path);
+        resolver.registry.addSingleton(type, object);
+        return object;
     }
 
     private <T> T construct(TypeConstructors<T> constructors, Stack<Class<?>> path)
@@ -85,7 +88,7 @@ class ConstructorResolver
                         "Dependencies resolving detected a cycle detected between %s and %s",
                         parameter.getName(), typename)));
 
-            if(!resolver.dictionary.contains(parameter))
+            if(!resolver.registry.contains(parameter))
                 return Instance.none(new MissingDependenciesException(
                         String.format("No dependency for type %s found when resolving type %s",
                                       parameter.getName(), typename)));

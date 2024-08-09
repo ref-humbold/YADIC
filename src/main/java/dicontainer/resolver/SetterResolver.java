@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 import dicontainer.annotation.Dependency;
 import dicontainer.resolver.exception.IncorrectDependencySetterException;
@@ -15,9 +14,9 @@ import dicontainer.resolver.exception.SetterInvocationException;
 class SetterResolver
 {
     private static final String SETTER_NAME_REGEX = "^set[a-z]?[A-Z](\\w|\\d)*";
-    private final DiResolver resolver;
+    private final TypesResolver resolver;
 
-    SetterResolver(DiResolver resolver)
+    SetterResolver(TypesResolver resolver)
     {
         this.resolver = resolver;
     }
@@ -27,7 +26,7 @@ class SetterResolver
         List<Method> dependencySetters = Arrays.stream(object.getClass().getMethods())
                                                .filter(this::hasAnnotation)
                                                .filter(this::validateSetter)
-                                               .collect(Collectors.toList());
+                                               .toList();
 
         for(Method setter : dependencySetters)
             invoke(object, setter, path);
@@ -42,7 +41,7 @@ class SetterResolver
 
         for(Class<?> parameter : setter.getParameterTypes())
         {
-            if(!resolver.dictionary.contains(parameter))
+            if(!resolver.registry.contains(parameter))
                 throw new MissingDependenciesException(
                         String.format("No dependency for type %s found when resolving type %s",
                                       parameter.getName(), typename));
@@ -79,6 +78,6 @@ class SetterResolver
     private boolean isSetter(Method method)
     {
         return method.getReturnType() == void.class && method.getName().matches(SETTER_NAME_REGEX)
-                       && method.getParameterCount() == 1;
+                && method.getParameterCount() == 1;
     }
 }

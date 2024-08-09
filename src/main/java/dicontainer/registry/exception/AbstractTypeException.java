@@ -1,11 +1,13 @@
-package dicontainer.dictionary.exception;
+package dicontainer.registry.exception;
+
+import java.io.Serial;
 
 import dicontainer.DiException;
 
 public class AbstractTypeException
         extends DiException
 {
-    private static final long serialVersionUID = 5573956461991224741L;
+    @Serial private static final long serialVersionUID = 5573956461991224741L;
 
     public AbstractTypeException(String s)
     {

@@ -1,17 +1,19 @@
 package dicontainer;
 
+import java.io.Serial;
+
 public class DiException
         extends RuntimeException
 {
-    private static final long serialVersionUID = -3019200382390630637L;
+    @Serial private static final long serialVersionUID = -3019200382390630637L;
 
-    public DiException(String s)
+    public DiException(String message)
     {
-        super(s);
+        super(message);
     }
 
-    public DiException(String s, Throwable t)
+    public DiException(String message, Throwable cause)
     {
-        super(s, t);
+        super(message, cause);
     }
 }

@@ -13,5 +13,5 @@ import dicontainer.ConstructionPolicy;
 @Target(ElementType.TYPE)
 public @interface SelfRegister
 {
-    ConstructionPolicy policy() default ConstructionPolicy.CONSTRUCT;
+    ConstructionPolicy policy() default ConstructionPolicy.CONSTRUCTION;
 }

@@ -2,27 +2,25 @@ package dicontainer.resolver;
 
 import java.util.Stack;
 
-import dicontainer.dictionary.DiDictionary;
+import dicontainer.DiResolver;
+import dicontainer.registry.DependencyRegistry;
 
-public class DiResolver
+public class TypesResolver
+        implements DiResolver
 {
-    final DiDictionary dictionary;
+    final DependencyRegistry registry;
     private final ConstructorResolver constructorResolver = new ConstructorResolver(this);
     private final SetterResolver setterResolver = new SetterResolver(this);
 
-    public DiResolver(DiDictionary dictionary)
+    public TypesResolver(DependencyRegistry registry)
     {
-        this.dictionary = dictionary;
+        this.registry = registry;
     }
 
-    public <T> T construct(Class<T> type)
+    @Override
+    public <T> T resolve(Class<T> type)
     {
         return resolve(type, new Stack<>());
-    }
-
-    public <T> T inject(T instance)
-    {
-        return setterResolver.resolve(instance, new Stack<>());
     }
 
     <T> T resolve(Class<T> type, Stack<Class<?>> path)

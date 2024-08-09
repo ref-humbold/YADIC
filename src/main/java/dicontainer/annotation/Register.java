@@ -15,5 +15,5 @@ public @interface Register
 {
     Class<?> value();
 
-    ConstructionPolicy policy() default ConstructionPolicy.CONSTRUCT;
+    ConstructionPolicy policy() default ConstructionPolicy.CONSTRUCTION;
 }

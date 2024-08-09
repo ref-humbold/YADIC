@@ -1,11 +1,13 @@
-package dicontainer.dictionary.exception;
+package dicontainer.registry.exception;
+
+import java.io.Serial;
 
 import dicontainer.DiException;
 
 public class NotDerivedTypeException
         extends DiException
 {
-    private static final long serialVersionUID = -3180961583302361880L;
+    @Serial private static final long serialVersionUID = -3180961583302361880L;
 
     public NotDerivedTypeException(String s)
     {
