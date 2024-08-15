@@ -3,13 +3,13 @@ plugins {
 }
 
 ext {
-  majorVersion = 4
+  majorVersion = 5
   minorVersion = 0
   dateVersion = new Date().format('yyMMdd')
   specVersion = "${majorVersion}.${minorVersion}"
   jarVersion = "${majorVersion}.${minorVersion}.${dateVersion}"
   vendor = 'Rafał Kaleta'
-  mainPackage = 'dicontainer'
+  mainPackage = 'yadic'
 }
 
 version = project.jarVersion
@@ -32,7 +32,7 @@ tasks.jar {
   manifest {
     attributes(
         'Built-By': project.vendor,
-        'Specification-Title': 'Dependency Injection Container',
+        'Specification-Title': 'Yet Another Dependency Injection Container',
         'Specification-Version': project.specVersion,
         'Specification-Vendor': project.vendor,
         'Implementation-Title': project.mainPackage,

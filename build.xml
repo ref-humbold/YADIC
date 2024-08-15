@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="DI-Container" basedir="." default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="YADIC" basedir="." default="build">
   <tstamp>
     <format property="date.version" pattern="yyMMdd" locale="en,GB" />
   </tstamp>
 
-  <property name="major.version" value="4" />
+  <property name="major.version" value="5" />
   <property name="minor.version" value="0" />
   <property name="spec.version" value="${major.version}.${minor.version}" />
   <property name="jar.version" value="${major.version}.${minor.version}.${date.version}" />
   <property name="vendor" value="Rafał Kaleta" />
 
-  <property name="main.package" value="dicontainer" />
+  <property name="main.package" value="yadic" />
   <property name="src.dir" value="src/main/java" />
   <property name="resources.dir" value="src/main/resources" />
   <property name="test.dir" value="src/test/java" />
@@ -76,7 +76,7 @@
       <zipgroupfileset dir="${ivy.lib.dir}" includes="*.jar" />
       <manifest>
         <attribute name="Built-By" value="${vendor}" />
-        <attribute name="Specification-Title" value="Dependency Injection Container" />
+        <attribute name="Specification-Title" value="Yet Another Dependency Injection Container" />
         <attribute name="Specification-Version" value="${spec.version}" />
         <attribute name="Specification-Vendor" value="${vendor}" />
         <attribute name="Implementation-Title" value="${main.package}" />

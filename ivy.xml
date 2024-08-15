@@ -1,5 +1,5 @@
 <ivy-module version="2.0">
-  <info organisation="ref_humbold" module="di_coitainer" />
+  <info organisation="ref_humbold" module="yadic" />
   <dependencies>
     <dependency org="org.junit.jupiter" name="junit-jupiter-api" rev="5.+" />
     <dependency org="org.junit.jupiter" name="junit-jupiter-engine" rev="5.+" />
