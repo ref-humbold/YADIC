@@ -1,10 +1,12 @@
-# DI-Container
+# YADIC
 
 ![GitHub Actions](https://github.com/ref-humbold/DI-Container/workflows/GitHub%20Actions/badge.svg?branch=master)
 [![CircleCI](https://circleci.com/gh/ref-humbold/DI-Container/tree/master.svg?style=shield)](https://circleci.com/gh/ref-humbold/DI-Container/tree/master)
 
 ![Release](https://img.shields.io/github/v/release/ref-humbold/DI-Container?style=plastic)
 ![License](https://img.shields.io/github/license/ref-humbold/DI-Container?style=plastic)
+
+YADIC - Yet Another Dependency Injection Container
 
 Simple dependency injection container in Java
 
@@ -32,7 +34,7 @@ Simple dependency injection container in Java
 
 ## How to build with ANT?
 
-DI\_Container can be built with **Apache ANT** using **Apache Ivy** to resolve all dependencies.
+YADIC can be built with **Apache ANT** using **Apache Ivy** to resolve all dependencies.
 Ivy itself and all dependencies are downloaded during build, so make sure your Internet
 connection is working!
 
@@ -49,7 +51,7 @@ Possible ANT targets are:
 
 ## How to build with Gradle?
 
-DI\_Container can be built with **Gradle**. All dependencies are downloaded during build, so
+YADIC can be built with **Gradle**. All dependencies are downloaded during build, so
 make sure your Internet connection is working!
 
 Possible Gradle tasks are:
