@@ -72,7 +72,7 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void addType_findType_WhenTypeHasSelfRegisterAnnotation_ThenThisTypeInserted()
+    public void addType_findType_WhenTypeHasRegisterSelfAnnotation_ThenThisTypeInserted()
     {
         // given
         Class<ClassRegisterSelf> type = ClassRegisterSelf.class;
@@ -132,10 +132,10 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void addType_WhenSelfRegisterAnnotatedTypeAndSubtype_ThenAnnotatedTypeRegistrationException()
+    public void addType_WhenRegisterSelfAnnotatedTypeAndSubtype_ThenAnnotatedTypeRegistrationException()
     {
         Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterSelf.class,
-                                                               ClassRegisterDerivedFromSelfRegister.class,
+                                                               ClassRegisterDerivedFromRegisterSelf.class,
                                                                ConstructionPolicy.CONSTRUCTION))
                   .isInstanceOf(AnnotatedTypeRegistrationException.class);
     }
@@ -158,7 +158,7 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void addType_WhenSelfRegisterAbstract_ThenAbstractTypeException()
+    public void addType_WhenRegisterSelfAbstract_ThenAbstractTypeException()
     {
         Assertions.assertThatThrownBy(
                           () -> testObject.addType(ClassRegisterSelfAbstractIncorrect.class,
@@ -319,7 +319,7 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void findType_WhenSelfRegisterClass_ThenMapping()
+    public void findType_WhenRegisterSelfClass_ThenMapping()
     {
         // when
         TypeConstruction<? extends ClassRegisterSelf> result =

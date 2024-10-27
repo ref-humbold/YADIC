@@ -1,6 +1,6 @@
 package yadic.models.setter;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 import yadic.models.basic.InterfaceBasic;
 import yadic.models.basic.InterfaceBasicStringGetter;
 
@@ -21,7 +21,7 @@ public class ClassSetterMultiple
     }
 
     @Override
-    @Dependency
+    @YadicDependency
     public void setBasicObject(InterfaceBasic basicObject)
     {
         this.basicObject = basicObject;
@@ -34,7 +34,7 @@ public class ClassSetterMultiple
     }
 
     @Override
-    @Dependency
+    @YadicDependency
     public void setStringObject(InterfaceBasicStringGetter stringObject)
     {
         this.stringObject = stringObject;

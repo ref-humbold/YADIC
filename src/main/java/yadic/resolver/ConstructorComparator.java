@@ -3,7 +3,7 @@ package yadic.resolver;
 import java.lang.reflect.Constructor;
 import java.util.Comparator;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 
 public class ConstructorComparator
         implements Comparator<Constructor<?>>
@@ -11,8 +11,8 @@ public class ConstructorComparator
     @Override
     public int compare(Constructor<?> constructor0, Constructor<?> constructor1)
     {
-        boolean isAnnotated0 = constructor0.isAnnotationPresent(Dependency.class);
-        boolean isAnnotated1 = constructor1.isAnnotationPresent(Dependency.class);
+        boolean isAnnotated0 = constructor0.isAnnotationPresent(YadicDependency.class);
+        boolean isAnnotated1 = constructor1.isAnnotationPresent(YadicDependency.class);
 
         if(isAnnotated0 && !isAnnotated1)
             return -1;

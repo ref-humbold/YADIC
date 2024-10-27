@@ -1,8 +1,8 @@
 package yadic.models.register;
 
-import yadic.annotation.SelfRegister;
+import yadic.annotation.YadicRegisterSelf;
 
-@SelfRegister()
+@YadicRegisterSelf()
 public class ClassRegisterSelf
 {
 }

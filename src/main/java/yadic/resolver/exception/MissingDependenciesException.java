@@ -1,9 +1,9 @@
 package yadic.resolver.exception;
 
-import yadic.DiException;
+import yadic.YadicException;
 
 public class MissingDependenciesException
-        extends DiException
+        extends YadicException
 {
     private static final long serialVersionUID = 7265031467533657162L;
 

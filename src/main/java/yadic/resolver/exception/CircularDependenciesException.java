@@ -1,9 +1,9 @@
 package yadic.resolver.exception;
 
-import yadic.DiException;
+import yadic.YadicException;
 
 public class CircularDependenciesException
-        extends DiException
+        extends YadicException
 {
     private static final long serialVersionUID = 607229069481348756L;
 

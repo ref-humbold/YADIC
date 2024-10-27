@@ -1,6 +1,6 @@
 package yadic.models.diamond;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 
 public class ClassDiamondBottom
         implements InterfaceDiamondBottom
@@ -8,7 +8,7 @@ public class ClassDiamondBottom
     private InterfaceDiamondLeft diamond1;
     private InterfaceDiamondRight diamond2;
 
-    @Dependency
+    @YadicDependency
     public ClassDiamondBottom(InterfaceDiamondLeft diamond1, InterfaceDiamondRight diamond2)
     {
         this.diamond1 = diamond1;

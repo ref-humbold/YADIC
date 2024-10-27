@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 import yadic.resolver.exception.IncorrectDependencySetterException;
 import yadic.resolver.exception.MissingDependenciesException;
 import yadic.resolver.exception.SetterInvocationException;
@@ -37,14 +37,14 @@ class SetterResolver
     private <T> void invoke(T object, Method setter, Stack<Class<?>> path)
     {
         List<Object> parameters = new ArrayList<>();
-        String typename = object.getClass().getName();
+        String typename = object.getClass().getTypeName();
 
         for(Class<?> parameter : setter.getParameterTypes())
         {
             if(!resolver.registry.contains(parameter))
                 throw new MissingDependenciesException(
                         String.format("No dependency for type %s found when resolving type %s",
-                                      parameter.getName(), typename));
+                                      parameter.getTypeName(), typename));
 
             parameters.add(resolver.resolve(parameter, path));
         }
@@ -63,7 +63,7 @@ class SetterResolver
 
     private boolean hasAnnotation(Method setter)
     {
-        return setter.isAnnotationPresent(Dependency.class);
+        return setter.isAnnotationPresent(YadicDependency.class);
     }
 
     private boolean validateSetter(Method method)

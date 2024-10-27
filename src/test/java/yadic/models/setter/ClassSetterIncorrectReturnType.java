@@ -1,6 +1,6 @@
 package yadic.models.setter;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 
 public class ClassSetterIncorrectReturnType
 {
@@ -8,7 +8,7 @@ public class ClassSetterIncorrectReturnType
     {
     }
 
-    @Dependency
+    @YadicDependency
     public int method(int number)
     {
         return number + 1;

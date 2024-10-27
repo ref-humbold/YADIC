@@ -1,9 +1,9 @@
 package yadic.resolver.exception;
 
-import yadic.DiException;
+import yadic.YadicException;
 
 public class NoSuitableConstructorException
-        extends DiException
+        extends YadicException
 {
     private static final long serialVersionUID = 902034423730601801L;
 

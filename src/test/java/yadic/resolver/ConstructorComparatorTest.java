@@ -8,7 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 import yadic.models.comparator.ClassComparatorConstructor;
 
 public class ConstructorComparatorTest
@@ -37,7 +37,7 @@ public class ConstructorComparatorTest
         Arrays.sort(constructors, testObject);
 
         // then
-        Assertions.assertThat(constructors[0].isAnnotationPresent(Dependency.class)).isTrue();
+        Assertions.assertThat(constructors[0].isAnnotationPresent(YadicDependency.class)).isTrue();
         Assertions.assertThat(
                           Arrays.stream(constructors).map(Constructor::getParameterCount).toList())
                   .containsExactly(3, 5, 4, 2, 1, 0);

@@ -1,10 +1,10 @@
 package yadic.models.setter;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 
 public class ClassSetterThrows
 {
-    @Dependency
+    @YadicDependency
     public void setString(String string)
             throws Exception
     {

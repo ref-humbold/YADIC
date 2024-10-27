@@ -1,8 +1,8 @@
 package yadic.models.register;
 
-import yadic.annotation.Register;
+import yadic.annotation.YadicRegister;
 
-@Register(InterfaceRegister.class)
+@YadicRegister(InterfaceRegister.class)
 public class ClassRegisterInterfaceIncorrect
         implements InterfaceRegister
 {

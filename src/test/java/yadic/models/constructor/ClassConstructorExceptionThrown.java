@@ -1,12 +1,12 @@
 package yadic.models.constructor;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 import yadic.models.basic.InterfaceBasic;
 
 public class ClassConstructorExceptionThrown
         implements InterfaceBasic
 {
-    @Dependency
+    @YadicDependency
     public ClassConstructorExceptionThrown()
             throws Exception
     {

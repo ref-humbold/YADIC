@@ -1,6 +1,6 @@
 package yadic.models.constructor;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 import yadic.models.basic.InterfaceBasicSimpleDependency;
 import yadic.models.basic.InterfaceBasicStringGetter;
 import yadic.models.diamond.InterfaceDiamondLeft;
@@ -11,7 +11,7 @@ public class ClassConstructorAnnotatedWithDependency
     private InterfaceDiamondLeft firstObject;
     private InterfaceBasicStringGetter secondObject;
 
-    @Dependency
+    @YadicDependency
     public ClassConstructorAnnotatedWithDependency(
             InterfaceDiamondLeft firstObject, InterfaceBasicStringGetter secondObject)
     {

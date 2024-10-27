@@ -1,19 +1,17 @@
 package yadic;
 
-import yadic.annotation.Dependency;
-
-public interface DiResolver
+public interface YadicResolver
 {
     /**
-     * Resolve all dependencies and construct a new instance of given type using {@link Dependency}.
+     * Resolve all dependencies and construct a new instance of given type.
      * @param type type class
      * @return new instance
-     * @throws DiException if type cannot be resolved
+     * @throws YadicException if type cannot be resolved
      */
     <T> T resolve(Class<T> type);
 
     /**
-     * Resolve all dependencies and construct a new instance of given type using {@link Dependency}.
+     * Resolve all dependencies and construct a new instance of given type.
      * @param type type class
      * @return new instance, or {@code null} if type cannot be resolved.
      */
@@ -23,7 +21,7 @@ public interface DiResolver
         {
             return resolve(type);
         }
-        catch(DiException ex)
+        catch(YadicException ex)
         {
             return null;
         }

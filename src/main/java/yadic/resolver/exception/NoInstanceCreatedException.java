@@ -1,9 +1,9 @@
 package yadic.resolver.exception;
 
-import yadic.DiException;
+import yadic.YadicException;
 
 public class NoInstanceCreatedException
-        extends DiException
+        extends YadicException
 {
     private static final long serialVersionUID = 810031827582865450L;
 

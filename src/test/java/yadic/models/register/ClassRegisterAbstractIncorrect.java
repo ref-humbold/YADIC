@@ -1,8 +1,8 @@
 package yadic.models.register;
 
-import yadic.annotation.Register;
+import yadic.annotation.YadicRegister;
 
-@Register(ClassRegisterAbstractIncorrect.class)
+@YadicRegister(ClassRegisterAbstractIncorrect.class)
 public abstract class ClassRegisterAbstractIncorrect
         extends ClassRegisterIncorrectAbstractClass
 {

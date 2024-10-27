@@ -1,6 +1,6 @@
 package yadic.models.register;
 
-public class ClassRegisterDerivedFromSelfRegister
+public class ClassRegisterDerivedFromRegisterSelf
         extends ClassRegisterSelf
 {
 }

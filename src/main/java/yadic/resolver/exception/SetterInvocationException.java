@@ -1,9 +1,9 @@
 package yadic.resolver.exception;
 
-import yadic.DiException;
+import yadic.YadicException;
 
 public class SetterInvocationException
-        extends DiException
+        extends YadicException
 {
     private static final long serialVersionUID = 3175636363176361357L;
 

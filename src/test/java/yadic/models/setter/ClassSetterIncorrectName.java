@@ -1,6 +1,6 @@
 package yadic.models.setter;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 
 public class ClassSetterIncorrectName
 {
@@ -10,7 +10,7 @@ public class ClassSetterIncorrectName
     {
     }
 
-    @Dependency
+    @YadicDependency
     public void method(int number)
     {
         this.number = number;

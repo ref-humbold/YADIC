@@ -515,7 +515,7 @@ public class TypesResolverTest
     }
 
     // endregion
-    // region resolve [@Register and @SelfRegister]
+    // region resolve [annotations]
 
     @Test
     public void resolve_WhenAnnotatedInterface_ThenInstanceIsResolved()

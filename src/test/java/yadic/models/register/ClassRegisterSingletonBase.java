@@ -1,9 +1,9 @@
 package yadic.models.register;
 
 import yadic.ConstructionPolicy;
-import yadic.annotation.Register;
+import yadic.annotation.YadicRegister;
 
-@Register(value = ClassRegisterSingletonDerived.class, policy = ConstructionPolicy.SINGLETON)
+@YadicRegister(value = ClassRegisterSingletonDerived.class, policy = ConstructionPolicy.SINGLETON)
 public class ClassRegisterSingletonBase
         implements InterfaceRegisterSingleton
 {

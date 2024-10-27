@@ -1,6 +1,6 @@
 package yadic.models.basic;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 import yadic.models.diamond.InterfaceDiamondLeft;
 
 public class ClassBasicComplexDependency
@@ -10,7 +10,7 @@ public class ClassBasicComplexDependency
     private InterfaceBasicStringGetter secondObject;
     private InterfaceBasic basicObject;
 
-    @Dependency
+    @YadicDependency
     public ClassBasicComplexDependency(
             InterfaceDiamondLeft firstObject, InterfaceBasicStringGetter secondObject)
     {
@@ -37,7 +37,7 @@ public class ClassBasicComplexDependency
     }
 
     @Override
-    @Dependency
+    @YadicDependency
     public void setBasicObject(InterfaceBasic basicObject)
     {
         this.basicObject = basicObject;

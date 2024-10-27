@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import yadic.DiException;
+import yadic.YadicException;
 import yadic.registry.valuetypes.Instance;
 import yadic.resolver.exception.CircularDependenciesException;
 import yadic.resolver.exception.MissingDependenciesException;
@@ -68,7 +68,7 @@ class ConstructorResolver
             {
                 instance = invoke(constructors.parameterizedConstructors.get(i), path);
             }
-            catch(DiException e)
+            catch(YadicException e)
             {
                 instance = Instance.none(e);
             }
@@ -79,19 +79,19 @@ class ConstructorResolver
     private <T> Instance<T> invoke(Constructor<T> constructor, Stack<Class<?>> path)
     {
         List<Object> parameters = new ArrayList<>();
-        String typename = constructor.getDeclaringClass().getName();
+        String typename = constructor.getDeclaringClass().getTypeName();
 
         for(Class<?> parameter : constructor.getParameterTypes())
         {
             if(path.contains(parameter))
                 return Instance.none(new CircularDependenciesException(String.format(
                         "Dependencies resolving detected a cycle detected between %s and %s",
-                        parameter.getName(), typename)));
+                        parameter.getTypeName(), typename)));
 
             if(!resolver.registry.contains(parameter))
                 return Instance.none(new MissingDependenciesException(
                         String.format("No dependency for type %s found when resolving type %s",
-                                      parameter.getName(), typename)));
+                                      parameter.getTypeName(), typename)));
 
             parameters.add(resolver.resolve(parameter, path));
         }

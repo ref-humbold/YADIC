@@ -1,17 +1,17 @@
 package yadic.models.constructor;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 
 public class ClassConstructorMultipleAnnotated
 {
     private String text;
 
-    @Dependency
+    @YadicDependency
     public ClassConstructorMultipleAnnotated()
     {
     }
 
-    @Dependency
+    @YadicDependency
     public ClassConstructorMultipleAnnotated(String text)
     {
         this.text = text;

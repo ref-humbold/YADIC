@@ -1,6 +1,6 @@
 package yadic.models.setter;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 
 public class ClassSetterWithoutParameters
 {
@@ -8,7 +8,7 @@ public class ClassSetterWithoutParameters
     {
     }
 
-    @Dependency
+    @YadicDependency
     public void setMethod()
     {
         System.out.println();

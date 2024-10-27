@@ -3,7 +3,7 @@ package yadic.models.comparator;
 import java.util.Arrays;
 import java.util.List;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 import yadic.models.basic.ClassBasicInheritsFromAbstract;
 import yadic.models.basic.ClassBasicStringGetter;
 import yadic.models.basic.InterfaceBasic;
@@ -40,7 +40,7 @@ public class ClassComparatorConstructor
         classBasicStringGetter = null;
     }
 
-    @Dependency
+    @YadicDependency
     public ClassComparatorConstructor(int number, String string, List<Double> doubles)
     {
         this.number = number;

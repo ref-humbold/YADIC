@@ -1,8 +1,8 @@
 package yadic.models.register;
 
-import yadic.annotation.Register;
+import yadic.annotation.YadicRegister;
 
-@Register(ClassRegisterConcrete.class)
+@YadicRegister(ClassRegisterConcrete.class)
 public class ClassRegisterIncorrectSuperClass
         extends ClassRegisterConcrete
 {

@@ -4,6 +4,7 @@ import yadic.ConstructionPolicy;
 import yadic.registry.exception.RegistrationException;
 import yadic.registry.valuetypes.Instance;
 import yadic.registry.valuetypes.TypeConstruction;
+import yadic.utils.TypeUtils;
 
 public class DependencyRegistry
 {
@@ -62,7 +63,7 @@ public class DependencyRegistry
 
     private <T> void validateRegisteredInstance(Class<T> type)
     {
-        if(TypesUtils.isAnnotatedType(type))
+        if(TypeUtils.isAnnotatedType(type))
             throw new RegistrationException(
                     String.format("Cannot register instance for annotated type %s",
                                   type.getSimpleName()));

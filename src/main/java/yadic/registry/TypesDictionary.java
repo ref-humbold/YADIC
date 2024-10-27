@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import yadic.ConstructionPolicy;
-import yadic.annotation.Register;
-import yadic.annotation.SelfRegister;
+import yadic.annotation.YadicRegister;
+import yadic.annotation.YadicRegisterSelf;
 import yadic.registry.exception.AbstractTypeException;
 import yadic.registry.exception.AnnotatedTypeRegistrationException;
 import yadic.registry.exception.MixingPoliciesException;
@@ -13,6 +13,7 @@ import yadic.registry.exception.NotDerivedTypeException;
 import yadic.registry.valuetypes.Instance;
 import yadic.registry.valuetypes.TypeConstruction;
 import yadic.resolver.exception.MissingDependenciesException;
+import yadic.utils.TypeUtils;
 
 class TypesDictionary
 {
@@ -24,24 +25,24 @@ class TypesDictionary
     {
         validateAnnotation(type);
 
-        if(type.isAnnotationPresent(Register.class))
+        if(type.isAnnotationPresent(YadicRegister.class))
         {
-            Register annotation = type.getAnnotation(Register.class);
+            YadicRegister annotation = type.getAnnotation(YadicRegister.class);
 
             doInsert(type, new TypeConstruction<>((Class<? extends T>)annotation.value(),
                                                   annotation.policy()));
         }
-        else if(type.isAnnotationPresent(SelfRegister.class))
+        else if(type.isAnnotationPresent(YadicRegisterSelf.class))
         {
-            SelfRegister annotation = type.getAnnotation(SelfRegister.class);
+            YadicRegisterSelf annotation = type.getAnnotation(YadicRegisterSelf.class);
 
             doInsert(type, new TypeConstruction<>(type, annotation.policy()));
         }
         else
         {
-            if(TypesUtils.isAbstractReferenceType(type))
+            if(TypeUtils.isAbstractReferenceType(type))
                 throw new AbstractTypeException(
-                        String.format("Cannot register abstract type %s", type.getName()));
+                        String.format("Cannot register abstract type %s", type.getTypeName()));
 
             doInsert(type, new TypeConstruction<>(type, policy));
         }
@@ -49,9 +50,10 @@ class TypesDictionary
 
     <T> void insert(Class<T> type, Class<? extends T> subtype, ConstructionPolicy policy)
     {
-        if(TypesUtils.isAnnotatedType(type))
+        if(TypeUtils.isAnnotatedType(type))
             throw new AnnotatedTypeRegistrationException(
-                    String.format("Cannot register type for annotated type %s", type.getName()));
+                    String.format("Cannot register type for annotated type %s",
+                                  type.getTypeName()));
 
         doInsert(type, new TypeConstruction<>(subtype, policy));
     }
@@ -67,7 +69,7 @@ class TypesDictionary
             return false;
         }
 
-        return TypesUtils.isAnnotatedType(type) || typesMap.containsKey(type);
+        return TypeUtils.isAnnotatedType(type) || typesMap.containsKey(type);
     }
 
     <T> TypeConstruction<? extends T> find(Class<T> type)
@@ -76,7 +78,7 @@ class TypesDictionary
         ConstructionPolicy desiredPolicy = mapping.policy();
         Class<?> supertype = type;
 
-        while(TypesUtils.isAbstractReferenceType(mapping.type())
+        while(TypeUtils.isAbstractReferenceType(mapping.type())
                 || contains(mapping.type()) && !mapping.type().equals(supertype))
         {
             supertype = mapping.type();
@@ -109,7 +111,7 @@ class TypesDictionary
     @SuppressWarnings("unchecked")
     private <T> TypeConstruction<? extends T> get(Class<T> type)
     {
-        if(TypesUtils.isAnnotatedType(type) && !typesMap.containsKey(type))
+        if(TypeUtils.isAnnotatedType(type) && !typesMap.containsKey(type))
             insert(type, null);
 
         TypeConstruction<? extends T> mapping = (TypeConstruction<? extends T>)typesMap.get(type);
@@ -117,10 +119,10 @@ class TypesDictionary
         if(mapping != null)
             return mapping;
 
-        if(TypesUtils.isAbstractReferenceType(type))
+        if(TypeUtils.isAbstractReferenceType(type))
             throw new MissingDependenciesException(
                     String.format("Abstract type %s has no registered concrete subclass",
-                                  type.getName()));
+                                  type.getTypeName()));
 
         return new TypeConstruction<>(type, ConstructionPolicy.CONSTRUCTION);
     }
@@ -133,27 +135,32 @@ class TypesDictionary
 
     private void validateAnnotation(Class<?> type)
     {
-        if(type.isAnnotationPresent(Register.class))
+        if(type.isAnnotationPresent(YadicRegister.class))
         {
-            Register annotation = type.getAnnotation(Register.class);
+            YadicRegister annotation = type.getAnnotation(YadicRegister.class);
             Class<?> subtype = annotation.value();
 
             if(!type.isAssignableFrom(subtype))
                 throw new NotDerivedTypeException(
-                        String.format("Type %s registered via @Register is not derived type of %s",
-                                      subtype.getName(), type.getName()));
+                        String.format("Type %s registered via %s is not derived type of %s",
+                                      subtype.getTypeName(),
+                                      TypeUtils.getAnnotationName(YadicRegister.class),
+                                      type.getTypeName()));
 
-            if(TypesUtils.isAbstractReferenceType(subtype))
+            if(TypeUtils.isAbstractReferenceType(subtype))
                 throw new AbstractTypeException(
-                        String.format("Type %s registered via @Register in %s is abstract",
-                                      subtype.getName(), type.getName()));
+                        String.format("Type %s registered via %s in %s is abstract",
+                                      subtype.getTypeName(),
+                                      TypeUtils.getAnnotationName(YadicRegister.class),
+                                      type.getTypeName()));
         }
-        else if(type.isAnnotationPresent(SelfRegister.class))
+        else if(type.isAnnotationPresent(YadicRegisterSelf.class))
         {
-            if(TypesUtils.isAbstractReferenceType(type))
+            if(TypeUtils.isAbstractReferenceType(type))
                 throw new AbstractTypeException(
-                        String.format("Abstract type %s cannot be annotated with @SelfRegister",
-                                      type.getName()));
+                        String.format("Abstract type %s cannot be annotated with %s",
+                                      type.getTypeName(),
+                                      TypeUtils.getAnnotationName(YadicRegisterSelf.class)));
         }
     }
 }

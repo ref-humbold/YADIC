@@ -1,9 +1,10 @@
 package yadic.models.register;
 
 import yadic.ConstructionPolicy;
-import yadic.annotation.Register;
+import yadic.annotation.YadicRegister;
 
-@Register(value = ClassRegisterSelfAsSubtypeSingleton.class, policy = ConstructionPolicy.SINGLETON)
+@YadicRegister(value = ClassRegisterSelfAsSubtypeSingleton.class,
+               policy = ConstructionPolicy.SINGLETON)
 public class ClassRegisterSelfAsSubtypeSingleton
 {
 }

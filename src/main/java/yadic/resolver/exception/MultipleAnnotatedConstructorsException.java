@@ -1,9 +1,9 @@
 package yadic.resolver.exception;
 
-import yadic.DiException;
+import yadic.YadicException;
 
 public class MultipleAnnotatedConstructorsException
-        extends DiException
+        extends YadicException
 {
     private static final long serialVersionUID = 9149838622398855405L;
 

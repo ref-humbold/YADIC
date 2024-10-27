@@ -1,6 +1,6 @@
 package yadic.models.setter;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 import yadic.models.basic.InterfaceBasic;
 
 public class ClassSetterSingle
@@ -19,7 +19,7 @@ public class ClassSetterSingle
     }
 
     @Override
-    @Dependency
+    @YadicDependency
     public void setBasicObject(InterfaceBasic basicObject)
     {
         this.basicObject = basicObject;

@@ -1,8 +1,8 @@
 package yadic.models.register;
 
-import yadic.annotation.Register;
+import yadic.annotation.YadicRegister;
 
-@Register(ClassRegisterDerivedFromRegister.class)
+@YadicRegister(ClassRegisterDerivedFromRegister.class)
 public class ClassRegisterConcrete
         extends ClassRegisterAbstract
 {

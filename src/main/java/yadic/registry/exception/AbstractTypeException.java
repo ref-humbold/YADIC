@@ -2,10 +2,10 @@ package yadic.registry.exception;
 
 import java.io.Serial;
 
-import yadic.DiException;
+import yadic.YadicException;
 
 public class AbstractTypeException
-        extends DiException
+        extends YadicException
 {
     @Serial private static final long serialVersionUID = 5573956461991224741L;
 

@@ -1,10 +1,10 @@
 package yadic.models.constructor;
 
-import yadic.annotation.Dependency;
+import yadic.annotation.YadicDependency;
 
 public class ClassConstructorAnnotatedDefault
 {
-    @Dependency
+    @YadicDependency
     public ClassConstructorAnnotatedDefault()
     {
     }

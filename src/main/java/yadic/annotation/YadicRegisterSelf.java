@@ -11,9 +11,7 @@ import yadic.ConstructionPolicy;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Register
+public @interface YadicRegisterSelf
 {
-    Class<?> value();
-
     ConstructionPolicy policy() default ConstructionPolicy.CONSTRUCTION;
 }

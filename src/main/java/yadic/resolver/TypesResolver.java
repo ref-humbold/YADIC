@@ -2,11 +2,11 @@ package yadic.resolver;
 
 import java.util.Stack;
 
-import yadic.DiResolver;
+import yadic.YadicResolver;
 import yadic.registry.DependencyRegistry;
 
 public class TypesResolver
-        implements DiResolver
+        implements YadicResolver
 {
     final DependencyRegistry registry;
     private final ConstructorResolver constructorResolver = new ConstructorResolver(this);

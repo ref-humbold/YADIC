@@ -17,14 +17,14 @@ import yadic.resolver.exception.IncorrectDependencySetterException;
 import yadic.resolver.exception.MultipleAnnotatedConstructorsException;
 import yadic.resolver.exception.NoSuitableConstructorException;
 
-public class DiContainerTest
+public class YadicContainerTest
 {
-    private DiContainer testObject;
+    private YadicContainer testObject;
 
     @BeforeEach
     public void setUp()
     {
-        testObject = new DiContainer();
+        testObject = new YadicContainer();
     }
 
     @AfterEach
@@ -33,7 +33,7 @@ public class DiContainerTest
         testObject = null;
     }
 
-    // region registerType (single class)
+    // region registerType [single class]
 
     @Test
     public void registerType_WhenSingleClass_ThenDifferentInstances()
@@ -246,11 +246,10 @@ public class DiContainerTest
     public void registerType_WhenTwoStepsOfHierarchy_ThenInstanceIsDerived()
     {
         // given
-        DiContainer diContainer =
-                testObject.registerType(InterfaceBasic.class, ClassBasicAbstract.class,
-                                        ConstructionPolicy.CONSTRUCTION);
-        diContainer.registerType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
-                                 ConstructionPolicy.CONSTRUCTION);
+        testObject.registerType(InterfaceBasic.class, ClassBasicAbstract.class,
+                                ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
+                                ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceBasic result = testObject.resolve(InterfaceBasic.class);
@@ -347,7 +346,7 @@ public class DiContainerTest
     }
 
     // endregion
-    // region resolve (@Dependency)
+    // region resolve [annotation]
 
     @Test
     public void resolve_WhenMultipleAnnotatedConstructors_ThenMultipleAnnotatedConstructorsException()
@@ -390,11 +389,10 @@ public class DiContainerTest
     public void resolve_WhenDependencySetterOnly_ThenInstanceIsResolved()
     {
         // given
-        DiContainer diContainer =
-                testObject.registerType(InterfaceSetter.class, ClassSetterSingle.class,
-                                        ConstructionPolicy.CONSTRUCTION);
-        diContainer.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                 ConstructionPolicy.CONSTRUCTION);
+        testObject.registerType(InterfaceSetter.class, ClassSetterSingle.class,
+                                ConstructionPolicy.CONSTRUCTION)
+                  .registerType(InterfaceBasic.class, ClassConstructorDefault.class,
+                                ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceSetter result = testObject.resolve(InterfaceSetter.class);
@@ -408,11 +406,10 @@ public class DiContainerTest
     public void resolve_WhenDependencySetterAndConstructor_ThenInstanceIsResolved()
     {
         // given
-        DiContainer diContainer =
-                testObject.registerType(InterfaceSetter.class, ClassSetterConstructor.class,
-                                        ConstructionPolicy.CONSTRUCTION);
-        diContainer.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                 ConstructionPolicy.CONSTRUCTION);
+        testObject.registerType(InterfaceSetter.class, ClassSetterConstructor.class,
+                                ConstructionPolicy.CONSTRUCTION)
+                  .registerType(InterfaceBasic.class, ClassConstructorDefault.class,
+                                ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceSetter result = testObject.resolve(InterfaceSetter.class);
@@ -442,15 +439,13 @@ public class DiContainerTest
         // given
         String string = "string";
 
-        DiContainer diContainer = testObject.registerInstance(String.class, string);
-        DiContainer diContainer2 =
-                diContainer.registerType(InterfaceSetterMultiple.class, ClassSetterMultiple.class,
-                                         ConstructionPolicy.CONSTRUCTION);
-        DiContainer diContainer1 =
-                diContainer2.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                          ConstructionPolicy.CONSTRUCTION);
-        diContainer1.registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                                  ConstructionPolicy.CONSTRUCTION);
+        testObject.registerInstance(String.class, string)
+                  .registerType(InterfaceSetterMultiple.class, ClassSetterMultiple.class,
+                                ConstructionPolicy.CONSTRUCTION)
+                  .registerType(InterfaceBasic.class, ClassConstructorDefault.class,
+                                ConstructionPolicy.CONSTRUCTION)
+                  .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
+                                ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceSetterMultiple result = testObject.resolve(InterfaceSetterMultiple.class);
@@ -460,6 +455,49 @@ public class DiContainerTest
         Assertions.assertThat(result.getBasicObject()).isNotNull();
         Assertions.assertThat(result.getStringObject()).isNotNull();
         Assertions.assertThat(result.getStringObject().getString()).isNotNull().isEqualTo(string);
+    }
+
+    // endregion
+    // region resolveOrNull
+
+    @Test
+    public void resolveOrNull_WhenTypeRegistered_ThenTypeInstance()
+    {
+        // given
+        testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
+                                ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        InterfaceBasic result = testObject.resolveOrNull(InterfaceBasic.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassConstructorDefault.class);
+    }
+
+    @Test
+    public void resolveOrNull_WhenInstanceRegistered_ThenThisInstance()
+    {
+        // given
+        String string = "string";
+
+        testObject.registerInstance(String.class, string);
+
+        // when
+        String result = testObject.resolveOrNull(String.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isEqualTo(string);
+    }
+
+    @Test
+    public void resolveOrNull_WhenTypeCannotBeResolved_ThenNull()
+    {
+        // when
+        ClassConstructorParameterized result =
+                testObject.resolveOrNull(ClassConstructorParameterized.class);
+
+        // then
+        Assertions.assertThat(result).isNull();
     }
 
     // endregion
