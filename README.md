@@ -1,10 +1,9 @@
 # YADIC (Yet Another Dependency Injection Container)
 
-![GitHub Actions](https://github.com/ref-humbold/DI-Container/workflows/GitHub%20Actions/badge.svg?branch=master)
-[![CircleCI](https://circleci.com/gh/ref-humbold/DI-Container/tree/master.svg?style=shield)](https://circleci.com/gh/ref-humbold/DI-Container/tree/master)
+[![GitHub Actions](https://github.com/ref-humbold/YADIC/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/ref-humbold/YADIC/actions/workflows/build-and-test.yml)
 
-![Release](https://img.shields.io/github/v/release/ref-humbold/DI-Container?style=plastic)
-![License](https://img.shields.io/github/license/ref-humbold/DI-Container?style=plastic)
+![Release](https://img.shields.io/github/v/release/ref-humbold/YADIC?style=plastic)
+![License](https://img.shields.io/github/license/ref-humbold/YADIC?style=plastic)
 
 Simple dependency injection container in Java
 
