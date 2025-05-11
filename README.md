@@ -5,6 +5,8 @@
 ![Release](https://img.shields.io/github/v/release/ref-humbold/YADIC?style=plastic)
 ![License](https://img.shields.io/github/license/ref-humbold/YADIC?style=plastic)
 
+**Yet Another Dependency Injection Container**
+
 Simple dependency injection container in Java
 
 -----
