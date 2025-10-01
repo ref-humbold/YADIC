@@ -5,7 +5,7 @@ on:
   - pull_request
 
 jobs:
-  gradle-build-and-test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,26 +23,3 @@ jobs:
 
       - name: Test
         run: ./gradlew test
-
-  ant-build-and-test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: temurin
-
-      - name: Install JUnit5 for ANT
-        run: ./ci/install_ant_junit5.sh
-
-      - name: Download Dependencies
-        run: ant resolve
-
-      - name: Build
-        run: ant build
-
-      - name: Test
-        run: ant test

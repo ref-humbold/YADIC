@@ -19,11 +19,16 @@ Simple dependency injection container in Java
   *Debian testing*
 + [Java](https://www.oracle.com/technetwork/java/javase/overview/index.html) \
   *APT package `openjdk-17-jdk`, version 17 SE*
-+ [Gradle](https://gradle.org/) or [Apache ANT](http://ant.apache.org/) \
-  *SDK-Man `gradle`, version 8.10* \
-  *APT package `ant`, version 1.10.+*
++ [Gradle](https://gradle.org/) \
+  *SDK-Man `gradle`, version 8.10*
 
 ## Dependencies
+
+> dependencies are automatically downloaded during build process
+
+*none*
+
+## Test dependencies
 
 > dependencies are automatically downloaded during build process
 
@@ -32,7 +37,7 @@ Simple dependency injection container in Java
 
 -----
 
-## How to build with Gradle?
+## How to build?
 
 YADIC can be built with **Gradle**. All dependencies are downloaded during build, so
 make sure your Internet connection is working!
@@ -46,26 +51,6 @@ Possible Gradle tasks are:
 + `gradle rebuild` - remove additional build files & resolve dependencies & compile source files &
   create jar & run all tests
 
-## How to build with ANT?
-
-YADIC can be built with **Apache ANT** using **Apache Ivy** to resolve all dependencies.
-Ivy itself and all dependencies are downloaded during build, so make sure your Internet
-connection is working!
-
-Possible ANT targets are:
-
-+ `ant`, `ant build` - resolve dependencies & compile source files & create jar & run all tests
-+ `ant resolve` - resolve dependencies
-+ `ant jar` - compile source files & create jar
-+ `ant test` - run all tests
-+ `ant docs` - generate Javadoc
-+ `ant clean` - remove additional build files
-+ `ant rebuild` - remove additional build files & resolve dependencies & compile source files &
-  create jar & run all tests
-
 ## How to include it?
 
-Simply add the *jar* file to your classpath from the directory:
-
-+ `build/libs` for Gradle builds
-+ `antBuild/dist` for ANT builds
+Simply add the *jar* file to your module path from the `build/libs` directory:
