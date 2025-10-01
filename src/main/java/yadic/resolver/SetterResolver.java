@@ -44,7 +44,7 @@ class SetterResolver
             if(!resolver.registry.contains(parameter))
                 throw new MissingDependenciesException(
                         String.format("No dependency for type %s found when resolving type %s",
-                                      parameter.getTypeName(), typename));
+                                parameter.getTypeName(), typename));
 
             parameters.add(resolver.resolve(parameter, path));
         }
@@ -57,7 +57,7 @@ class SetterResolver
         {
             throw new SetterInvocationException(
                     String.format("Could not invoke setter '%s' due to an error: %s",
-                                  setter.getName(), e.getMessage()), e);
+                            setter.getName(), e.getMessage()), e);
         }
     }
 

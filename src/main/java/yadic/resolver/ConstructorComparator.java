@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 import yadic.annotation.YadicDependency;
 
-public class ConstructorComparator
+class ConstructorComparator
         implements Comparator<Constructor<?>>
 {
     @Override
@@ -14,12 +14,11 @@ public class ConstructorComparator
         boolean isAnnotated0 = constructor0.isAnnotationPresent(YadicDependency.class);
         boolean isAnnotated1 = constructor1.isAnnotationPresent(YadicDependency.class);
 
-        if(isAnnotated0 && !isAnnotated1)
-            return -1;
-
-        if(isAnnotated1 && !isAnnotated0)
-            return 1;
-
-        return Integer.compare(constructor1.getParameterCount(), constructor0.getParameterCount());
+        return isAnnotated0 && !isAnnotated1
+               ? -1
+               : isAnnotated1 && !isAnnotated0
+                 ? 1
+                 : Integer.compare(constructor1.getParameterCount(),
+                         constructor0.getParameterCount());
     }
 }

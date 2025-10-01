@@ -1,14 +1,16 @@
 package yadic.resolver.exception;
 
+import java.io.Serial;
+
 import yadic.YadicException;
 
 public class IncorrectDependencySetterException
         extends YadicException
 {
-    private static final long serialVersionUID = 3707239480399538423L;
+    @Serial private static final long serialVersionUID = 3707239480399538423L;
 
-    public IncorrectDependencySetterException(String s)
+    public IncorrectDependencySetterException(String message)
     {
-        super(s);
+        super(message);
     }
 }

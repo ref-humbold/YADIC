@@ -9,8 +9,8 @@ public class AbstractTypeException
 {
     @Serial private static final long serialVersionUID = 5573956461991224741L;
 
-    public AbstractTypeException(String s)
+    public AbstractTypeException(String message)
     {
-        super(s);
+        super(message);
     }
 }

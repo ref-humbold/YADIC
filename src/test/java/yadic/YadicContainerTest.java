@@ -95,16 +95,14 @@ public class YadicContainerTest
     public void registerType_WhenSingleClassIsInterface_ThenAbstractTypeException()
     {
         Assertions.assertThatThrownBy(() -> testObject.registerType(InterfaceBasic.class,
-                                                                    ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(AbstractTypeException.class);
+                ConstructionPolicy.CONSTRUCTION)).isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void registerType_WhenSingleClassIsAbstractClass_ThenAbstractTypeException()
     {
         Assertions.assertThatThrownBy(() -> testObject.registerType(ClassBasicAbstract.class,
-                                                                    ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(AbstractTypeException.class);
+                ConstructionPolicy.CONSTRUCTION)).isInstanceOf(AbstractTypeException.class);
     }
 
     // endregion
@@ -115,7 +113,7 @@ public class YadicContainerTest
     {
         // given
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
@@ -134,7 +132,7 @@ public class YadicContainerTest
     {
         // given
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                ConstructionPolicy.SINGLETON);
+                ConstructionPolicy.SINGLETON);
 
         // when
         InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
@@ -153,7 +151,7 @@ public class YadicContainerTest
     {
         // given 1
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                ConstructionPolicy.SINGLETON);
+                ConstructionPolicy.SINGLETON);
 
         // when 1
         InterfaceBasic result11 = testObject.resolve(InterfaceBasic.class);
@@ -168,7 +166,7 @@ public class YadicContainerTest
 
         // given 2
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
 
         // when 2
         InterfaceBasic result21 = testObject.resolve(InterfaceBasic.class);
@@ -187,7 +185,7 @@ public class YadicContainerTest
     {
         // given 1
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
 
         // when 1
         InterfaceBasic result1 = testObject.resolve(InterfaceBasic.class);
@@ -197,7 +195,7 @@ public class YadicContainerTest
 
         // given 2
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefaultAndParameterized.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
 
         // when 2
         InterfaceBasic result3 = testObject.resolve(InterfaceBasic.class);
@@ -213,7 +211,7 @@ public class YadicContainerTest
     {
         // given
         testObject.registerType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
 
         // when
         ClassBasicAbstract result = testObject.resolve(ClassBasicAbstract.class);
@@ -229,8 +227,7 @@ public class YadicContainerTest
     {
         // given
         testObject.registerType(ClassConstructorParameterized.class,
-                                ClassConstructorSuperParameterized.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                ClassConstructorSuperParameterized.class, ConstructionPolicy.CONSTRUCTION);
 
         // when
         ClassConstructorParameterized result =
@@ -247,9 +244,9 @@ public class YadicContainerTest
     {
         // given
         testObject.registerType(InterfaceBasic.class, ClassBasicAbstract.class,
-                                ConstructionPolicy.CONSTRUCTION)
+                          ConstructionPolicy.CONSTRUCTION)
                   .registerType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                          ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceBasic result = testObject.resolve(InterfaceBasic.class);
@@ -342,7 +339,7 @@ public class YadicContainerTest
     {
         Assertions.assertThatThrownBy(
                 () -> testObject.registerInstance(ClassConstructorDefaultAndParameterized.class,
-                                                  null)).isInstanceOf(NullPointerException.class);
+                        null)).isInstanceOf(NullPointerException.class);
     }
 
     // endregion
@@ -390,9 +387,9 @@ public class YadicContainerTest
     {
         // given
         testObject.registerType(InterfaceSetter.class, ClassSetterSingle.class,
-                                ConstructionPolicy.CONSTRUCTION)
+                          ConstructionPolicy.CONSTRUCTION)
                   .registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                          ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceSetter result = testObject.resolve(InterfaceSetter.class);
@@ -407,9 +404,9 @@ public class YadicContainerTest
     {
         // given
         testObject.registerType(InterfaceSetter.class, ClassSetterConstructor.class,
-                                ConstructionPolicy.CONSTRUCTION)
+                          ConstructionPolicy.CONSTRUCTION)
                   .registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                          ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceSetter result = testObject.resolve(InterfaceSetter.class);
@@ -424,8 +421,7 @@ public class YadicContainerTest
     {
         // given
         testObject.registerType(InterfaceSetterMultipleParameters.class,
-                                ClassSetterMultipleParameters.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                ClassSetterMultipleParameters.class, ConstructionPolicy.CONSTRUCTION);
 
         // then
         Assertions.assertThatThrownBy(
@@ -441,11 +437,11 @@ public class YadicContainerTest
 
         testObject.registerInstance(String.class, string)
                   .registerType(InterfaceSetterMultiple.class, ClassSetterMultiple.class,
-                                ConstructionPolicy.CONSTRUCTION)
+                          ConstructionPolicy.CONSTRUCTION)
                   .registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                ConstructionPolicy.CONSTRUCTION)
+                          ConstructionPolicy.CONSTRUCTION)
                   .registerType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                          ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceSetterMultiple result = testObject.resolve(InterfaceSetterMultiple.class);
@@ -465,7 +461,7 @@ public class YadicContainerTest
     {
         // given
         testObject.registerType(InterfaceBasic.class, ClassConstructorDefault.class,
-                                ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceBasic result = testObject.resolveOrNull(InterfaceBasic.class);

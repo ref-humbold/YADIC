@@ -91,7 +91,7 @@ class ConstructorResolver
             if(!resolver.registry.contains(parameter))
                 return Instance.none(new MissingDependenciesException(
                         String.format("No dependency for type %s found when resolving type %s",
-                                      parameter.getTypeName(), typename)));
+                                parameter.getTypeName(), typename)));
 
             parameters.add(resolver.resolve(parameter, path));
         }
@@ -99,15 +99,15 @@ class ConstructorResolver
         try
         {
             return Instance.of(constructor.newInstance(parameters.toArray()),
-                               new NoInstanceCreatedException(String.format(
-                                       "Constructor could not produce an instance of type %s",
-                                       typename)));
+                    new NoInstanceCreatedException(
+                            String.format("Constructor could not produce an instance of type %s",
+                                    typename)));
         }
         catch(Exception e)
         {
             return Instance.none(new NoInstanceCreatedException(
                     String.format("Could not invoke constructor due to an error: %s",
-                                  e.getMessage()), e));
+                            e.getMessage()), e));
         }
     }
 }

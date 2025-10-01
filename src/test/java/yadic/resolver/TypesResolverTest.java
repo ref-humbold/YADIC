@@ -216,7 +216,7 @@ public class TypesResolverTest
     {
         // given
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceSetter result = testObject.resolve(ClassSetterSingle.class);
@@ -233,11 +233,11 @@ public class TypesResolverTest
         String string = "string";
 
         dictionary.addType(InterfaceSetterMultiple.class, ClassSetterMultiple.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addInstance(String.class, string);
 
         // when
@@ -261,16 +261,15 @@ public class TypesResolverTest
 
         dictionary.addInstance(String.class, string);
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceBasicSimpleDependency.class,
-                           ClassConstructorNotAnnotatedWithDependency.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ClassConstructorNotAnnotatedWithDependency.class, ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceBasicSimpleDependency result =
@@ -291,16 +290,15 @@ public class TypesResolverTest
     {
         // given
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceBasicSimpleDependency.class,
-                           ClassConstructorNotAnnotatedWithDependency.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ClassConstructorNotAnnotatedWithDependency.class, ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceBasicSimpleDependency result =
@@ -321,14 +319,13 @@ public class TypesResolverTest
     {
         // given
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceBasicSimpleDependency.class,
-                           ClassConstructorNotAnnotatedWithDependency.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ClassConstructorNotAnnotatedWithDependency.class, ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceBasicSimpleDependency result =
@@ -348,16 +345,15 @@ public class TypesResolverTest
     {
         // given
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceBasicSimpleDependency.class,
-                           ClassConstructorAnnotatedWithDependency.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ClassConstructorAnnotatedWithDependency.class, ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceBasicSimpleDependency result =
@@ -378,11 +374,11 @@ public class TypesResolverTest
     {
         // given
         dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondRight.class, ClassDiamondRight.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
 
         // then
         Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceDiamondBottom.class))
@@ -394,13 +390,13 @@ public class TypesResolverTest
     {
         // given
         dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondRight.class, ClassDiamondRight.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
@@ -420,13 +416,13 @@ public class TypesResolverTest
     {
         // given
         dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondRight.class, ClassDiamondRight.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                           ConstructionPolicy.SINGLETON);
+                ConstructionPolicy.SINGLETON);
 
         // when
         InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
@@ -446,9 +442,9 @@ public class TypesResolverTest
     {
         // given
         dictionary.addType(InterfaceCircularLeft.class, ClassCircularLeft.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceCircularRight.class, ClassCircularRight.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
 
         // then
         Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceCircularRight.class))
@@ -463,13 +459,13 @@ public class TypesResolverTest
 
         dictionary.addInstance(String.class, string);
         dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceCircularLeft.class, ClassCircularLeft.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceCircularRight.class, ClassCircularRight.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceCircularDependency.class, ClassCircularDependency.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
 
         // when
         InterfaceCircularDependency result = testObject.resolve(InterfaceCircularDependency.class);
@@ -490,15 +486,15 @@ public class TypesResolverTest
         String string = "string";
 
         dictionary.addType(InterfaceBasicComplexDependency.class, ClassBasicComplexDependency.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                           ConstructionPolicy.CONSTRUCTION);
+                ConstructionPolicy.CONSTRUCTION);
         dictionary.addInstance(String.class, string);
 
         // when

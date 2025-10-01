@@ -1,19 +1,21 @@
 package yadic.resolver.exception;
 
+import java.io.Serial;
+
 import yadic.YadicException;
 
 public class NoInstanceCreatedException
         extends YadicException
 {
-    private static final long serialVersionUID = 810031827582865450L;
+    @Serial private static final long serialVersionUID = 810031827582865450L;
 
-    public NoInstanceCreatedException(String s)
+    public NoInstanceCreatedException(String message)
     {
-        super(s);
+        super(message);
     }
 
-    public NoInstanceCreatedException(String s, Throwable t)
+    public NoInstanceCreatedException(String message, Throwable cause)
     {
-        super(s, t);
+        super(message, cause);
     }
 }

@@ -1,14 +1,16 @@
 package yadic.resolver.exception;
 
+import java.io.Serial;
+
 import yadic.YadicException;
 
 public class CircularDependenciesException
         extends YadicException
 {
-    private static final long serialVersionUID = 607229069481348756L;
+    @Serial private static final long serialVersionUID = 607229069481348756L;
 
-    public CircularDependenciesException(String s)
+    public CircularDependenciesException(String message)
     {
-        super(s);
+        super(message);
     }
 }
