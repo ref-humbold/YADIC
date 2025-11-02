@@ -1,4 +1,4 @@
 module yadic {
-    exports yadic;
-    exports yadic.annotation;
+    exports com.github.refhumbold.yadic;
+    exports com.github.refhumbold.yadic.annotation;
 }

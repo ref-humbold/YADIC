@@ -18,7 +18,7 @@ Simple dependency injection container in Java
 + Operating system \
   *Debian testing*
 + [Java](https://www.oracle.com/technetwork/java/javase/overview/index.html) \
-  *APT package `openjdk-17-jdk`, version 17 SE*
+  *APT package `openjdk-21-jdk`, version 21 SE*
 + [Gradle](https://gradle.org/) \
   *SDK-Man `gradle`, version 8.10*
 
