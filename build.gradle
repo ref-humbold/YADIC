@@ -9,11 +9,10 @@ ext {
   specVersion = "${majorVersion}.${minorVersion}"
   jarVersion = "${majorVersion}.${minorVersion}.${dateVersion}"
   vendor = 'Rafał Kaleta'
-  mainPackage = 'yadic'
+  mainPackage = 'com.github.refhumbold.yadic'
 }
 
 version = project.jarVersion
-archivesBaseName = project.mainPackage
 
 repositories {
   mavenCentral()

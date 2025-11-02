@@ -1,0 +1,19 @@
+package com.github.refhumbold.yadic.models.constructor;
+
+import com.github.refhumbold.yadic.models.basic.InterfaceBasic;
+
+public class ClassConstructorParameterized
+        implements InterfaceBasic
+{
+    private int number;
+
+    public ClassConstructorParameterized(int number)
+    {
+        this.number = number;
+    }
+
+    public int getNumber()
+    {
+        return number;
+    }
+}
