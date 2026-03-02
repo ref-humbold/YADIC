@@ -2,10 +2,8 @@
 
 [![GitHub Actions](https://github.com/ref-humbold/YADIC/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/ref-humbold/YADIC/actions/workflows/build-and-test.yml)
 
-![Release](https://img.shields.io/github/v/release/ref-humbold/YADIC?style=plastic)
-![License](https://img.shields.io/github/license/ref-humbold/YADIC?style=plastic)
-
-**Yet Another Dependency Injection Container**
+[![Release](https://img.shields.io/github/v/release/ref-humbold/YADIC?style=plastic)](https://github.com/ref-humbold/YADIC/releases)
+[![License](https://img.shields.io/github/license/ref-humbold/YADIC?style=plastic)](./LICENSE)
 
 Simple dependency injection container in Java
 
@@ -17,10 +15,10 @@ Simple dependency injection container in Java
 
 + Operating system \
   *Debian testing*
-+ [Java](https://www.oracle.com/technetwork/java/javase/overview/index.html) \
++ Java \
   *APT package `openjdk-21-jdk`, version 21 SE*
-+ [Gradle](https://gradle.org/) \
-  *SDK-Man `gradle`, version 8.10*
++ Gradle \
+  *SDK-Man `gradle`, version 8.14.+*
 
 ## Dependencies
 
@@ -54,3 +52,7 @@ Possible Gradle tasks are:
 ## How to include it?
 
 Simply add the *jar* file to your module path from the `build/libs` directory:
+
+```sh
+$ /path-to-project-directory/build/libs/YADIC-{version}.jar
+```
