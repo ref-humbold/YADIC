@@ -37,7 +37,7 @@ class TypeConstructors<T>
                         String.format("Type %s has more than one constructor with %s annotation",
                                 typename, TypeUtils.getAnnotationName(YadicDependency.class)));
 
-            annotatedConstructor = parameterizedConstructors.remove(0);
+            annotatedConstructor = parameterizedConstructors.removeFirst();
         }
         else
         {

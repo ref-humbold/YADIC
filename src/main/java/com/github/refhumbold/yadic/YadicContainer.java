@@ -35,7 +35,9 @@ public final class YadicContainer
      * @return {@code this} for method chaining
      */
     public <T> YadicContainer registerType(
-            Class<T> supertype, Class<? extends T> subtype, ConstructionPolicy policy)
+            Class<T> supertype,
+            Class<? extends T> subtype,
+            ConstructionPolicy policy)
     {
         registry.addType(supertype, subtype, policy);
         return this;

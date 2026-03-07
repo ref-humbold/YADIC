@@ -31,9 +31,8 @@ public class DependencyRegistry
 
     public <T> TypeConstruction<? extends T> findType(Class<T> type)
     {
-        return instancesDictionary.contains(type)
-               ? new TypeConstruction<>(type, ConstructionPolicy.SINGLETON)
-               : typesDictionary.find(type);
+        return instancesDictionary.contains(type) ? new TypeConstruction<>(type,
+                ConstructionPolicy.SINGLETON) : typesDictionary.find(type);
     }
 
     public <T> Instance<T> findInstance(Class<T> type)
@@ -66,11 +65,11 @@ public class DependencyRegistry
         if(TypeUtils.isAnnotatedType(type))
             throw new RegistrationException(
                     String.format("Cannot register instance for annotated type %s",
-                                  type.getSimpleName()));
+                            type.getSimpleName()));
 
         if(typesDictionary.contains(type))
             throw new RegistrationException(
                     String.format("Type %s was registered with another type",
-                                  type.getSimpleName()));
+                            type.getSimpleName()));
     }
 }
