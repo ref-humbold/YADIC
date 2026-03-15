@@ -5,11 +5,18 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.github.refhumbold.yadic.ConstructionPolicy;
-import com.github.refhumbold.yadic.models.basic.ClassBasicAbstract;
-import com.github.refhumbold.yadic.models.basic.ClassBasicInheritsFromAbstract;
-import com.github.refhumbold.yadic.models.basic.ClassBasicStringGetter;
-import com.github.refhumbold.yadic.models.basic.InterfaceBasic;
-import com.github.refhumbold.yadic.models.register.*;
+import com.github.refhumbold.yadic.newer.models.inheritance.ClassAbstract;
+import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcrete;
+import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcreteDerived;
+import com.github.refhumbold.yadic.newer.models.inheritance.InterfaceInheritance;
+import com.github.refhumbold.yadic.newer.models.register.ClassAbstractRegister;
+import com.github.refhumbold.yadic.newer.models.register.ClassRegister;
+import com.github.refhumbold.yadic.newer.models.register.ClassRegisterDerived;
+import com.github.refhumbold.yadic.newer.models.register.invalid.ClassRegisterAbstractSubclass;
+import com.github.refhumbold.yadic.newer.models.register.invalid.ClassRegisterOutOfHierarchy;
+import com.github.refhumbold.yadic.newer.models.register.self.ClassRegisterSelf;
+import com.github.refhumbold.yadic.newer.models.register.self.invalid.ClassAbstractRegisterSelf;
+import com.github.refhumbold.yadic.newer.models.register.self.invalid.ClassRegisterSelfDerived;
 import com.github.refhumbold.yadic.registry.exception.AbstractTypeException;
 import com.github.refhumbold.yadic.registry.exception.AnnotatedTypeRegistrationException;
 import com.github.refhumbold.yadic.registry.exception.MixingPoliciesException;
@@ -17,6 +24,7 @@ import com.github.refhumbold.yadic.registry.exception.NotDerivedTypeException;
 import com.github.refhumbold.yadic.registry.exception.RegistrationException;
 import com.github.refhumbold.yadic.registry.valuetypes.Instance;
 import com.github.refhumbold.yadic.registry.valuetypes.TypeConstruction;
+import com.github.refhumbold.yadic.resolver.exception.MissingDependenciesException;
 
 public class DependencyRegistryTest
 {
@@ -34,19 +42,96 @@ public class DependencyRegistryTest
         testObject = null;
     }
 
-    // region addType/findType
+    // region addType & addType/findType
 
     @Test
-    public void addType_findType_WhenSpecifyTypeWithSubtypeAndPolicy_ThenSubtypeInserted()
+    public void addType_WhenInterface_ThenAbstractTypeException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.addType(InterfaceInheritance.class,
+                ConstructionPolicy.CONSTRUCTION)).isInstanceOf(AbstractTypeException.class);
+    }
+
+    @Test
+    public void addType_WhenAbstractClass_ThenAbstractTypeException()
+    {
+        Assertions.assertThatThrownBy(
+                          () -> testObject.addType(ClassAbstract.class, ConstructionPolicy.CONSTRUCTION))
+                  .isInstanceOf(AbstractTypeException.class);
+    }
+
+    @Test
+    public void addType_WhenPrimitiveType_ThenRegistrationException()
+    {
+        Assertions.assertThatThrownBy(
+                          () -> testObject.addType(boolean.class, ConstructionPolicy.CONSTRUCTION))
+                  .isInstanceOf(RegistrationException.class);
+    }
+
+    @Test
+    public void addType_WhenRegisterToNotSubtype_ThenNotDerivedTypeException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterOutOfHierarchy.class,
+                ConstructionPolicy.CONSTRUCTION)).isInstanceOf(NotDerivedTypeException.class);
+    }
+
+    @Test
+    public void addType_WhenRegisterToAbstractClass_ThenAbstractTypeException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterAbstractSubclass.class,
+                ConstructionPolicy.CONSTRUCTION)).isInstanceOf(AbstractTypeException.class);
+    }
+
+    @Test
+    public void addType_WhenRegisterSelfOnAbstractClass_ThenAbstractTypeException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.addType(ClassAbstractRegisterSelf.class,
+                ConstructionPolicy.CONSTRUCTION)).isInstanceOf(AbstractTypeException.class);
+    }
+
+    @Test
+    public void addType_WhenSubtypeOfRegisterAnnotation_ThenAnnotatedTypeRegistrationException()
+    {
+        Assertions.assertThatThrownBy(
+                          () -> testObject.addType(ClassRegister.class, ClassRegisterDerived.class,
+                                  ConstructionPolicy.CONSTRUCTION))
+                  .isInstanceOf(AnnotatedTypeRegistrationException.class);
+    }
+
+    @Test
+    public void addType_WhenSubtypeOfRegisterSelfAnnotation_ThenAnnotatedTypeRegistrationException()
+    {
+        Assertions.assertThatThrownBy(
+                          () -> testObject.addType(ClassRegisterSelf.class, ClassRegisterSelfDerived.class,
+                                  ConstructionPolicy.CONSTRUCTION))
+                  .isInstanceOf(AnnotatedTypeRegistrationException.class);
+    }
+
+    @Test
+    public void addType_WhenAlreadyRegisteredInstance_ThenRegistrationException()
     {
         // given
-        Class<ClassBasicAbstract> type = ClassBasicAbstract.class;
-        Class<ClassBasicInheritsFromAbstract> subtype = ClassBasicInheritsFromAbstract.class;
+        Class<ClassConcrete> type = ClassConcrete.class;
+        ClassConcrete instance = new ClassConcrete();
+
+        testObject.addInstance(type, instance);
+
+        // then
+        Assertions.assertThatThrownBy(
+                          () -> testObject.addType(type, ConstructionPolicy.CONSTRUCTION))
+                  .isInstanceOf(RegistrationException.class);
+    }
+
+    @Test
+    public void addType_findType_WhenSubtypeAndPolicy_ThenSubtypeInserted()
+    {
+        // given
+        Class<ClassAbstract> type = ClassAbstract.class;
+        Class<ClassConcrete> subtype = ClassConcrete.class;
 
         // when
         testObject.addType(type, subtype, ConstructionPolicy.SINGLETON);
 
-        TypeConstruction<? extends InterfaceBasic> result = testObject.findType(type);
+        TypeConstruction<? extends InterfaceInheritance> result = testObject.findType(type);
 
         // then
         Assertions.assertThat(result.type()).isEqualTo(subtype);
@@ -54,16 +139,15 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void addType_findType_WhenSpecifyTypeAndPolicy_ThenThisTypeInserted()
+    public void addType_findType_WhenPolicy_ThenThisTypeInserted()
     {
         // given
-        Class<ClassBasicInheritsFromAbstract> type = ClassBasicInheritsFromAbstract.class;
+        Class<ClassConcrete> type = ClassConcrete.class;
 
         // when
         testObject.addType(type, ConstructionPolicy.SINGLETON);
 
-        TypeConstruction<? extends ClassBasicInheritsFromAbstract> result =
-                testObject.findType(type);
+        TypeConstruction<? extends ClassConcrete> result = testObject.findType(type);
 
         // then
         Assertions.assertThat(result.type()).isEqualTo(type);
@@ -71,7 +155,7 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void addType_findType_WhenTypeHasRegisterSelfAnnotation_ThenThisTypeInserted()
+    public void addType_findType_WhenRegisterSelfAnnotation_ThenThisTypeInserted()
     {
         // given
         Class<ClassRegisterSelf> type = ClassRegisterSelf.class;
@@ -87,136 +171,30 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void addType_findType_WhenTypeHasRegisterAnnotation_ThenSubtypeInserted()
+    public void addType_findType_WhenRegisterAnnotation_ThenRegisteredSubtypeInserted()
     {
         // given
-        Class<ClassRegisterConcrete> type = ClassRegisterConcrete.class;
+        Class<ClassRegister> type = ClassRegister.class;
 
         // when
         testObject.addType(type, ConstructionPolicy.CONSTRUCTION);
 
-        TypeConstruction<? extends ClassRegisterConcrete> result = testObject.findType(type);
+        TypeConstruction<? extends ClassRegister> result = testObject.findType(type);
 
         // then
-        Assertions.assertThat(result.type()).isEqualTo(ClassRegisterDerivedFromRegister.class);
+        Assertions.assertThat(result.type()).isEqualTo(ClassRegisterDerived.class);
         Assertions.assertThat(result.policy()).isEqualTo(ConstructionPolicy.CONSTRUCTION);
     }
 
     // endregion
-    // region addType
+    // region addInstance & addInstance/findInstance
 
     @Test
-    public void addType_WhenSingleInterface_ThenAbstractTypeException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.addType(InterfaceBasic.class, ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(AbstractTypeException.class);
-    }
-
-    @Test
-    public void addType_WhenSingleAbstractClass_ThenAbstractTypeException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.addType(ClassBasicAbstract.class, ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(AbstractTypeException.class);
-    }
-
-    @Test
-    public void addType_WhenRegisterAnnotatedTypeAndSubtype_ThenAnnotatedTypeRegistrationException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterConcrete.class,
-                          ClassRegisterDerivedFromRegister.class, ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(AnnotatedTypeRegistrationException.class);
-    }
-
-    @Test
-    public void addType_WhenRegisterSelfAnnotatedTypeAndSubtype_ThenAnnotatedTypeRegistrationException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterSelf.class,
-                          ClassRegisterDerivedFromRegisterSelf.class, ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(AnnotatedTypeRegistrationException.class);
-    }
-
-    @Test
-    public void addType_WhenRegisterTypeAndNotSubtype_ThenNotDerivedTypeException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.addType(ClassRegisterIncorrectOtherClass.class,
-                                  ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(NotDerivedTypeException.class);
-    }
-
-    @Test
-    public void addType_WhenRegisterTypeAndAbstract_ThenAbstractTypeException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterAbstractIncorrect.class,
-                ConstructionPolicy.CONSTRUCTION)).isInstanceOf(AbstractTypeException.class);
-    }
-
-    @Test
-    public void addType_WhenRegisterSelfAbstract_ThenAbstractTypeException()
-    {
-        Assertions.assertThatThrownBy(
-                () -> testObject.addType(ClassRegisterSelfAbstractIncorrect.class,
-                        ConstructionPolicy.CONSTRUCTION)).isInstanceOf(AbstractTypeException.class);
-    }
-
-    @Test
-    public void addType_WhenRegisteredInstance_ThenRegistrationException()
+    public void addInstance_WhenAlreadyRegisteredType_ThenRegistrationException()
     {
         // given
-        String string = "String";
-        Class<ClassBasicStringGetter> type = ClassBasicStringGetter.class;
-        ClassBasicStringGetter instance = new ClassBasicStringGetter(string);
-
-        testObject.addInstance(type, instance);
-
-        // then
-        Assertions.assertThatThrownBy(
-                          () -> testObject.addType(type, ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(RegistrationException.class);
-    }
-
-    @Test
-    public void addType_WhenPrimitiveType_ThenRegistrationException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.addType(boolean.class, ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(RegistrationException.class);
-    }
-
-    // endregion
-    // region addInstance/findInstance
-
-    @Test
-    public void addInstance_findInstance_WhenInstancePresent_ThenInstance()
-    {
-        // given
-        String string = "String";
-        ClassBasicStringGetter instance = new ClassBasicStringGetter(string);
-
-        // when
-        testObject.addInstance(ClassBasicStringGetter.class, instance);
-
-        Instance<ClassBasicStringGetter> result =
-                testObject.findInstance(ClassBasicStringGetter.class);
-
-        // then
-        Assertions.assertThat(result.exists()).isTrue();
-        Assertions.assertThat(result.extract()).isSameAs(instance);
-        Assertions.assertThat(result.extract().getString()).isEqualTo(string);
-    }
-
-    // endregion
-    // region addInstance
-
-    @Test
-    public void addInstance_WhenRegisteredType_ThenRegistrationException()
-    {
-        // given
-        String string = "String";
-        Class<ClassBasicStringGetter> type = ClassBasicStringGetter.class;
-        ClassBasicStringGetter instance = new ClassBasicStringGetter(string);
+        Class<ClassConcrete> type = ClassConcrete.class;
+        ClassConcrete instance = new ClassConcrete();
 
         testObject.addType(type, ConstructionPolicy.CONSTRUCTION);
 
@@ -226,24 +204,154 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void addInstance_WhenAnnotatedType_ThenRegistrationException()
+    public void addInstance_WhenRegisterAnnotation_ThenRegistrationException()
     {
-        Assertions.assertThatThrownBy(() -> testObject.addInstance(ClassRegisterConcrete.class,
-                new ClassRegisterConcrete())).isInstanceOf(RegistrationException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.addInstance(ClassRegister.class, new ClassRegister()))
+                  .isInstanceOf(RegistrationException.class);
     }
 
     @Test
     public void addInstance_WhenNullInstance_ThenNullPointerException()
     {
-        Assertions.assertThatThrownBy(() -> testObject.addInstance(ClassBasicAbstract.class, null))
+        Assertions.assertThatThrownBy(() -> testObject.addInstance(ClassConcrete.class, null))
                   .isInstanceOf(NullPointerException.class);
     }
 
-    // endregion
-    // region findType
+    @Test
+    public void addInstance_findInstance_WhenInstanceOfSameType_ThenInstance()
+    {
+        // given
+        Class<ClassConcrete> type = ClassConcrete.class;
+        ClassConcrete instance = new ClassConcrete();
+
+        // when
+        testObject.addInstance(type, instance);
+
+        Instance<ClassConcrete> result = testObject.findInstance(type);
+
+        // then
+        Assertions.assertThat(result.exists()).isTrue();
+        Assertions.assertThat(result.extract()).isSameAs(instance);
+        Assertions.assertThat(result.extract()).isExactlyInstanceOf(type);
+    }
 
     @Test
-    public void findType_WhenPrimitive_ThenFoundMapping()
+    public void addInstance_findInstance_WhenInstanceOfDerivedType_ThenInstance()
+    {
+        // given
+        Class<ClassConcrete> type = ClassConcrete.class;
+        ClassConcreteDerived instance = new ClassConcreteDerived();
+
+        // when
+        testObject.addInstance(type, instance);
+
+        Instance<ClassConcrete> result = testObject.findInstance(type);
+
+        // then
+        Assertions.assertThat(result.exists()).isTrue();
+        Assertions.assertThat(result.extract()).isSameAs(instance);
+        Assertions.assertThat(result.extract()).isInstanceOf(type);
+        Assertions.assertThat(result.extract()).isExactlyInstanceOf(ClassConcreteDerived.class);
+    }
+
+    @Test
+    public void addInstance_findInstance_WhenAddInterfaceWithConcreteInstance_ThenInstance()
+    {
+        // given
+        Class<InterfaceInheritance> type = InterfaceInheritance.class;
+        ClassConcrete instance = new ClassConcrete();
+
+        // when
+        testObject.addInstance(type, instance);
+
+        Instance<InterfaceInheritance> result = testObject.findInstance(type);
+
+        // then
+        Assertions.assertThat(result.exists()).isTrue();
+        Assertions.assertThat(result.extract()).isSameAs(instance);
+        Assertions.assertThat(result.extract()).isInstanceOf(type);
+        Assertions.assertThat(result.extract()).isExactlyInstanceOf(ClassConcrete.class);
+    }
+
+    @Test
+    public void addInstance_findInstance_WhenAddAbstractClassWithConcreteInstance_ThenInstance()
+    {
+        // given
+        Class<ClassAbstract> type = ClassAbstract.class;
+        ClassConcreteDerived instance = new ClassConcreteDerived();
+
+        // when
+        testObject.addInstance(type, instance);
+
+        Instance<ClassAbstract> result = testObject.findInstance(type);
+
+        // then
+        Assertions.assertThat(result.exists()).isTrue();
+        Assertions.assertThat(result.extract()).isSameAs(instance);
+        Assertions.assertThat(result.extract()).isInstanceOf(type);
+        Assertions.assertThat(result.extract()).isExactlyInstanceOf(ClassConcreteDerived.class);
+    }
+
+    // endregion
+    // region addSingleton/findInstance
+
+    @Test
+    public void addSingleton_findInstance_WhenAddedTypeWithSingletonPolicy_ThenSingleton()
+    {
+        // given
+        ClassConcrete singleton = new ClassConcrete();
+
+        testObject.addType(ClassAbstract.class, ClassConcrete.class, ConstructionPolicy.SINGLETON);
+
+        // when
+        testObject.addSingleton(ClassAbstract.class, singleton);
+
+        Instance<ClassAbstract> result = testObject.findInstance(ClassAbstract.class);
+
+        // then
+        Assertions.assertThat(result.exists()).isTrue();
+        Assertions.assertThat(result.extract()).isSameAs(singleton);
+    }
+
+    @Test
+    public void addSingleton_findInstance_WhenAddedTypeWithConstructionPolicy_ThenNoInstance()
+    {
+        // given
+        ClassConcrete singleton = new ClassConcrete();
+
+        testObject.addType(ClassAbstract.class, ClassConcrete.class,
+                ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        testObject.addSingleton(ClassAbstract.class, singleton);
+
+        Instance<ClassAbstract> result = testObject.findInstance(ClassAbstract.class);
+
+        // then
+        Assertions.assertThat(result.exists()).isFalse();
+    }
+
+    @Test
+    public void addSingleton_findInstance_WhenNotAddedType_ThenNoInstance()
+    {
+        // given
+        ClassConcrete singleton = new ClassConcrete();
+
+        // when
+        testObject.addSingleton(ClassAbstract.class, singleton);
+
+        Instance<ClassAbstract> result = testObject.findInstance(ClassAbstract.class);
+
+        // then
+        Assertions.assertThat(result.exists()).isFalse();
+    }
+
+    // endregion
+    // region findType & findInstance
+
+    @Test
+    public void findType_WhenPrimitive_ThenMappingToSelf()
     {
         // when
         TypeConstruction<?> result = testObject.findType(double.class);
@@ -254,32 +362,91 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void findType_WhenAbstractClass_ThenFoundMapping()
+    public void findType_WhenAddedFromInterface_ThenMapping()
     {
         // given
-        testObject.addType(InterfaceBasic.class, ClassBasicAbstract.class,
-                ConstructionPolicy.CONSTRUCTION);
-        testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
+        testObject.addType(InterfaceInheritance.class, ClassConcrete.class,
                 ConstructionPolicy.CONSTRUCTION);
 
         // when
-        TypeConstruction<? extends InterfaceBasic> result =
-                testObject.findType(InterfaceBasic.class);
+        TypeConstruction<? extends InterfaceInheritance> result =
+                testObject.findType(InterfaceInheritance.class);
 
         // then
-        Assertions.assertThat(result.type()).isEqualTo(ClassBasicInheritsFromAbstract.class);
+        Assertions.assertThat(result.type()).isEqualTo(ClassConcrete.class);
         Assertions.assertThat(result.policy()).isEqualTo(ConstructionPolicy.CONSTRUCTION);
     }
 
     @Test
-    public void findType_WhenConcreteClassNotRegistered_ThenFoundNewMapping()
+    public void findType_WhenAddedFromAbstractClass_ThenMapping()
     {
         // given
-        Class<ClassBasicInheritsFromAbstract> type = ClassBasicInheritsFromAbstract.class;
+        testObject.addType(ClassAbstract.class, ClassConcrete.class,
+                ConstructionPolicy.CONSTRUCTION);
 
         // when
-        TypeConstruction<? extends ClassBasicInheritsFromAbstract> result =
-                testObject.findType(type);
+        TypeConstruction<? extends ClassAbstract> result = testObject.findType(ClassAbstract.class);
+
+        // then
+        Assertions.assertThat(result.type()).isEqualTo(ClassConcrete.class);
+        Assertions.assertThat(result.policy()).isEqualTo(ConstructionPolicy.CONSTRUCTION);
+    }
+
+    @Test
+    public void findType_WhenAddedFromConcreteClass_ThenMapping()
+    {
+        // given
+        testObject.addType(ClassConcrete.class, ClassConcreteDerived.class,
+                ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        TypeConstruction<? extends ClassConcrete> result = testObject.findType(ClassConcrete.class);
+
+        // then
+        Assertions.assertThat(result.type()).isEqualTo(ClassConcreteDerived.class);
+        Assertions.assertThat(result.policy()).isEqualTo(ConstructionPolicy.CONSTRUCTION);
+    }
+
+    @Test
+    public void findType_WhenAddedMultipleAbstractionLevels_ThenMapping()
+    {
+        // given
+        testObject.addType(InterfaceInheritance.class, ClassAbstract.class,
+                ConstructionPolicy.CONSTRUCTION);
+        testObject.addType(ClassAbstract.class, ClassConcrete.class,
+                ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        TypeConstruction<? extends InterfaceInheritance> result =
+                testObject.findType(InterfaceInheritance.class);
+
+        // then
+        Assertions.assertThat(result.type()).isEqualTo(ClassConcrete.class);
+        Assertions.assertThat(result.policy()).isEqualTo(ConstructionPolicy.CONSTRUCTION);
+    }
+
+    @Test
+    public void findType_WhenInterfaceNotAdded_ThenMissingDependenciesException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.findType(InterfaceInheritance.class))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    @Test
+    public void findType_WhenAbstractClassNotAdded_ThenMissingDependenciesException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.findType(ClassAbstract.class))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    @Test
+    public void findType_WhenConcreteTypeNotAdded_ThenMappingToSelf()
+    {
+        // given
+        Class<ClassConcrete> type = ClassConcrete.class;
+
+        // when
+        TypeConstruction<? extends ClassConcrete> result = testObject.findType(type);
 
         // then
         Assertions.assertThat(result.type()).isEqualTo(type);
@@ -287,33 +454,18 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void findType_WhenAnnotatedClass_ThenMappingFromAnnotation()
+    public void findType_WhenRegisterAnnotation_ThenMappingFromAnnotation()
     {
         // when
-        TypeConstruction<? extends ClassRegisterAbstract> result =
-                testObject.findType(ClassRegisterAbstract.class);
+        TypeConstruction<? extends ClassRegister> result = testObject.findType(ClassRegister.class);
 
         // then
-        Assertions.assertThat(result.type()).isEqualTo(ClassRegisterDerivedFromRegister.class);
+        Assertions.assertThat(result.type()).isEqualTo(ClassRegisterDerived.class);
         Assertions.assertThat(result.policy()).isEqualTo(ConstructionPolicy.CONSTRUCTION);
     }
 
     @Test
-    public void findType_WhenDifferentPolicy_ThenMixingPoliciesException()
-    {
-        // given
-        testObject.addType(InterfaceBasic.class, ClassBasicAbstract.class,
-                ConstructionPolicy.CONSTRUCTION);
-        testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
-                ConstructionPolicy.SINGLETON);
-
-        // then
-        Assertions.assertThatThrownBy(() -> testObject.findType(InterfaceBasic.class))
-                  .isInstanceOf(MixingPoliciesException.class);
-    }
-
-    @Test
-    public void findType_WhenRegisterSelfClass_ThenMapping()
+    public void findType_WhenRegisterSelfAnnotation_ThenMappingToSelf()
     {
         // when
         TypeConstruction<? extends ClassRegisterSelf> result =
@@ -325,31 +477,51 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void findType_whenRegisteredInstance_ThenMappingToThisType()
+    public void findType_WhenMultipleAnnotationLayers_ThenMappingFromAnnotationsChain()
+    {
+        // when
+        TypeConstruction<? extends ClassAbstractRegister> result =
+                testObject.findType(ClassAbstractRegister.class);
+
+        // then
+        Assertions.assertThat(result.type()).isEqualTo(ClassRegisterDerived.class);
+        Assertions.assertThat(result.policy()).isEqualTo(ConstructionPolicy.CONSTRUCTION);
+    }
+
+    @Test
+    public void findType_WhenDifferentPolicy_ThenMixingPoliciesException()
     {
         // given
-        Class<ClassBasicInheritsFromAbstract> type = ClassBasicInheritsFromAbstract.class;
+        testObject.addType(InterfaceInheritance.class, ClassAbstract.class,
+                ConstructionPolicy.CONSTRUCTION);
+        testObject.addType(ClassAbstract.class, ClassConcrete.class, ConstructionPolicy.SINGLETON);
 
-        testObject.addInstance(type, new ClassBasicInheritsFromAbstract());
+        // then
+        Assertions.assertThatThrownBy(() -> testObject.findType(InterfaceInheritance.class))
+                  .isInstanceOf(MixingPoliciesException.class);
+    }
+
+    @Test
+    public void findType_whenAddedInstance_ThenMappingToSelf()
+    {
+        // given
+        Class<ClassConcrete> type = ClassConcrete.class;
+
+        testObject.addInstance(type, new ClassConcrete());
 
         // when
-        TypeConstruction<? extends ClassBasicInheritsFromAbstract> result =
-                testObject.findType(type);
+        TypeConstruction<? extends ClassConcrete> result = testObject.findType(type);
 
         // then
         Assertions.assertThat(result.type()).isEqualTo(type);
         Assertions.assertThat(result.policy()).isEqualTo(ConstructionPolicy.SINGLETON);
     }
 
-    // endregion
-    // region findInstance
-
     @Test
-    public void findInstance_WhenInstanceAbsent_ThenMappingNone()
+    public void findInstance_WhenInstanceAbsent_ThenNoMapping()
     {
         // when
-        Instance<ClassBasicStringGetter> result =
-                testObject.findInstance(ClassBasicStringGetter.class);
+        Instance<ClassConcrete> result = testObject.findInstance(ClassConcrete.class);
 
         // then
         Assertions.assertThat(result.exists()).isFalse();
@@ -362,50 +534,70 @@ public class DependencyRegistryTest
     public void contains_WhenAddedInstance_ThenTrue()
     {
         // given
-        testObject.addInstance(ClassBasicStringGetter.class, new ClassBasicStringGetter("String"));
+        testObject.addInstance(ClassConcrete.class, new ClassConcrete());
 
         // when
-        boolean result = testObject.contains(ClassBasicStringGetter.class);
+        boolean result = testObject.contains(ClassConcrete.class);
 
         // then
         Assertions.assertThat(result).isTrue();
     }
 
     @Test
-    public void contains_WhenAbstractTypeIsAbsent_ThenFalse()
-    {
-        // when
-        boolean result = testObject.contains(InterfaceBasic.class);
-
-        // then
-        Assertions.assertThat(result).isFalse();
-    }
-
-    @Test
-    public void contains_WhenConcreteTypeIsAbsent_ThenFalse()
-    {
-        // when
-        boolean result = testObject.contains(ClassBasicInheritsFromAbstract.class);
-
-        // then
-        Assertions.assertThat(result).isFalse();
-    }
-
-    @Test
-    public void contains_WhenAnnotatedTypeIsAbsent_ThenTrue()
-    {
-        // when
-        boolean result = testObject.contains(ClassRegisterConcrete.class);
-
-        // then
-        Assertions.assertThat(result).isTrue();
-    }
-
-    @Test
-    public void contains_WhenAnnotatedTypeIsPresent_ThenTrue()
+    public void contains_WhenInterfaceAdded_ThenTrue()
     {
         // given
-        Class<ClassRegisterConcrete> type = ClassRegisterConcrete.class;
+        Class<InterfaceInheritance> type = InterfaceInheritance.class;
+
+        testObject.addType(type, ClassAbstract.class, ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        boolean result = testObject.contains(type);
+
+        // then
+        Assertions.assertThat(result).isTrue();
+    }
+
+    @Test
+    public void contains_WhenInterfaceNotAdded_ThenFalse()
+    {
+        // when
+        boolean result = testObject.contains(InterfaceInheritance.class);
+
+        // then
+        Assertions.assertThat(result).isFalse();
+    }
+
+    @Test
+    public void contains_WhenAbstractClassAdded_ThenTrue()
+    {
+        // given
+        Class<ClassAbstract> type = ClassAbstract.class;
+
+        testObject.addType(type, ClassConcrete.class, ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        boolean result = testObject.contains(type);
+
+        // then
+        Assertions.assertThat(result).isTrue();
+    }
+
+    @Test
+    public void contains_WhenAbstractClassNotAdded_ThenFalse()
+    {
+        // when
+        boolean result = testObject.contains(ClassAbstract.class);
+
+        // then
+        Assertions.assertThat(result).isFalse();
+    }
+
+    @Test
+    public void contains_WhenConcreteClassAdded_ThenFalse()
+    {
+        // given
+        Class<ClassConcrete> type = ClassConcrete.class;
 
         testObject.addType(type, ConstructionPolicy.CONSTRUCTION);
 
@@ -417,12 +609,22 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void contains_WhenInsertedTypeIsPresent_ThenTrue()
+    public void contains_WhenConcreteClassNotAdded_ThenFalse()
+    {
+        // when
+        boolean result = testObject.contains(ClassConcrete.class);
+
+        // then
+        Assertions.assertThat(result).isFalse();
+    }
+
+    @Test
+    public void contains_WhenAnnotatedClassAdded_ThenTrue()
     {
         // given
-        Class<InterfaceBasic> type = InterfaceBasic.class;
+        Class<ClassRegister> type = ClassRegister.class;
 
-        testObject.addType(type, ClassBasicAbstract.class, ConstructionPolicy.CONSTRUCTION);
+        testObject.addType(type, ConstructionPolicy.CONSTRUCTION);
 
         // when
         boolean result = testObject.contains(type);
@@ -432,68 +634,33 @@ public class DependencyRegistryTest
     }
 
     @Test
-    public void contains_WhenAnnotatedTypeIncorrect_ThenFalse()
+    public void contains_WhenAnnotatedClassNotAdded_ThenTrue()
     {
         // when
-        boolean result = testObject.contains(ClassRegisterSelfAbstractIncorrect.class);
+        boolean result = testObject.contains(ClassRegister.class);
+
+        // then
+        Assertions.assertThat(result).isTrue();
+    }
+
+    @Test
+    public void contains_WhenSelfAnnotatedClassNotAdded_ThenTrue()
+    {
+        // when
+        boolean result = testObject.contains(ClassRegisterSelf.class);
+
+        // then
+        Assertions.assertThat(result).isTrue();
+    }
+
+    @Test
+    public void contains_WhenIncorrectlyAnnotatedClass_ThenFalse()
+    {
+        // when
+        boolean result = testObject.contains(ClassAbstractRegisterSelf.class);
 
         // then
         Assertions.assertThat(result).isFalse();
-    }
-
-    // endregion
-    // region addSingleton/findInstance
-
-    @Test
-    public void addSingleton_findInstance_WhenRegisteredTypeAsSingleton_ThenSingleton()
-    {
-        // given
-        ClassBasicInheritsFromAbstract singleton = new ClassBasicInheritsFromAbstract();
-
-        testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
-                ConstructionPolicy.SINGLETON);
-
-        // when
-        testObject.addSingleton(ClassBasicAbstract.class, singleton);
-
-        Instance<ClassBasicAbstract> result = testObject.findInstance(ClassBasicAbstract.class);
-
-        // then
-        Assertions.assertThat(result.exists()).isTrue();
-        Assertions.assertThat(result.extract()).isSameAs(singleton);
-    }
-
-    @Test
-    public void addSingleton_findInstance_WhenRegisteredTypeAsNotSingleton_ThenNoInstance()
-    {
-        // given
-        ClassBasicInheritsFromAbstract singleton = new ClassBasicInheritsFromAbstract();
-
-        testObject.addType(ClassBasicAbstract.class, ClassBasicInheritsFromAbstract.class,
-                ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        testObject.addSingleton(ClassBasicAbstract.class, singleton);
-
-        Instance<ClassBasicAbstract> result = testObject.findInstance(ClassBasicAbstract.class);
-
-        // then
-        Assertions.assertThat(result.exists()).isFalse();
-    }
-
-    @Test
-    public void addSingleton_findInstance_WhenNotRegisteredType_ThenNoInstance()
-    {
-        // given
-        ClassBasicInheritsFromAbstract singleton = new ClassBasicInheritsFromAbstract();
-
-        // when
-        testObject.addSingleton(ClassBasicAbstract.class, singleton);
-
-        Instance<ClassBasicAbstract> result = testObject.findInstance(ClassBasicAbstract.class);
-
-        // then
-        Assertions.assertThat(result.exists()).isFalse();
     }
 
     // endregion
