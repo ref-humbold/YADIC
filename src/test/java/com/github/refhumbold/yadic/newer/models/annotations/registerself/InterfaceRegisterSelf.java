@@ -1,4 +1,4 @@
-package com.github.refhumbold.yadic.newer.models.register.self.invalid;
+package com.github.refhumbold.yadic.newer.models.annotations.registerself;
 
 import com.github.refhumbold.yadic.annotation.YadicRegisterSelf;
 

@@ -6,11 +6,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import com.github.refhumbold.yadic.newer.models.annotations.register.*;
+import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassAbstractRegisterSelf;
+import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassRegisterSelf;
+import com.github.refhumbold.yadic.newer.models.annotations.registerself.InterfaceRegisterSelf;
 import com.github.refhumbold.yadic.newer.models.constructors.*;
 import com.github.refhumbold.yadic.newer.models.inheritance.ClassAbstract;
 import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcrete;
 import com.github.refhumbold.yadic.newer.models.inheritance.InterfaceInheritance;
 import com.github.refhumbold.yadic.registry.DependencyRegistry;
+import com.github.refhumbold.yadic.registry.exception.AbstractTypeException;
 import com.github.refhumbold.yadic.resolver.exception.MissingDependenciesException;
 import com.github.refhumbold.yadic.resolver.exception.NoInstanceCreatedException;
 import com.github.refhumbold.yadic.resolver.exception.NoSuitableConstructorException;
@@ -32,6 +37,8 @@ public class TypesResolverTest_Newer
     {
         testObject = null;
     }
+
+    // region resolve [constructor]
 
     @Test
     public void resolve_WhenClassHasDefaultConstructorOnly_ThenInstanceIsResolved()
@@ -161,4 +168,95 @@ public class TypesResolverTest_Newer
         Assertions.assertThatThrownBy(() -> testObject.resolve(ClassPrivateConstructorOnly.class))
                   .isInstanceOf(NoSuitableConstructorException.class);
     }
+
+    // endregion
+    // region resolve [annotations]
+
+    @Test
+    public void resolve_WhenAnnotatedInterface_ThenInstanceIsResolved()
+    {
+        // when
+        InterfaceRegister result1 = testObject.resolve(InterfaceRegister.class);
+        InterfaceRegister result2 = testObject.resolve(InterfaceRegister.class);
+
+        // then
+        Assertions.assertThat(result1)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDerivedFromInterfaceRegister.class);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDerivedFromInterfaceRegister.class)
+                  .isNotSameAs(result1);
+    }
+
+    @Test
+    public void resolve_WhenAnnotatedAbstractClass_ThenInstanceIsResolved()
+    {
+        // when
+        ClassAbstractRegister result1 = testObject.resolve(ClassAbstractRegister.class);
+        ClassAbstractRegister result2 = testObject.resolve(ClassAbstractRegister.class);
+
+        // then
+        Assertions.assertThat(result1)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDerivedFromAbstractRegister.class);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDerivedFromAbstractRegister.class)
+                  .isNotSameAs(result1);
+    }
+
+    @Test
+    public void resolve_WhenAnnotatedConcreteClass_ThenInstanceIsResolved()
+    {
+        // when
+        ClassRegister result1 = testObject.resolve(ClassRegister.class);
+        ClassRegister result2 = testObject.resolve(ClassRegister.class);
+
+        // then
+        Assertions.assertThat(result1)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDerivedFromRegister.class);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDerivedFromRegister.class)
+                  .isNotSameAs(result1);
+    }
+
+    @Test
+    public void resolve_WhenSelfAnnotatedInterface_ThenAbstractTypeException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceRegisterSelf.class))
+                  .isInstanceOf(AbstractTypeException.class);
+    }
+
+    @Test
+    public void resolve_WhenSelfAnnotatedAbstractClass_ThenAbstractTypeException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassAbstractRegisterSelf.class))
+                  .isInstanceOf(AbstractTypeException.class);
+    }
+
+    @Test
+    public void resolve_WhenSelfAnnotatedConcreteClass_ThenInstanceIsResolved()
+    {
+        // when
+        ClassRegisterSelf result1 = testObject.resolve(ClassRegisterSelf.class);
+        ClassRegisterSelf result2 = testObject.resolve(ClassRegisterSelf.class);
+
+        // then
+        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(ClassRegisterSelf.class);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassRegisterSelf.class)
+                  .isNotSameAs(result1);
+    }
+
+    // endregion
+    // region resolve [setter]
+
+    // endregion
+    // region resolve [dependencies schemas]
+
+    // endregion
 }

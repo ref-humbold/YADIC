@@ -5,18 +5,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.github.refhumbold.yadic.ConstructionPolicy;
+import com.github.refhumbold.yadic.newer.models.annotations.register.*;
+import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassAbstractRegisterSelf;
+import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassDerivedFromRegisterSelf;
+import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassRegisterSelf;
 import com.github.refhumbold.yadic.newer.models.inheritance.ClassAbstract;
 import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcrete;
 import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcreteDerived;
 import com.github.refhumbold.yadic.newer.models.inheritance.InterfaceInheritance;
-import com.github.refhumbold.yadic.newer.models.register.ClassAbstractRegister;
-import com.github.refhumbold.yadic.newer.models.register.ClassRegister;
-import com.github.refhumbold.yadic.newer.models.register.ClassRegisterDerived;
-import com.github.refhumbold.yadic.newer.models.register.invalid.ClassRegisterAbstractSubclass;
-import com.github.refhumbold.yadic.newer.models.register.invalid.ClassRegisterOutOfHierarchy;
-import com.github.refhumbold.yadic.newer.models.register.self.ClassRegisterSelf;
-import com.github.refhumbold.yadic.newer.models.register.self.invalid.ClassAbstractRegisterSelf;
-import com.github.refhumbold.yadic.newer.models.register.self.invalid.ClassRegisterSelfDerived;
 import com.github.refhumbold.yadic.registry.exception.AbstractTypeException;
 import com.github.refhumbold.yadic.registry.exception.AnnotatedTypeRegistrationException;
 import com.github.refhumbold.yadic.registry.exception.MixingPoliciesException;
@@ -70,7 +66,7 @@ public class DependencyRegistryTest
     @Test
     public void addType_WhenRegisterToNotSubtype_ThenNotDerivedTypeException()
     {
-        Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterOutOfHierarchy.class,
+        Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterNotOwnSubclass.class,
                 ConstructionPolicy.CONSTRUCTION)).isInstanceOf(NotDerivedTypeException.class);
     }
 
@@ -92,7 +88,7 @@ public class DependencyRegistryTest
     public void addType_WhenSubtypeOfRegisterAnnotation_ThenAnnotatedTypeRegistrationException()
     {
         Assertions.assertThatThrownBy(
-                          () -> testObject.addType(ClassRegister.class, ClassRegisterDerived.class,
+                          () -> testObject.addType(ClassRegister.class, ClassDerivedFromRegister.class,
                                   ConstructionPolicy.CONSTRUCTION))
                   .isInstanceOf(AnnotatedTypeRegistrationException.class);
     }
@@ -100,9 +96,8 @@ public class DependencyRegistryTest
     @Test
     public void addType_WhenSubtypeOfRegisterSelfAnnotation_ThenAnnotatedTypeRegistrationException()
     {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.addType(ClassRegisterSelf.class, ClassRegisterSelfDerived.class,
-                                  ConstructionPolicy.CONSTRUCTION))
+        Assertions.assertThatThrownBy(() -> testObject.addType(ClassRegisterSelf.class,
+                          ClassDerivedFromRegisterSelf.class, ConstructionPolicy.CONSTRUCTION))
                   .isInstanceOf(AnnotatedTypeRegistrationException.class);
     }
 
@@ -182,7 +177,7 @@ public class DependencyRegistryTest
         TypeConstruction<? extends ClassRegister> result = testObject.findType(type);
 
         // then
-        Assertions.assertThat(result.type()).isEqualTo(ClassRegisterDerived.class);
+        Assertions.assertThat(result.type()).isEqualTo(ClassDerivedFromRegister.class);
         Assertions.assertThat(result.policy()).isEqualTo(ConstructionPolicy.CONSTRUCTION);
     }
 
@@ -460,7 +455,7 @@ public class DependencyRegistryTest
         TypeConstruction<? extends ClassRegister> result = testObject.findType(ClassRegister.class);
 
         // then
-        Assertions.assertThat(result.type()).isEqualTo(ClassRegisterDerived.class);
+        Assertions.assertThat(result.type()).isEqualTo(ClassDerivedFromRegister.class);
         Assertions.assertThat(result.policy()).isEqualTo(ConstructionPolicy.CONSTRUCTION);
     }
 
@@ -480,11 +475,11 @@ public class DependencyRegistryTest
     public void findType_WhenMultipleAnnotationLayers_ThenMappingFromAnnotationsChain()
     {
         // when
-        TypeConstruction<? extends ClassAbstractRegister> result =
-                testObject.findType(ClassAbstractRegister.class);
+        TypeConstruction<? extends ClassAbstractRegisterChain> result =
+                testObject.findType(ClassAbstractRegisterChain.class);
 
         // then
-        Assertions.assertThat(result.type()).isEqualTo(ClassRegisterDerived.class);
+        Assertions.assertThat(result.type()).isEqualTo(ClassRegisterChainDerived.class);
         Assertions.assertThat(result.policy()).isEqualTo(ConstructionPolicy.CONSTRUCTION);
     }
 
