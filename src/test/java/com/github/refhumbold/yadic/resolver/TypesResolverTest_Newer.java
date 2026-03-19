@@ -6,16 +6,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import com.github.refhumbold.yadic.ConstructionPolicy;
 import com.github.refhumbold.yadic.newer.models.annotations.register.*;
 import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassAbstractRegisterSelf;
 import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassRegisterSelf;
 import com.github.refhumbold.yadic.newer.models.annotations.registerself.InterfaceRegisterSelf;
 import com.github.refhumbold.yadic.newer.models.constructors.*;
+import com.github.refhumbold.yadic.newer.models.dependencies.circular.*;
+import com.github.refhumbold.yadic.newer.models.dependencies.diamond.*;
+import com.github.refhumbold.yadic.newer.models.dependencies.linear.*;
 import com.github.refhumbold.yadic.newer.models.inheritance.ClassAbstract;
 import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcrete;
 import com.github.refhumbold.yadic.newer.models.inheritance.InterfaceInheritance;
 import com.github.refhumbold.yadic.registry.DependencyRegistry;
 import com.github.refhumbold.yadic.registry.exception.AbstractTypeException;
+import com.github.refhumbold.yadic.resolver.exception.CircularDependenciesException;
 import com.github.refhumbold.yadic.resolver.exception.MissingDependenciesException;
 import com.github.refhumbold.yadic.resolver.exception.NoInstanceCreatedException;
 import com.github.refhumbold.yadic.resolver.exception.NoSuitableConstructorException;
@@ -257,6 +262,117 @@ public class TypesResolverTest_Newer
 
     // endregion
     // region resolve [dependencies schemas]
+
+    @Test
+    public void resolve_WhenLinear_ThenInstanceIsResolved()
+    {
+        // given
+        dictionary.addType(InterfaceLinear.class, ClassLinear.class,
+                ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(InterfaceLinearFirst.class, ClassLinearFirst.class,
+                ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(InterfaceLinearSecond.class, ClassLinearSecond.class,
+                ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(InterfaceLinearThird.class, ClassLinearThird.class,
+                ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        InterfaceLinear result = testObject.resolve(InterfaceLinear.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassLinear.class);
+        Assertions.assertThat(result.getFirst())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassLinearFirst.class);
+        Assertions.assertThat(result.getFirst().getSecond())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassLinearSecond.class);
+        Assertions.assertThat(result.getFirst().getSecond().getThird())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassLinearThird.class);
+    }
+
+    @Test
+    public void resolve_WhenCircular_ThenCircularDependenciesException()
+    {
+        // given
+        dictionary.addType(InterfaceCircular.class, ClassCircular.class,
+                ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(InterfaceCircularLeft.class, ClassCircularLeft.class,
+                ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(InterfaceCircularRight.class, ClassCircularRight.class,
+                ConstructionPolicy.CONSTRUCTION);
+
+        // then
+        Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceCircular.class))
+                  .isInstanceOf(CircularDependenciesException.class);
+    }
+
+    @Test
+    public void resolve_WhenDiamondWithoutSingleton_ThenInstanceIsResolved()
+    {
+        // given
+        dictionary.addType(InterfaceDiamond.class, ClassDiamond.class,
+                ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
+                ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(InterfaceDiamondRight.class, ClassDiamondRight.class,
+                ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
+                ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        InterfaceDiamond result = testObject.resolve(InterfaceDiamond.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassDiamond.class);
+        Assertions.assertThat(result.getLeft())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondLeft.class);
+        Assertions.assertThat(result.getRight())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondRight.class);
+        Assertions.assertThat(result.getLeft().getTop())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondTop.class);
+        Assertions.assertThat(result.getRight().getTop())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondTop.class)
+                  .isNotSameAs(result.getLeft().getTop());
+    }
+
+    @Test
+    public void resolve_WhenDiamondWithSingleton_ThenInstanceIsResolved()
+    {
+        // given
+        dictionary.addType(InterfaceDiamond.class, ClassDiamond.class,
+                ConstructionPolicy.SINGLETON);
+        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
+                ConstructionPolicy.SINGLETON);
+        dictionary.addType(InterfaceDiamondRight.class, ClassDiamondRight.class,
+                ConstructionPolicy.SINGLETON);
+        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
+                ConstructionPolicy.SINGLETON);
+
+        // when
+        InterfaceDiamond result = testObject.resolve(InterfaceDiamond.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassDiamond.class);
+        Assertions.assertThat(result.getLeft())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondLeft.class);
+        Assertions.assertThat(result.getRight())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondRight.class);
+        Assertions.assertThat(result.getLeft().getTop())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondTop.class);
+        Assertions.assertThat(result.getRight().getTop())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondTop.class)
+                  .isSameAs(result.getLeft().getTop());
+    }
 
     // endregion
 }
