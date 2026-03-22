@@ -1,17 +1,15 @@
 package com.github.refhumbold.yadic.newer.models.dependencies.linear;
 
 public class ClassLinear
-        implements InterfaceLinear
 {
-    private final InterfaceLinearFirst first;
+    private final ClassLinearFirst first;
 
-    public ClassLinear(InterfaceLinearFirst first)
+    public ClassLinear(ClassLinearFirst first)
     {
         this.first = first;
     }
 
-    @Override
-    public InterfaceLinearFirst getFirst()
+    public ClassLinearFirst getFirst()
     {
         return first;
     }

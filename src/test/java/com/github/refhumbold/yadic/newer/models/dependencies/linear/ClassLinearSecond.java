@@ -1,17 +1,15 @@
 package com.github.refhumbold.yadic.newer.models.dependencies.linear;
 
 public class ClassLinearSecond
-        implements InterfaceLinearSecond
 {
-    private final InterfaceLinearThird third;
+    private final ClassLinearThird third;
 
-    public ClassLinearSecond(InterfaceLinearThird third)
+    public ClassLinearSecond(ClassLinearThird third)
     {
         this.third = third;
     }
 
-    @Override
-    public InterfaceLinearThird getThird()
+    public ClassLinearThird getThird()
     {
         return third;
     }

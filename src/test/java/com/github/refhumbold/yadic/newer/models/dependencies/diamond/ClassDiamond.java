@@ -1,25 +1,22 @@
 package com.github.refhumbold.yadic.newer.models.dependencies.diamond;
 
 public class ClassDiamond
-        implements InterfaceDiamond
 {
-    private final InterfaceDiamondLeft left;
-    private final InterfaceDiamondRight right;
+    private final ClassDiamondLeft left;
+    private final ClassDiamondRight right;
 
-    public ClassDiamond(InterfaceDiamondLeft left, InterfaceDiamondRight right)
+    public ClassDiamond(ClassDiamondLeft left, ClassDiamondRight right)
     {
         this.left = left;
         this.right = right;
     }
 
-    @Override
-    public InterfaceDiamondLeft getLeft()
+    public ClassDiamondLeft getLeft()
     {
         return left;
     }
 
-    @Override
-    public InterfaceDiamondRight getRight()
+    public ClassDiamondRight getRight()
     {
         return right;
     }

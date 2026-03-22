@@ -1,17 +1,15 @@
 package com.github.refhumbold.yadic.newer.models.dependencies.circular;
 
 public class ClassCircular
-        implements InterfaceCircular
 {
-    private final InterfaceCircularLeft circular;
+    private final ClassCircularLeft circular;
 
-    public ClassCircular(InterfaceCircularLeft circular)
+    public ClassCircular(ClassCircularLeft circular)
     {
         this.circular = circular;
     }
 
-    @Override
-    public InterfaceCircularLeft getCircular()
+    public ClassCircularLeft getCircular()
     {
         return circular;
     }
