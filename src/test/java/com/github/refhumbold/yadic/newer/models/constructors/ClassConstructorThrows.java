@@ -4,6 +4,6 @@ public class ClassConstructorThrows
 {
     public ClassConstructorThrows()
     {
-        throw new RuntimeException();
+        throw new UnsupportedOperationException();
     }
 }

@@ -4,16 +4,34 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import com.github.refhumbold.yadic.ConstructionPolicy;
-import com.github.refhumbold.yadic.models.basic.*;
-import com.github.refhumbold.yadic.models.circular.*;
-import com.github.refhumbold.yadic.models.constructor.*;
-import com.github.refhumbold.yadic.models.diamond.*;
-import com.github.refhumbold.yadic.models.register.*;
-import com.github.refhumbold.yadic.models.setter.*;
+import com.github.refhumbold.yadic.newer.models.annotations.register.*;
+import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassAbstractRegisterSelf;
+import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassRegisterSelf;
+import com.github.refhumbold.yadic.newer.models.annotations.registerself.InterfaceRegisterSelf;
+import com.github.refhumbold.yadic.newer.models.constructors.*;
+import com.github.refhumbold.yadic.newer.models.dependencies.annotation.ClassDependencyAnnotation;
+import com.github.refhumbold.yadic.newer.models.dependencies.annotation.ClassDependencyOptionalCircular;
+import com.github.refhumbold.yadic.newer.models.dependencies.circular.ClassCircular;
+import com.github.refhumbold.yadic.newer.models.dependencies.circular.ClassCircularLeft;
+import com.github.refhumbold.yadic.newer.models.dependencies.circular.ClassCircularRight;
+import com.github.refhumbold.yadic.newer.models.dependencies.diamond.ClassDiamond;
+import com.github.refhumbold.yadic.newer.models.dependencies.diamond.ClassDiamondLeft;
+import com.github.refhumbold.yadic.newer.models.dependencies.diamond.ClassDiamondRight;
+import com.github.refhumbold.yadic.newer.models.dependencies.diamond.ClassDiamondTop;
+import com.github.refhumbold.yadic.newer.models.dependencies.linear.ClassLinear;
+import com.github.refhumbold.yadic.newer.models.dependencies.linear.ClassLinearFirst;
+import com.github.refhumbold.yadic.newer.models.dependencies.linear.ClassLinearSecond;
+import com.github.refhumbold.yadic.newer.models.dependencies.linear.ClassLinearThird;
+import com.github.refhumbold.yadic.newer.models.inheritance.ClassAbstract;
+import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcrete;
+import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcreteDerived;
+import com.github.refhumbold.yadic.newer.models.inheritance.InterfaceInheritance;
+import com.github.refhumbold.yadic.newer.models.setter.*;
 import com.github.refhumbold.yadic.registry.DependencyRegistry;
 import com.github.refhumbold.yadic.registry.exception.AbstractTypeException;
-import com.github.refhumbold.yadic.registry.exception.NotDerivedTypeException;
 import com.github.refhumbold.yadic.resolver.exception.*;
 
 public class TypesResolverTest
@@ -34,110 +52,6 @@ public class TypesResolverTest
         testObject = null;
     }
 
-    // region resolve [constructor]
-
-    @Test
-    public void resolve_WhenClassHasDefaultConstructorOnly_ThenInstanceIsResolved()
-    {
-        // when
-        ClassConstructorDefault result = testObject.resolve(ClassConstructorDefault.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-    }
-
-    @Test
-    public void resolve_WhenClassInheritsFromConcreteClass_ThenInstanceIsResolved()
-    {
-        // when
-        ClassConstructorSuperParameterized result =
-                testObject.resolve(ClassConstructorSuperParameterized.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-    }
-
-    @Test
-    public void resolve_WhenClassInheritsFromAbstractClass_ThenInstanceIsResolved()
-    {
-        // when
-        ClassBasicInheritsFromAbstract result =
-                testObject.resolve(ClassBasicInheritsFromAbstract.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-    }
-
-    @Test
-    public void resolve_WhenClassHasParameterConstructorWithoutRegisteredParameter_ThenMissingDependenciesException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassConstructorParameterized.class))
-                  .isInstanceOf(MissingDependenciesException.class);
-    }
-
-    @Test
-    public void resolve_WhenClassHasParameterConstructorWithRegisteredPrimitiveParameter_ThenInstanceIsResolved()
-    {
-        // given
-        int number = 10;
-
-        dictionary.addInstance(int.class, number);
-
-        // when
-        ClassConstructorParameterized result =
-                testObject.resolve(ClassConstructorParameterized.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getNumber()).isEqualTo(number);
-    }
-
-    @Test
-    public void resolve_WhenClassHasPrimitiveParameterConstructorButRegisteredReferenceParameter_ThenMissingDependenciesException()
-    {
-        // given
-        Integer number = 10;
-
-        dictionary.addInstance(Integer.class, number);
-
-        // then
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassConstructorParameterized.class))
-                  .isInstanceOf(MissingDependenciesException.class);
-    }
-
-    @Test
-    public void resolve_WhenClassHasDefaultAndParameterConstructorWithoutRegisteredParameter_ThenInstanceIsResolved()
-    {
-        // when
-        ClassConstructorDefaultAndParameterized result =
-                testObject.resolve(ClassConstructorDefaultAndParameterized.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-    }
-
-    @Test
-    public void resolve_WhenInterface_ThenMissingDependenciesException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceBasic.class))
-                  .isInstanceOf(MissingDependenciesException.class);
-    }
-
-    @Test
-    public void resolve_WhenAbstractClass_ThenMissingDependenciesException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassBasicAbstract.class))
-                  .isInstanceOf(MissingDependenciesException.class);
-    }
-
-    @Test
-    public void resolve_WhenClassConstructorThrowsException_ThenNoInstanceCreatedException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.resolve(ClassConstructorExceptionThrown.class))
-                  .isInstanceOf(NoInstanceCreatedException.class);
-    }
-
     @Test
     public void resolve_WhenPrimitiveType_ThenNoSuitableConstructorException()
     {
@@ -145,372 +59,105 @@ public class TypesResolverTest
                   .isInstanceOf(NoSuitableConstructorException.class);
     }
 
+    // region resolve [constructor]
+
     @Test
-    public void resolve_WhenMultipleAnnotatedConstructors_ThenMultipleAnnotatedConstructorsException()
+    public void resolve_WhenClassHasDefaultConstructorOnly_ThenInstanceIsResolved()
     {
+        // when
+        ClassDefaultConstructorOnly result = testObject.resolve(ClassDefaultConstructorOnly.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {
+            ClassParameterizedConstructorString.class, ClassParameterizedConstructorPrimitive.class,
+            ClassParameterizedConstructorBoxed.class
+    })
+    public void resolve_WhenClassHasParameterConstructorWithoutAddedParameter_ThenMissingDependenciesException(
+            Class<?> cls)
+    {
+        // then
+        Assertions.assertThatThrownBy(() -> testObject.resolve(cls))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    @Test
+    public void resolve_WhenClassHasPrimitiveParameterConstructorWithAddedParameter_ThenInstanceIsResolved()
+    {
+        // given
+        int number = 10;
+
+        dictionary.addInstance(int.class, number);
+
+        // when
+        ClassParameterizedConstructorPrimitive result =
+                testObject.resolve(ClassParameterizedConstructorPrimitive.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getNumber()).isEqualTo(number);
+    }
+
+    @Test
+    public void resolve_WhenClassHasReferenceParameterConstructorWithAddedParameter_ThenInstanceIsResolved()
+    {
+        // given
+        Integer number = 10;
+
+        dictionary.addInstance(Integer.class, number);
+
+        // when
+        ClassParameterizedConstructorBoxed result =
+                testObject.resolve(ClassParameterizedConstructorBoxed.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getNumber()).isEqualTo(number);
+    }
+
+    @Test
+    public void resolve_WhenClassHasPrimitiveParameterConstructorButAddedBoxedParameter_ThenMissingDependenciesException()
+    {
+        // given
+        dictionary.addInstance(Integer.class, 10);
+
+        // then
         Assertions.assertThatThrownBy(
-                          () -> testObject.resolve(ClassConstructorMultipleAnnotated.class))
-                  .isInstanceOf(MultipleAnnotatedConstructorsException.class);
+                          () -> testObject.resolve(ClassParameterizedConstructorPrimitive.class))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    @Test
+    public void resolve_WhenClassHasBoxedParameterConstructorButAddedPrimitiveParameter_ThenMissingDependenciesException()
+    {
+        // given
+        dictionary.addInstance(int.class, 10);
+
+        // then
+        Assertions.assertThatThrownBy(
+                          () -> testObject.resolve(ClassParameterizedConstructorBoxed.class))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    @Test
+    public void resolve_WhenClassConstructorThrowsException_ThenNoInstanceCreatedException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassConstructorThrows.class))
+                  .isInstanceOf(NoInstanceCreatedException.class);
     }
 
     @Test
     public void resolve_WhenNoPublicConstructors_ThenNoSuitableConstructorException()
     {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassConstructorPrivate.class))
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassPrivateConstructorOnly.class))
                   .isInstanceOf(NoSuitableConstructorException.class);
     }
 
     // endregion
-    // region resolve [setter]
-
-    @Test
-    public void resolve_WhenDependencySetterHasReturnType_ThenIncorrectDependencySetterException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.resolve(ClassSetterIncorrectReturnType.class))
-                  .isInstanceOf(IncorrectDependencySetterException.class);
-    }
-
-    @Test
-    public void resolve_WhenDependencySetterHasNoParameters_ThenIncorrectDependencySetterException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassSetterWithoutParameters.class))
-                  .isInstanceOf(IncorrectDependencySetterException.class);
-    }
-
-    @Test
-    public void resolve_WhenDependencySetterHasIncorrectName_ThenIncorrectDependencySetterException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassSetterIncorrectName.class))
-                  .isInstanceOf(IncorrectDependencySetterException.class);
-    }
-
-    @Test
-    public void resolve_WhenDependencySetterHasMultipleParameters_ThenIncorrectDependencySetterException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassSetterMultipleParameters.class))
-                  .isInstanceOf(IncorrectDependencySetterException.class);
-    }
-
-    @Test
-    public void resolve_WhenMissingDependency_ThenMissingDependenciesException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassSetterSingle.class))
-                  .isInstanceOf(MissingDependenciesException.class);
-    }
-
-    @Test
-    public void resolve_WhenSetterThrowsException_ThenSetterInvocationException()
-    {
-        // given
-        dictionary.addInstance(String.class, "string");
-
-        // then
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassSetterThrows.class))
-                  .isInstanceOf(SetterInvocationException.class);
-    }
-
-    @Test
-    public void resolve_WhenDependencySetterOnly_ThenInstanceIsResolved()
-    {
-        // given
-        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        InterfaceSetter result = testObject.resolve(ClassSetterSingle.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getBasicObject()).isNotNull();
-    }
-
-    @Test
-    public void resolve_WhenMultipleDependencySetters_ThenInstanceIsResolved()
-    {
-        // given
-        String string = "string";
-
-        dictionary.addType(InterfaceSetterMultiple.class, ClassSetterMultiple.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addInstance(String.class, string);
-
-        // when
-        InterfaceSetterMultiple result = testObject.resolve(InterfaceSetterMultiple.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getBasicObject()).isNotNull();
-        Assertions.assertThat(result.getStringObject()).isNotNull();
-        Assertions.assertThat(result.getStringObject().getString()).isNotNull().isEqualTo(string);
-    }
-
-    // endregion
-    // region resolve [dependencies schemas]
-
-    @Test
-    public void resolve_WhenDependenciesWithRegisteredInstance_ThenInstanceIsResolved()
-    {
-        // given
-        String string = "String";
-
-        dictionary.addInstance(String.class, string);
-        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceBasicSimpleDependency.class,
-                ClassConstructorNotAnnotatedWithDependency.class, ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
-
-        // then
-        Assertions.assertThat(result)
-                  .isNotNull()
-                  .isInstanceOf(ClassConstructorNotAnnotatedWithDependency.class);
-        Assertions.assertThat(result.getFirstObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject()).isNotNull();
-        Assertions.assertThat(result.getFirstObject().getObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isNotNull().isEqualTo(string);
-    }
-
-    @Test
-    public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithAllDependencies_ThenInstanceIsResolved()
-    {
-        // given
-        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceBasicSimpleDependency.class,
-                ClassConstructorNotAnnotatedWithDependency.class, ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
-
-        // then
-        Assertions.assertThat(result)
-                  .isNotNull()
-                  .isInstanceOf(ClassConstructorNotAnnotatedWithDependency.class);
-        Assertions.assertThat(result.getFirstObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject()).isNotNull();
-        Assertions.assertThat(result.getFirstObject().getObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isNotNull().isEqualTo("");
-    }
-
-    @Test
-    public void resolve_WhenDependenciesWithoutAnnotatedConstructorsWithoutSomeDependencies_ThenInstanceIsResolved()
-    {
-        // given
-        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceBasicSimpleDependency.class,
-                ClassConstructorNotAnnotatedWithDependency.class, ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
-
-        // then
-        Assertions.assertThat(result)
-                  .isNotNull()
-                  .isInstanceOf(ClassConstructorNotAnnotatedWithDependency.class);
-        Assertions.assertThat(result.getFirstObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject()).isNull();
-        Assertions.assertThat(result.getFirstObject().getObject()).isNotNull();
-    }
-
-    @Test
-    public void resolve_WhenDependenciesWithAnnotatedConstructor_ThenInstanceIsResolved()
-    {
-        // given
-        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceBasicSimpleDependency.class,
-                ClassConstructorAnnotatedWithDependency.class, ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        InterfaceBasicSimpleDependency result =
-                testObject.resolve(InterfaceBasicSimpleDependency.class);
-
-        // then
-        Assertions.assertThat(result)
-                  .isNotNull()
-                  .isInstanceOf(ClassConstructorAnnotatedWithDependency.class);
-        Assertions.assertThat(result.getFirstObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject()).isNotNull();
-        Assertions.assertThat(result.getFirstObject().getObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isNotNull().isEqualTo("");
-    }
-
-    @Test
-    public void resolve_WhenDependenciesWithAnnotatedConstructorWithoutSomeDependencies_ThenMissingDependenciesException()
-    {
-        // given
-        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondRight.class, ClassDiamondRight.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
-                ConstructionPolicy.CONSTRUCTION);
-
-        // then
-        Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceDiamondBottom.class))
-                  .isInstanceOf(MissingDependenciesException.class);
-    }
-
-    @Test
-    public void resolve_WhenDiamondDependenciesWithoutSingleton_ThenInstanceIsResolved()
-    {
-        // given
-        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondRight.class, ClassDiamondRight.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassDiamondBottom.class);
-        Assertions.assertThat(result.getDiamond1()).isNotNull();
-        Assertions.assertThat(result.getDiamond2()).isNotNull();
-        Assertions.assertThat(result.getDiamond1().getObject()).isNotNull();
-        Assertions.assertThat(result.getDiamond2().getObject()).isNotNull();
-        Assertions.assertThat(result.getDiamond1().getObject())
-                  .isNotSameAs(result.getDiamond2().getObject());
-    }
-
-    @Test
-    public void resolve_WhenDiamondDependenciesWithSingleton_ThenInstanceIsResolved()
-    {
-        // given
-        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondRight.class, ClassDiamondRight.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondBottom.class, ClassDiamondBottom.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                ConstructionPolicy.SINGLETON);
-
-        // when
-        InterfaceDiamondBottom result = testObject.resolve(InterfaceDiamondBottom.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassDiamondBottom.class);
-        Assertions.assertThat(result.getDiamond1()).isNotNull();
-        Assertions.assertThat(result.getDiamond2()).isNotNull();
-        Assertions.assertThat(result.getDiamond1().getObject()).isNotNull();
-        Assertions.assertThat(result.getDiamond2().getObject())
-                  .isNotNull()
-                  .isSameAs(result.getDiamond1().getObject());
-    }
-
-    @Test
-    public void resolve_WhenCircularDependencies_ThenCircularDependenciesException()
-    {
-        // given
-        dictionary.addType(InterfaceCircularLeft.class, ClassCircularLeft.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceCircularRight.class, ClassCircularRight.class,
-                ConstructionPolicy.CONSTRUCTION);
-
-        // then
-        Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceCircularRight.class))
-                  .isInstanceOf(CircularDependenciesException.class);
-    }
-
-    @Test
-    public void resolve_WhenCanOmitCircularDependencies_ThenInstanceIsResolved()
-    {
-        // given
-        String string = "String";
-
-        dictionary.addInstance(String.class, string);
-        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceCircularLeft.class, ClassCircularLeft.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceCircularRight.class, ClassCircularRight.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceCircularDependency.class, ClassCircularDependency.class,
-                ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        InterfaceCircularDependency result = testObject.resolve(InterfaceCircularDependency.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassCircularDependency.class);
-        Assertions.assertThat(result.getNonCircularObject()).isNotNull();
-        Assertions.assertThat(result.getCircularObject()).isNull();
-        Assertions.assertThat(result.getNonCircularObject().getString())
-                  .isNotNull()
-                  .isEqualTo(string);
-    }
-
-    @Test
-    public void resolve_WhenComplexDependency_ThenInstanceIsResolved()
-    {
-        // given
-        String string = "string";
-
-        dictionary.addType(InterfaceBasicComplexDependency.class, ClassBasicComplexDependency.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceBasic.class, ClassConstructorDefault.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondTop.class, ClassDiamondTop.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceDiamondLeft.class, ClassDiamondLeft.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(InterfaceBasicStringGetter.class, ClassBasicStringGetter.class,
-                ConstructionPolicy.CONSTRUCTION);
-        dictionary.addInstance(String.class, string);
-
-        // when
-        InterfaceBasicComplexDependency result =
-                testObject.resolve(InterfaceBasicComplexDependency.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull().isInstanceOf(ClassBasicComplexDependency.class);
-        Assertions.assertThat(result.getBasicObject()).isNotNull();
-        Assertions.assertThat(result.getFirstObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject()).isNotNull();
-        Assertions.assertThat(result.getFirstObject().getObject()).isNotNull();
-        Assertions.assertThat(result.getSecondObject().getString()).isNotNull().isEqualTo(string);
-    }
-
-    // endregion
-    // region resolve [annotations]
+    // region resolve [register annotations]
 
     @Test
     public void resolve_WhenAnnotatedInterface_ThenInstanceIsResolved()
@@ -520,10 +167,12 @@ public class TypesResolverTest
         InterfaceRegister result2 = testObject.resolve(InterfaceRegister.class);
 
         // then
-        Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassRegisterInterface.class);
+        Assertions.assertThat(result1)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDerivedFromInterfaceRegister.class);
         Assertions.assertThat(result2)
                   .isNotNull()
-                  .isInstanceOf(ClassRegisterInterface.class)
+                  .isExactlyInstanceOf(ClassDerivedFromInterfaceRegister.class)
                   .isNotSameAs(result1);
     }
 
@@ -531,14 +180,16 @@ public class TypesResolverTest
     public void resolve_WhenAnnotatedAbstractClass_ThenInstanceIsResolved()
     {
         // when
-        ClassRegisterAbstract result1 = testObject.resolve(ClassRegisterAbstract.class);
-        ClassRegisterAbstract result2 = testObject.resolve(ClassRegisterAbstract.class);
+        ClassAbstractRegister result1 = testObject.resolve(ClassAbstractRegister.class);
+        ClassAbstractRegister result2 = testObject.resolve(ClassAbstractRegister.class);
 
         // then
-        Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassRegisterConcrete.class);
+        Assertions.assertThat(result1)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDerivedFromAbstractRegister.class);
         Assertions.assertThat(result2)
                   .isNotNull()
-                  .isInstanceOf(ClassRegisterConcrete.class)
+                  .isExactlyInstanceOf(ClassDerivedFromAbstractRegister.class)
                   .isNotSameAs(result1);
     }
 
@@ -546,17 +197,31 @@ public class TypesResolverTest
     public void resolve_WhenAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
         // when
-        ClassRegisterConcrete result1 = testObject.resolve(ClassRegisterConcrete.class);
-        ClassRegisterConcrete result2 = testObject.resolve(ClassRegisterConcrete.class);
+        ClassRegister result1 = testObject.resolve(ClassRegister.class);
+        ClassRegister result2 = testObject.resolve(ClassRegister.class);
 
         // then
         Assertions.assertThat(result1)
                   .isNotNull()
-                  .isInstanceOf(ClassRegisterDerivedFromRegister.class);
+                  .isExactlyInstanceOf(ClassDerivedFromRegister.class);
         Assertions.assertThat(result2)
                   .isNotNull()
-                  .isInstanceOf(ClassRegisterDerivedFromRegister.class)
+                  .isExactlyInstanceOf(ClassDerivedFromRegister.class)
                   .isNotSameAs(result1);
+    }
+
+    @Test
+    public void resolve_WhenSelfAnnotatedInterface_ThenAbstractTypeException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceRegisterSelf.class))
+                  .isInstanceOf(AbstractTypeException.class);
+    }
+
+    @Test
+    public void resolve_WhenSelfAnnotatedAbstractClass_ThenAbstractTypeException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassAbstractRegisterSelf.class))
+                  .isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
@@ -567,133 +232,364 @@ public class TypesResolverTest
         ClassRegisterSelf result2 = testObject.resolve(ClassRegisterSelf.class);
 
         // then
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull().isNotSameAs(result1);
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedConcreteClassAsItself_ThenInstanceIsResolved()
-    {
-        // when
-        ClassRegisterSelfAsSubtype result1 = testObject.resolve(ClassRegisterSelfAsSubtype.class);
-        ClassRegisterSelfAsSubtype result2 = testObject.resolve(ClassRegisterSelfAsSubtype.class);
-
-        // then
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull().isNotSameAs(result1);
-    }
-
-    @Test
-    public void resolve_WhenSelfAnnotatedInterface_ThenAbstractTypeException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.resolve(InterfaceRegisterSelfIncorrect.class))
-                  .isInstanceOf(AbstractTypeException.class);
-    }
-
-    @Test
-    public void resolve_WhenSelfAnnotatedAbstractClass_ThenAbstractTypeException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.resolve(ClassRegisterSelfAbstractIncorrect.class))
-                  .isInstanceOf(AbstractTypeException.class);
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedAbstractClassAsItself_ThenAbstractTypeException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.resolve(ClassRegisterAbstractIncorrect.class))
-                  .isInstanceOf(AbstractTypeException.class);
-    }
-
-    @Test
-    public void resolve_WhenInterfaceAnnotatedClassNotImplementing_ThenNotDerivedTypeException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceRegisterIncorrect.class))
-                  .isInstanceOf(NotDerivedTypeException.class);
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedClassRegistersInterface_ThenNotDerivedTypeException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.resolve(ClassRegisterInterfaceIncorrect.class))
-                  .isInstanceOf(NotDerivedTypeException.class);
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedClassRegistersNotDerivedClass_ThenNotDerivedTypeException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.resolve(ClassRegisterIncorrectOtherClass.class))
-                  .isInstanceOf(NotDerivedTypeException.class);
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedClassRegistersAbstractConcreteSuperclass_ThenNotDerivedTypeException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.resolve(ClassRegisterIncorrectSuperClass.class))
-                  .isInstanceOf(NotDerivedTypeException.class);
-    }
-
-    @Test
-    public void resolve_WhenAnnotatedInterfaceSingleton_ThenSameInstances()
-    {
-        // when
-        InterfaceRegisterSingleton result1 = testObject.resolve(InterfaceRegisterSingleton.class);
-        InterfaceRegisterSingleton result2 = testObject.resolve(InterfaceRegisterSingleton.class);
-
-        // then
-        Assertions.assertThat(result1).isNotNull().isInstanceOf(ClassRegisterSingletonBase.class);
+        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(ClassRegisterSelf.class);
         Assertions.assertThat(result2)
                   .isNotNull()
-                  .isInstanceOf(ClassRegisterSingletonBase.class)
-                  .isSameAs(result1);
+                  .isExactlyInstanceOf(ClassRegisterSelf.class)
+                  .isNotSameAs(result1);
+    }
+
+    // endregion
+    // region resolve [inheritance]
+
+    @Test
+    public void resolve_WhenInterfaceNotAdded_ThenMissingDependenciesException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceInheritance.class))
+                  .isInstanceOf(MissingDependenciesException.class);
     }
 
     @Test
-    public void resolve_WhenAnnotatedConcreteClassSingleton_ThenSameInstances()
+    public void resolve_WhenInterfaceAdded_ThenResolvedToSubtype()
     {
+        // given
+        dictionary.addType(InterfaceInheritance.class, ClassConcrete.class,
+                ConstructionPolicy.CONSTRUCTION);
+
         // when
-        ClassRegisterSingletonBase result1 = testObject.resolve(ClassRegisterSingletonBase.class);
-        ClassRegisterSingletonBase result2 = testObject.resolve(ClassRegisterSingletonBase.class);
+        InterfaceInheritance result = testObject.resolve(InterfaceInheritance.class);
 
         // then
-        Assertions.assertThat(result1)
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassConcrete.class);
+    }
+
+    @Test
+    public void resolve_WhenAbstractClassNotAdded_ThenMissingDependenciesException()
+    {
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassAbstract.class))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    @Test
+    public void resolve_WhenAbstractClassAdded_ThenResolvedToSubtype()
+    {
+        // given
+        dictionary.addType(ClassAbstract.class, ClassConcreteDerived.class,
+                ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        ClassAbstract result = testObject.resolve(ClassAbstract.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassConcreteDerived.class);
+    }
+
+    @Test
+    public void resolve_WhenConcreteClassNotAdded_ThenInstanceOfThisClass()
+    {
+        // when
+        ClassConcrete result = testObject.resolve(ClassConcrete.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassConcrete.class);
+    }
+
+    @Test
+    public void resolve_WhenConcreteClassAddedWithSelf_ThenResolvedToThisType()
+    {
+        // given
+        dictionary.addType(ClassConcrete.class, ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        ClassConcrete result = testObject.resolve(ClassConcrete.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassConcrete.class);
+    }
+
+    @Test
+    public void resolve_WhenConcreteClassAddedWithSubtype_ThenResolvedToSubtype()
+    {
+        // given
+        dictionary.addType(ClassConcrete.class, ClassConcreteDerived.class,
+                ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        ClassConcrete result = testObject.resolve(ClassConcrete.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassConcreteDerived.class);
+    }
+
+    // endregion
+    // region resolve [dependencies schemas]
+
+    @Test
+    public void resolve_WhenLinear_ThenInstanceIsResolved()
+    {
+        // given
+        dictionary.addType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearThird.class, ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        ClassLinear result = testObject.resolve(ClassLinear.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getFirst()).isNotNull();
+        Assertions.assertThat(result.getFirst().getSecond()).isNotNull();
+        Assertions.assertThat(result.getFirst().getSecond().getThird()).isNotNull();
+    }
+
+    @Test
+    public void resolve_WhenCircular_ThenCircularDependenciesException()
+    {
+        // given
+        dictionary.addType(ClassCircular.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassCircularLeft.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassCircularRight.class, ConstructionPolicy.CONSTRUCTION);
+
+        // then
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassCircular.class))
+                  .isInstanceOf(CircularDependenciesException.class);
+    }
+
+    @Test
+    public void resolve_WhenDiamondWithoutSingleton_ThenInstanceIsResolved()
+    {
+        // given
+        dictionary.addType(ClassDiamond.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassDiamondLeft.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassDiamondRight.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassDiamondTop.class, ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        ClassDiamond result = testObject.resolve(ClassDiamond.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassDiamond.class);
+        Assertions.assertThat(result.getLeft())
                   .isNotNull()
-                  .isInstanceOf(ClassRegisterSingletonDerived.class);
-        Assertions.assertThat(result2)
+                  .isExactlyInstanceOf(ClassDiamondLeft.class);
+        Assertions.assertThat(result.getRight())
                   .isNotNull()
-                  .isInstanceOf(ClassRegisterSingletonDerived.class)
-                  .isSameAs(result1);
+                  .isExactlyInstanceOf(ClassDiamondRight.class);
+        Assertions.assertThat(result.getLeft().getTop())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondTop.class);
+        Assertions.assertThat(result.getRight().getTop())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondTop.class)
+                  .isNotSameAs(result.getLeft().getTop());
     }
 
     @Test
-    public void resolve_WhenSelfAnnotatedConcreteClassSingleton_ThenSameInstances()
+    public void resolve_WhenDiamondWithSingleton_ThenInstanceIsResolved()
     {
+        // given
+        dictionary.addType(ClassDiamond.class, ConstructionPolicy.SINGLETON);
+        dictionary.addType(ClassDiamondLeft.class, ConstructionPolicy.SINGLETON);
+        dictionary.addType(ClassDiamondRight.class, ConstructionPolicy.SINGLETON);
+        dictionary.addType(ClassDiamondTop.class, ConstructionPolicy.SINGLETON);
+
         // when
-        ClassRegisterSelfSingleton result1 = testObject.resolve(ClassRegisterSelfSingleton.class);
-        ClassRegisterSelfSingleton result2 = testObject.resolve(ClassRegisterSelfSingleton.class);
+        ClassDiamond result = testObject.resolve(ClassDiamond.class);
 
         // then
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull().isSameAs(result1);
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getLeft()).isNotNull();
+        Assertions.assertThat(result.getRight()).isNotNull();
+        Assertions.assertThat(result.getLeft().getTop()).isNotNull();
+        Assertions.assertThat(result.getRight().getTop())
+                  .isNotNull()
+                  .isSameAs(result.getLeft().getTop());
     }
 
     @Test
-    public void resolve_WhenAnnotatedConcreteClassAsItselfSingleton_ThenSameInstances()
+    public void resolve_WhenDependencyNotPresent_ThenMissingDependenciesException()
     {
-        // when
-        ClassRegisterSelfAsSubtypeSingleton result1 =
-                testObject.resolve(ClassRegisterSelfAsSubtypeSingleton.class);
-        ClassRegisterSelfAsSubtypeSingleton result2 =
-                testObject.resolve(ClassRegisterSelfAsSubtypeSingleton.class);
+        // given
+        dictionary.addType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION);
 
         // then
-        Assertions.assertThat(result1).isNotNull();
-        Assertions.assertThat(result2).isNotNull().isSameAs(result1);
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassLinear.class))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    // endregion
+    // region resolve [dependency annotated constructor]
+
+    @Test
+    public void resolve_WhenDependencyAnnotationHasAddedTypes_ThenInstanceIsResolved()
+    {
+
+        // given
+        dictionary.addType(ClassDependencyAnnotation.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearThird.class, ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        ClassDependencyAnnotation result = testObject.resolve(ClassDependencyAnnotation.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getLinear()).isNotNull();
+        Assertions.assertThat(result.getDiamond()).isNull();
+    }
+
+    @Test
+    public void resolve_WhenDependencyAnnotationHasAddedInstance_ThenInstanceIsResolved()
+    {
+
+        // given
+        dictionary.addType(ClassDependencyAnnotation.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addInstance(ClassLinear.class, new ClassLinear(null));
+
+        // when
+        ClassDependencyAnnotation result = testObject.resolve(ClassDependencyAnnotation.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getLinear()).isNotNull();
+        Assertions.assertThat(result.getLinear().getFirst()).isNull();
+        Assertions.assertThat(result.getDiamond()).isNull();
+    }
+
+    @Test
+    public void resolve_WhenAnnotationHasMissingDependency_ThenMissingDependenciesException()
+    {
+
+        // given
+        dictionary.addType(ClassDependencyAnnotation.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION);
+
+        // then
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassDependencyAnnotation.class))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    @Test
+    public void resolve_WhenAnnotationOmitsCircularDependency_ThenInstanceIsResolved()
+    {
+        // given
+        dictionary.addType(ClassDependencyOptionalCircular.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassLinearThird.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassCircular.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassCircularLeft.class, ConstructionPolicy.CONSTRUCTION);
+        dictionary.addType(ClassCircularRight.class, ConstructionPolicy.CONSTRUCTION);
+
+        // when
+        ClassDependencyOptionalCircular result =
+                testObject.resolve(ClassDependencyOptionalCircular.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getLinear()).isNotNull();
+        Assertions.assertThat(result.getCircular()).isNull();
+    }
+
+    // endregion
+    // region resolve [dependency annotated setter]
+
+    @ParameterizedTest
+    @ValueSource(classes = {
+            ClassSetterInvalidReturnType.class, ClassSetterNoParameter.class,
+            ClassSetterInvalidName.class, ClassSetterMultipleParameters.class
+    })
+    public void resolve_WhenSetterIsInvalid_ThenIncorrectDependencySetterException(Class<?> cls)
+    {
+        // given
+        dictionary.addInstance(String.class, "qwertyuiop");
+        dictionary.addInstance(int.class, 10);
+
+        // then
+        Assertions.assertThatThrownBy(() -> testObject.resolve(cls))
+                  .isInstanceOf(IncorrectDependencySetterException.class);
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {
+            ClassSetterString.class, ClassSetterPrimitive.class, ClassSetterBoxed.class
+    })
+    public void resolve_WhenSetterHasMissingDependency_ThenMissingDependenciesException(Class<?> cls)
+    {
+        Assertions.assertThatThrownBy(() -> testObject.resolve(cls))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    @Test
+    public void resolve_WhenSetterHasPrimitiveParameterWithAddedParameter_ThenInstanceIsResolved()
+    {
+        // given
+        int number = 10;
+
+        dictionary.addInstance(int.class, number);
+
+        // when
+        ClassSetterPrimitive result = testObject.resolve(ClassSetterPrimitive.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getNumber()).isEqualTo(number);
+    }
+
+    @Test
+    public void resolve_WhenSetterHasReferenceParameterWithAddedParameter_ThenInstanceIsResolved()
+    {
+        // given
+        Integer number = 10;
+
+        dictionary.addInstance(Integer.class, number);
+
+        // when
+        ClassSetterBoxed result = testObject.resolve(ClassSetterBoxed.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getNumber()).isEqualTo(number);
+    }
+
+    @Test
+    public void resolve_WhenSetterHasPrimitiveParameterButAddedBoxedParameter_ThenMissingDependenciesException()
+    {
+        // given
+        dictionary.addInstance(Integer.class, 10);
+
+        // then
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassSetterPrimitive.class))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    @Test
+    public void resolve_WhenSetterHasBoxedParameterButAddedPrimitiveParameter_ThenMissingDependenciesException()
+    {
+        // given
+        dictionary.addInstance(int.class, 10);
+
+        // then
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassSetterBoxed.class))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    @Test
+    public void resolve_WhenSetterThrowsException_ThenSetterInvocationException()
+    {
+        // given
+        dictionary.addInstance(int.class, 10);
+
+        // then
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassSetterThrows.class))
+                  .isInstanceOf(SetterInvocationException.class);
     }
 
     // endregion
