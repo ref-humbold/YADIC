@@ -7,29 +7,30 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import com.github.refhumbold.yadic.ConstructionPolicy;
-import com.github.refhumbold.yadic.newer.models.annotations.register.*;
-import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassAbstractRegisterSelf;
-import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassRegisterSelf;
-import com.github.refhumbold.yadic.newer.models.annotations.registerself.InterfaceRegisterSelf;
-import com.github.refhumbold.yadic.newer.models.constructors.*;
-import com.github.refhumbold.yadic.newer.models.dependencies.annotation.ClassDependencyAnnotation;
-import com.github.refhumbold.yadic.newer.models.dependencies.annotation.ClassDependencyOptionalCircular;
-import com.github.refhumbold.yadic.newer.models.dependencies.circular.ClassCircular;
-import com.github.refhumbold.yadic.newer.models.dependencies.circular.ClassCircularLeft;
-import com.github.refhumbold.yadic.newer.models.dependencies.circular.ClassCircularRight;
-import com.github.refhumbold.yadic.newer.models.dependencies.diamond.ClassDiamond;
-import com.github.refhumbold.yadic.newer.models.dependencies.diamond.ClassDiamondLeft;
-import com.github.refhumbold.yadic.newer.models.dependencies.diamond.ClassDiamondRight;
-import com.github.refhumbold.yadic.newer.models.dependencies.diamond.ClassDiamondTop;
-import com.github.refhumbold.yadic.newer.models.dependencies.linear.ClassLinear;
-import com.github.refhumbold.yadic.newer.models.dependencies.linear.ClassLinearFirst;
-import com.github.refhumbold.yadic.newer.models.dependencies.linear.ClassLinearSecond;
-import com.github.refhumbold.yadic.newer.models.dependencies.linear.ClassLinearThird;
-import com.github.refhumbold.yadic.newer.models.inheritance.ClassAbstract;
-import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcrete;
-import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcreteDerived;
-import com.github.refhumbold.yadic.newer.models.inheritance.InterfaceInheritance;
-import com.github.refhumbold.yadic.newer.models.setter.*;
+import com.github.refhumbold.yadic.models.annotations.register.*;
+import com.github.refhumbold.yadic.models.annotations.registerself.ClassAbstractRegisterSelf;
+import com.github.refhumbold.yadic.models.annotations.registerself.ClassRegisterSelf;
+import com.github.refhumbold.yadic.models.annotations.registerself.InterfaceRegisterSelf;
+import com.github.refhumbold.yadic.models.constructors.*;
+import com.github.refhumbold.yadic.models.constructors.annotation.ClassAnnotatedDefaultConstructor;
+import com.github.refhumbold.yadic.models.constructors.annotation.ClassAnnotatedMultipleConstructors;
+import com.github.refhumbold.yadic.models.constructors.annotation.ClassAnnotatedParameterizedConstructor;
+import com.github.refhumbold.yadic.models.dependencies.circular.ClassCircular;
+import com.github.refhumbold.yadic.models.dependencies.circular.ClassCircularLeft;
+import com.github.refhumbold.yadic.models.dependencies.circular.ClassCircularRight;
+import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamond;
+import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamondLeft;
+import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamondRight;
+import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamondTop;
+import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinear;
+import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinearFirst;
+import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinearSecond;
+import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinearThird;
+import com.github.refhumbold.yadic.models.inheritance.ClassAbstract;
+import com.github.refhumbold.yadic.models.inheritance.ClassConcrete;
+import com.github.refhumbold.yadic.models.inheritance.ClassConcreteDerived;
+import com.github.refhumbold.yadic.models.inheritance.InterfaceInheritance;
+import com.github.refhumbold.yadic.models.setter.*;
 import com.github.refhumbold.yadic.registry.DependencyRegistry;
 import com.github.refhumbold.yadic.registry.exception.AbstractTypeException;
 import com.github.refhumbold.yadic.resolver.exception.*;
@@ -52,10 +53,14 @@ public class TypesResolverTest
         testObject = null;
     }
 
-    @Test
-    public void resolve_WhenPrimitiveType_ThenNoSuitableConstructorException()
+    @ParameterizedTest
+    @ValueSource(classes = {
+            byte.class, short.class, int.class, long.class, float.class, double.class, char.class,
+            boolean.class
+    })
+    public void resolve_WhenPrimitiveType_ThenNoSuitableConstructorException(Class<?> cls)
     {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(double.class))
+        Assertions.assertThatThrownBy(() -> testObject.resolve(cls))
                   .isInstanceOf(NoSuitableConstructorException.class);
     }
 
@@ -68,7 +73,9 @@ public class TypesResolverTest
         ClassDefaultConstructorOnly result = testObject.resolve(ClassDefaultConstructorOnly.class);
 
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDefaultConstructorOnly.class);
     }
 
     @ParameterizedTest
@@ -97,7 +104,9 @@ public class TypesResolverTest
                 testObject.resolve(ClassParameterizedConstructorPrimitive.class);
 
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassParameterizedConstructorPrimitive.class);
         Assertions.assertThat(result.getNumber()).isEqualTo(number);
     }
 
@@ -114,7 +123,9 @@ public class TypesResolverTest
                 testObject.resolve(ClassParameterizedConstructorBoxed.class);
 
         // then
-        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassParameterizedConstructorBoxed.class);
         Assertions.assertThat(result.getNumber()).isEqualTo(number);
     }
 
@@ -197,55 +208,43 @@ public class TypesResolverTest
     public void resolve_WhenAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
         // when
-        ClassRegister result1 = testObject.resolve(ClassRegister.class);
-        ClassRegister result2 = testObject.resolve(ClassRegister.class);
+        ClassRegister result = testObject.resolve(ClassRegister.class);
 
         // then
-        Assertions.assertThat(result1)
+        Assertions.assertThat(result)
                   .isNotNull()
                   .isExactlyInstanceOf(ClassDerivedFromRegister.class);
-        Assertions.assertThat(result2)
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassDerivedFromRegister.class)
-                  .isNotSameAs(result1);
     }
 
-    @Test
-    public void resolve_WhenSelfAnnotatedInterface_ThenAbstractTypeException()
+    @ParameterizedTest
+    @ValueSource(classes = { InterfaceRegisterSelf.class, ClassAbstractRegisterSelf.class })
+    public void resolve_WhenSelfAnnotatedAbstractType_ThenAbstractTypeException(Class<?> cls)
     {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceRegisterSelf.class))
-                  .isInstanceOf(AbstractTypeException.class);
-    }
-
-    @Test
-    public void resolve_WhenSelfAnnotatedAbstractClass_ThenAbstractTypeException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassAbstractRegisterSelf.class))
+        Assertions.assertThatThrownBy(() -> testObject.resolve(cls))
                   .isInstanceOf(AbstractTypeException.class);
     }
 
     @Test
     public void resolve_WhenSelfAnnotatedConcreteClass_ThenInstanceIsResolved()
     {
+        // given
+        Class<ClassRegisterSelf> type = ClassRegisterSelf.class;
+
         // when
-        ClassRegisterSelf result1 = testObject.resolve(ClassRegisterSelf.class);
-        ClassRegisterSelf result2 = testObject.resolve(ClassRegisterSelf.class);
+        ClassRegisterSelf result = testObject.resolve(type);
 
         // then
-        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(ClassRegisterSelf.class);
-        Assertions.assertThat(result2)
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassRegisterSelf.class)
-                  .isNotSameAs(result1);
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(type);
     }
 
     // endregion
     // region resolve [inheritance]
 
-    @Test
-    public void resolve_WhenInterfaceNotAdded_ThenMissingDependenciesException()
+    @ParameterizedTest
+    @ValueSource(classes = { InterfaceInheritance.class, ClassAbstract.class })
+    public void resolve_WhenAbstractTypeNotAdded_ThenMissingDependenciesException(Class<?> cls)
     {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(InterfaceInheritance.class))
+        Assertions.assertThatThrownBy(() -> testObject.resolve(cls))
                   .isInstanceOf(MissingDependenciesException.class);
     }
 
@@ -253,35 +252,32 @@ public class TypesResolverTest
     public void resolve_WhenInterfaceAdded_ThenResolvedToSubtype()
     {
         // given
-        dictionary.addType(InterfaceInheritance.class, ClassConcrete.class,
-                ConstructionPolicy.CONSTRUCTION);
+        Class<InterfaceInheritance> type = InterfaceInheritance.class;
+        Class<ClassConcreteDerived> subtype = ClassConcreteDerived.class;
+
+        dictionary.addType(type, subtype, ConstructionPolicy.CONSTRUCTION);
 
         // when
-        InterfaceInheritance result = testObject.resolve(InterfaceInheritance.class);
+        InterfaceInheritance result = testObject.resolve(type);
 
         // then
-        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassConcrete.class);
-    }
-
-    @Test
-    public void resolve_WhenAbstractClassNotAdded_ThenMissingDependenciesException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassAbstract.class))
-                  .isInstanceOf(MissingDependenciesException.class);
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(subtype);
     }
 
     @Test
     public void resolve_WhenAbstractClassAdded_ThenResolvedToSubtype()
     {
         // given
-        dictionary.addType(ClassAbstract.class, ClassConcreteDerived.class,
-                ConstructionPolicy.CONSTRUCTION);
+        Class<ClassAbstract> type = ClassAbstract.class;
+        Class<ClassConcreteDerived> subtype = ClassConcreteDerived.class;
+
+        dictionary.addType(type, subtype, ConstructionPolicy.CONSTRUCTION);
 
         // when
-        ClassAbstract result = testObject.resolve(ClassAbstract.class);
+        ClassAbstract result = testObject.resolve(type);
 
         // then
-        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassConcreteDerived.class);
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(subtype);
     }
 
     @Test
@@ -298,27 +294,31 @@ public class TypesResolverTest
     public void resolve_WhenConcreteClassAddedWithSelf_ThenResolvedToThisType()
     {
         // given
-        dictionary.addType(ClassConcrete.class, ConstructionPolicy.CONSTRUCTION);
+        Class<ClassConcrete> type = ClassConcrete.class;
+
+        dictionary.addType(type, ConstructionPolicy.CONSTRUCTION);
 
         // when
-        ClassConcrete result = testObject.resolve(ClassConcrete.class);
+        ClassConcrete result = testObject.resolve(type);
 
         // then
-        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassConcrete.class);
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(type);
     }
 
     @Test
     public void resolve_WhenConcreteClassAddedWithSubtype_ThenResolvedToSubtype()
     {
         // given
-        dictionary.addType(ClassConcrete.class, ClassConcreteDerived.class,
-                ConstructionPolicy.CONSTRUCTION);
+        Class<ClassConcrete> type = ClassConcrete.class;
+        Class<ClassConcreteDerived> subtype = ClassConcreteDerived.class;
+
+        dictionary.addType(type, subtype, ConstructionPolicy.CONSTRUCTION);
 
         // when
-        ClassConcrete result = testObject.resolve(ClassConcrete.class);
+        ClassConcrete result = testObject.resolve(type);
 
         // then
-        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassConcreteDerived.class);
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(subtype);
     }
 
     // endregion
@@ -421,85 +421,55 @@ public class TypesResolverTest
     }
 
     // endregion
-    // region resolve [dependency annotated constructor]
+    // region resolve [annotated constructor]
 
     @Test
-    public void resolve_WhenDependencyAnnotationHasAddedTypes_ThenInstanceIsResolved()
+    public void resolve_WhenAnnotatedDefaultConstructor_ThenInstanceIsResolved()
     {
-
-        // given
-        dictionary.addType(ClassDependencyAnnotation.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearThird.class, ConstructionPolicy.CONSTRUCTION);
-
         // when
-        ClassDependencyAnnotation result = testObject.resolve(ClassDependencyAnnotation.class);
+        ClassAnnotatedDefaultConstructor result =
+                testObject.resolve(ClassAnnotatedDefaultConstructor.class);
 
         // then
         Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getLinear()).isNotNull();
-        Assertions.assertThat(result.getDiamond()).isNull();
+        Assertions.assertThat(result.getString()).isEmpty();
     }
 
     @Test
-    public void resolve_WhenDependencyAnnotationHasAddedInstance_ThenInstanceIsResolved()
+    public void resolve_WhenAnnotatedParameterizedConstructorWithDependency_ThenInstanceIsResolved()
     {
-
         // given
-        dictionary.addType(ClassDependencyAnnotation.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addInstance(ClassLinear.class, new ClassLinear(null));
+        String string = "qwertyuiop";
+
+        dictionary.addInstance(String.class, string);
 
         // when
-        ClassDependencyAnnotation result = testObject.resolve(ClassDependencyAnnotation.class);
+        ClassAnnotatedParameterizedConstructor result =
+                testObject.resolve(ClassAnnotatedParameterizedConstructor.class);
 
         // then
         Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getLinear()).isNotNull();
-        Assertions.assertThat(result.getLinear().getFirst()).isNull();
-        Assertions.assertThat(result.getDiamond()).isNull();
+        Assertions.assertThat(result.getString()).isEqualTo(string);
     }
 
     @Test
-    public void resolve_WhenAnnotationHasMissingDependency_ThenMissingDependenciesException()
+    public void resolve_WhenAnnotatedParameterizedConstructorWithoutDependency_ThenNoInstanceCreatedException()
     {
-
-        // given
-        dictionary.addType(ClassDependencyAnnotation.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION);
-
-        // then
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassDependencyAnnotation.class))
-                  .isInstanceOf(MissingDependenciesException.class);
+        Assertions.assertThatThrownBy(
+                          () -> testObject.resolve(ClassAnnotatedParameterizedConstructor.class))
+                  .isInstanceOf(NoInstanceCreatedException.class);
     }
 
     @Test
-    public void resolve_WhenAnnotationOmitsCircularDependency_ThenInstanceIsResolved()
+    public void resolve_WhenMultipleAnnotatedConstructors_ThenMultipleAnnotatedConstructorsException()
     {
-        // given
-        dictionary.addType(ClassDependencyOptionalCircular.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearThird.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassCircular.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassCircularLeft.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassCircularRight.class, ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        ClassDependencyOptionalCircular result =
-                testObject.resolve(ClassDependencyOptionalCircular.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getLinear()).isNotNull();
-        Assertions.assertThat(result.getCircular()).isNull();
+        Assertions.assertThatThrownBy(
+                          () -> testObject.resolve(ClassAnnotatedMultipleConstructors.class))
+                  .isInstanceOf(MultipleAnnotatedConstructorsException.class);
     }
 
     // endregion
-    // region resolve [dependency annotated setter]
+    // region resolve [annotated setter]
 
     @ParameterizedTest
     @ValueSource(classes = {
@@ -593,4 +563,48 @@ public class TypesResolverTest
     }
 
     // endregion
+    // region resolveOrNull
+
+    @Test
+    public void resolveOrNull_WhenClassCanBeResolved_ThenInstance()
+    {
+        // when
+        ClassDefaultConstructorOnly result =
+                testObject.resolveOrNull(ClassDefaultConstructorOnly.class);
+
+        // then
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDefaultConstructorOnly.class);
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {
+            InterfaceInheritance.class, ClassAbstract.class, ClassConstructorThrows.class,
+            ClassPrivateConstructorOnly.class
+    })
+    public void resolveOrNull_WhenClassCannotBeResolved_ThenNull(Class<?> cls)
+    {
+        // when
+        Object result = testObject.resolveOrNull(cls);
+
+        // then
+        Assertions.assertThat(result).isNull();
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {
+            byte.class, short.class, int.class, long.class, float.class, double.class, char.class,
+            boolean.class
+    })
+    public void resolveOrNull_WhenPrimitiveType_ThenNull(Class<?> cls)
+    {
+        // when
+        Object result = testObject.resolveOrNull(cls);
+
+        // then
+        Assertions.assertThat(result).isNull();
+    }
+
+    //endregion
 }

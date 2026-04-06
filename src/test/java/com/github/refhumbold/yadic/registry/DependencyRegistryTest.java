@@ -4,15 +4,17 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import com.github.refhumbold.yadic.ConstructionPolicy;
-import com.github.refhumbold.yadic.newer.models.annotations.register.*;
-import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassAbstractRegisterSelf;
-import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassDerivedFromRegisterSelf;
-import com.github.refhumbold.yadic.newer.models.annotations.registerself.ClassRegisterSelf;
-import com.github.refhumbold.yadic.newer.models.inheritance.ClassAbstract;
-import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcrete;
-import com.github.refhumbold.yadic.newer.models.inheritance.ClassConcreteDerived;
-import com.github.refhumbold.yadic.newer.models.inheritance.InterfaceInheritance;
+import com.github.refhumbold.yadic.models.annotations.register.*;
+import com.github.refhumbold.yadic.models.annotations.registerself.ClassAbstractRegisterSelf;
+import com.github.refhumbold.yadic.models.annotations.registerself.ClassDerivedFromRegisterSelf;
+import com.github.refhumbold.yadic.models.annotations.registerself.ClassRegisterSelf;
+import com.github.refhumbold.yadic.models.inheritance.ClassAbstract;
+import com.github.refhumbold.yadic.models.inheritance.ClassConcrete;
+import com.github.refhumbold.yadic.models.inheritance.ClassConcreteDerived;
+import com.github.refhumbold.yadic.models.inheritance.InterfaceInheritance;
 import com.github.refhumbold.yadic.registry.exception.AbstractTypeException;
 import com.github.refhumbold.yadic.registry.exception.AnnotatedTypeRegistrationException;
 import com.github.refhumbold.yadic.registry.exception.MixingPoliciesException;
@@ -40,18 +42,12 @@ public class DependencyRegistryTest
 
     // region addType & addType/findType
 
-    @Test
-    public void addType_WhenInterface_ThenAbstractTypeException()
-    {
-        Assertions.assertThatThrownBy(() -> testObject.addType(InterfaceInheritance.class,
-                ConstructionPolicy.CONSTRUCTION)).isInstanceOf(AbstractTypeException.class);
-    }
-
-    @Test
-    public void addType_WhenAbstractClass_ThenAbstractTypeException()
+    @ParameterizedTest
+    @ValueSource(classes = { InterfaceInheritance.class, ClassAbstract.class })
+    public void addType_WhenAbstractType_ThenAbstractTypeException(Class<?> cls)
     {
         Assertions.assertThatThrownBy(
-                          () -> testObject.addType(ClassAbstract.class, ConstructionPolicy.CONSTRUCTION))
+                          () -> testObject.addType(cls, ConstructionPolicy.CONSTRUCTION))
                   .isInstanceOf(AbstractTypeException.class);
     }
 
