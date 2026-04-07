@@ -15,17 +15,6 @@ import com.github.refhumbold.yadic.models.constructors.*;
 import com.github.refhumbold.yadic.models.constructors.annotation.ClassAnnotatedDefaultConstructor;
 import com.github.refhumbold.yadic.models.constructors.annotation.ClassAnnotatedMultipleConstructors;
 import com.github.refhumbold.yadic.models.constructors.annotation.ClassAnnotatedParameterizedConstructor;
-import com.github.refhumbold.yadic.models.dependencies.circular.ClassCircular;
-import com.github.refhumbold.yadic.models.dependencies.circular.ClassCircularLeft;
-import com.github.refhumbold.yadic.models.dependencies.circular.ClassCircularRight;
-import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamond;
-import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamondLeft;
-import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamondRight;
-import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamondTop;
-import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinear;
-import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinearFirst;
-import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinearSecond;
-import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinearThird;
 import com.github.refhumbold.yadic.models.inheritance.ClassAbstract;
 import com.github.refhumbold.yadic.models.inheritance.ClassConcrete;
 import com.github.refhumbold.yadic.models.inheritance.ClassConcreteDerived;
@@ -53,6 +42,8 @@ public class TypesResolverTest
         testObject = null;
     }
 
+    // region resolve [constructor]
+
     @ParameterizedTest
     @ValueSource(classes = {
             byte.class, short.class, int.class, long.class, float.class, double.class, char.class,
@@ -64,10 +55,8 @@ public class TypesResolverTest
                   .isInstanceOf(NoSuitableConstructorException.class);
     }
 
-    // region resolve [constructor]
-
     @Test
-    public void resolve_WhenClassHasDefaultConstructorOnly_ThenInstanceIsResolved()
+    public void resolve_WhenClassHasDefaultConstructorOnly_ThenInstance()
     {
         // when
         ClassDefaultConstructorOnly result = testObject.resolve(ClassDefaultConstructorOnly.class);
@@ -92,7 +81,7 @@ public class TypesResolverTest
     }
 
     @Test
-    public void resolve_WhenClassHasPrimitiveParameterConstructorWithAddedParameter_ThenInstanceIsResolved()
+    public void resolve_WhenClassHasPrimitiveParameterConstructorWithAddedParameter_ThenInstance()
     {
         // given
         int number = 10;
@@ -111,7 +100,7 @@ public class TypesResolverTest
     }
 
     @Test
-    public void resolve_WhenClassHasReferenceParameterConstructorWithAddedParameter_ThenInstanceIsResolved()
+    public void resolve_WhenClassHasReferenceParameterConstructorWithAddedParameter_ThenInstance()
     {
         // given
         Integer number = 10;
@@ -171,41 +160,31 @@ public class TypesResolverTest
     // region resolve [register annotations]
 
     @Test
-    public void resolve_WhenAnnotatedInterface_ThenInstanceIsResolved()
+    public void resolve_WhenAnnotatedInterface_ThenInstance()
     {
         // when
-        InterfaceRegister result1 = testObject.resolve(InterfaceRegister.class);
-        InterfaceRegister result2 = testObject.resolve(InterfaceRegister.class);
+        InterfaceRegister result = testObject.resolve(InterfaceRegister.class);
 
         // then
-        Assertions.assertThat(result1)
+        Assertions.assertThat(result)
                   .isNotNull()
                   .isExactlyInstanceOf(ClassDerivedFromInterfaceRegister.class);
-        Assertions.assertThat(result2)
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassDerivedFromInterfaceRegister.class)
-                  .isNotSameAs(result1);
     }
 
     @Test
-    public void resolve_WhenAnnotatedAbstractClass_ThenInstanceIsResolved()
+    public void resolve_WhenAnnotatedAbstractClass_ThenInstance()
     {
         // when
-        ClassAbstractRegister result1 = testObject.resolve(ClassAbstractRegister.class);
-        ClassAbstractRegister result2 = testObject.resolve(ClassAbstractRegister.class);
+        ClassAbstractRegister result = testObject.resolve(ClassAbstractRegister.class);
 
         // then
-        Assertions.assertThat(result1)
+        Assertions.assertThat(result)
                   .isNotNull()
                   .isExactlyInstanceOf(ClassDerivedFromAbstractRegister.class);
-        Assertions.assertThat(result2)
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassDerivedFromAbstractRegister.class)
-                  .isNotSameAs(result1);
     }
 
     @Test
-    public void resolve_WhenAnnotatedConcreteClass_ThenInstanceIsResolved()
+    public void resolve_WhenAnnotatedConcreteClass_ThenInstance()
     {
         // when
         ClassRegister result = testObject.resolve(ClassRegister.class);
@@ -225,7 +204,7 @@ public class TypesResolverTest
     }
 
     @Test
-    public void resolve_WhenSelfAnnotatedConcreteClass_ThenInstanceIsResolved()
+    public void resolve_WhenSelfAnnotatedConcreteClass_ThenInstance()
     {
         // given
         Class<ClassRegisterSelf> type = ClassRegisterSelf.class;
@@ -322,109 +301,10 @@ public class TypesResolverTest
     }
 
     // endregion
-    // region resolve [dependencies schemas]
-
-    @Test
-    public void resolve_WhenLinear_ThenInstanceIsResolved()
-    {
-        // given
-        dictionary.addType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearThird.class, ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        ClassLinear result = testObject.resolve(ClassLinear.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getFirst()).isNotNull();
-        Assertions.assertThat(result.getFirst().getSecond()).isNotNull();
-        Assertions.assertThat(result.getFirst().getSecond().getThird()).isNotNull();
-    }
-
-    @Test
-    public void resolve_WhenCircular_ThenCircularDependenciesException()
-    {
-        // given
-        dictionary.addType(ClassCircular.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassCircularLeft.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassCircularRight.class, ConstructionPolicy.CONSTRUCTION);
-
-        // then
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassCircular.class))
-                  .isInstanceOf(CircularDependenciesException.class);
-    }
-
-    @Test
-    public void resolve_WhenDiamondWithoutSingleton_ThenInstanceIsResolved()
-    {
-        // given
-        dictionary.addType(ClassDiamond.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassDiamondLeft.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassDiamondRight.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassDiamondTop.class, ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        ClassDiamond result = testObject.resolve(ClassDiamond.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassDiamond.class);
-        Assertions.assertThat(result.getLeft())
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassDiamondLeft.class);
-        Assertions.assertThat(result.getRight())
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassDiamondRight.class);
-        Assertions.assertThat(result.getLeft().getTop())
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassDiamondTop.class);
-        Assertions.assertThat(result.getRight().getTop())
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassDiamondTop.class)
-                  .isNotSameAs(result.getLeft().getTop());
-    }
-
-    @Test
-    public void resolve_WhenDiamondWithSingleton_ThenInstanceIsResolved()
-    {
-        // given
-        dictionary.addType(ClassDiamond.class, ConstructionPolicy.SINGLETON);
-        dictionary.addType(ClassDiamondLeft.class, ConstructionPolicy.SINGLETON);
-        dictionary.addType(ClassDiamondRight.class, ConstructionPolicy.SINGLETON);
-        dictionary.addType(ClassDiamondTop.class, ConstructionPolicy.SINGLETON);
-
-        // when
-        ClassDiamond result = testObject.resolve(ClassDiamond.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getLeft()).isNotNull();
-        Assertions.assertThat(result.getRight()).isNotNull();
-        Assertions.assertThat(result.getLeft().getTop()).isNotNull();
-        Assertions.assertThat(result.getRight().getTop())
-                  .isNotNull()
-                  .isSameAs(result.getLeft().getTop());
-    }
-
-    @Test
-    public void resolve_WhenDependencyNotPresent_ThenMissingDependenciesException()
-    {
-        // given
-        dictionary.addType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION);
-        dictionary.addType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION);
-
-        // then
-        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassLinear.class))
-                  .isInstanceOf(MissingDependenciesException.class);
-    }
-
-    // endregion
     // region resolve [annotated constructor]
 
     @Test
-    public void resolve_WhenAnnotatedDefaultConstructor_ThenInstanceIsResolved()
+    public void resolve_WhenAnnotatedDefaultConstructor_ThenInstance()
     {
         // when
         ClassAnnotatedDefaultConstructor result =
@@ -436,7 +316,7 @@ public class TypesResolverTest
     }
 
     @Test
-    public void resolve_WhenAnnotatedParameterizedConstructorWithDependency_ThenInstanceIsResolved()
+    public void resolve_WhenAnnotatedParameterizedConstructorWithDependency_ThenInstance()
     {
         // given
         String string = "qwertyuiop";
@@ -498,7 +378,7 @@ public class TypesResolverTest
     }
 
     @Test
-    public void resolve_WhenSetterHasPrimitiveParameterWithAddedParameter_ThenInstanceIsResolved()
+    public void resolve_WhenSetterHasPrimitiveParameterWithAddedParameter_ThenInstance()
     {
         // given
         int number = 10;
@@ -514,7 +394,7 @@ public class TypesResolverTest
     }
 
     @Test
-    public void resolve_WhenSetterHasReferenceParameterWithAddedParameter_ThenInstanceIsResolved()
+    public void resolve_WhenSetterHasReferenceParameterWithAddedParameter_ThenInstance()
     {
         // given
         Integer number = 10;

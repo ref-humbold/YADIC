@@ -1,17 +1,13 @@
 package com.github.refhumbold.yadic.models.constructors.annotation;
 
 import com.github.refhumbold.yadic.annotation.YadicDependency;
-import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamond;
+import com.github.refhumbold.yadic.models.dependencies.circular.ClassCircular;
 import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinear;
 
 public class ClassAnnotatedConstructor
 {
-    private ClassLinear linear;
-    private ClassDiamond diamond;
-
-    public ClassAnnotatedConstructor()
-    {
-    }
+    private final ClassLinear linear;
+    private ClassCircular circular;
 
     @YadicDependency
     public ClassAnnotatedConstructor(ClassLinear linear)
@@ -19,10 +15,10 @@ public class ClassAnnotatedConstructor
         this.linear = linear;
     }
 
-    public ClassAnnotatedConstructor(ClassLinear linear, ClassDiamond diamond)
+    public ClassAnnotatedConstructor(ClassLinear linear, ClassCircular circular)
     {
         this.linear = linear;
-        this.diamond = diamond;
+        this.circular = circular;
     }
 
     public ClassLinear getLinear()
@@ -30,8 +26,8 @@ public class ClassAnnotatedConstructor
         return linear;
     }
 
-    public ClassDiamond getDiamond()
+    public ClassCircular getCircular()
     {
-        return diamond;
+        return circular;
     }
 }

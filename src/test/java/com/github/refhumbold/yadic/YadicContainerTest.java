@@ -8,25 +8,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import com.github.refhumbold.yadic.models.annotations.register.ClassDerivedFromRegisterConstruction;
-import com.github.refhumbold.yadic.models.annotations.register.ClassDerivedFromRegisterSingleton;
-import com.github.refhumbold.yadic.models.annotations.register.ClassRegister;
-import com.github.refhumbold.yadic.models.annotations.register.ClassRegisterConstruction;
-import com.github.refhumbold.yadic.models.annotations.register.ClassRegisterSingleton;
+import com.github.refhumbold.yadic.models.annotations.register.*;
 import com.github.refhumbold.yadic.models.annotations.registerself.ClassRegisterSelf;
 import com.github.refhumbold.yadic.models.annotations.registerself.ClassRegisterSelfConstruction;
 import com.github.refhumbold.yadic.models.annotations.registerself.ClassRegisterSelfSingleton;
-import com.github.refhumbold.yadic.models.constructors.ClassDefaultConstructorOnly;
 import com.github.refhumbold.yadic.models.constructors.ClassParameterizedConstructorBoxed;
 import com.github.refhumbold.yadic.models.constructors.ClassParameterizedConstructorPrimitive;
 import com.github.refhumbold.yadic.models.constructors.ClassParameterizedConstructorString;
 import com.github.refhumbold.yadic.models.constructors.annotation.ClassAnnotatedConstructor;
-import com.github.refhumbold.yadic.models.constructors.annotation.ClassAnnotatedConstructorOptionalCircular;
 import com.github.refhumbold.yadic.models.constructors.comparator.ClassAnnotatedConstructorsSorting;
 import com.github.refhumbold.yadic.models.constructors.comparator.ClassConstructorsSorting;
 import com.github.refhumbold.yadic.models.dependencies.circular.ClassCircular;
 import com.github.refhumbold.yadic.models.dependencies.circular.ClassCircularLeft;
 import com.github.refhumbold.yadic.models.dependencies.circular.ClassCircularRight;
+import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamond;
+import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamondLeft;
+import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamondRight;
+import com.github.refhumbold.yadic.models.dependencies.diamond.ClassDiamondTop;
 import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinear;
 import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinearFirst;
 import com.github.refhumbold.yadic.models.dependencies.linear.ClassLinearSecond;
@@ -35,9 +33,9 @@ import com.github.refhumbold.yadic.models.inheritance.ClassAbstract;
 import com.github.refhumbold.yadic.models.inheritance.ClassConcrete;
 import com.github.refhumbold.yadic.models.inheritance.ClassConcreteDerived;
 import com.github.refhumbold.yadic.models.inheritance.InterfaceInheritance;
+import com.github.refhumbold.yadic.models.setter.ClassSetterOnly;
 import com.github.refhumbold.yadic.models.setter.ClassSetterWithConstructor;
-import com.github.refhumbold.yadic.registry.exception.AbstractTypeException;
-import com.github.refhumbold.yadic.registry.exception.RegistrationException;
+import com.github.refhumbold.yadic.resolver.exception.CircularDependenciesException;
 import com.github.refhumbold.yadic.resolver.exception.MissingDependenciesException;
 
 public class YadicContainerTest
@@ -93,7 +91,7 @@ public class YadicContainerTest
     }
 
     @Test
-    public void registerType_resolve_WhenTypeRegisteredWithDifferentPolicy_ThenChangesInstances()
+    public void registerType_resolve_WhenTypeRegisteredAgainWithDifferentPolicy_ThenInstanceChanged()
     {
         // given
         Class<ClassConcrete> type = ClassConcrete.class;
@@ -146,41 +144,341 @@ public class YadicContainerTest
                   .isSameAs(result1.getFirst().getSecond().getThird());
     }
 
+    // endregion
+    // region registerType/resolve [subtype]
+
     @Test
-    public void registerType_WhenRegisteredWithInstance_ThenRegistrationException()
+    public void registerType_resolve_WhenInterfaceWithConstructionPolicy_ThenDifferentInstances()
     {
         // given
-        testObject.registerInstance(ClassConcrete.class, new ClassConcrete());
+        Class<InterfaceInheritance> type = InterfaceInheritance.class;
+        Class<ClassConcrete> subtype = ClassConcrete.class;
+
+        // when
+        testObject.registerType(type, subtype, ConstructionPolicy.CONSTRUCTION);
+
+        InterfaceInheritance result1 = testObject.resolve(type);
+        InterfaceInheritance result2 = testObject.resolve(type);
 
         // then
-        Assertions.assertThatThrownBy(
-                          () -> testObject.registerType(ClassConcrete.class, ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(RegistrationException.class);
+        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(subtype);
+        Assertions.assertThat(result2)
+                  .isNotNull()
+                  .isExactlyInstanceOf(subtype)
+                  .isNotSameAs(result1);
     }
 
-    @ParameterizedTest
-    @ValueSource(classes = { InterfaceInheritance.class, ClassAbstract.class })
-    public void registerType_WhenAbstractType_ThenAbstractTypeException(Class<?> cls)
+    @Test
+    public void registerType_resolve_WhenInterfaceWithSingletonPolicy_ThenSameInstance()
     {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.registerType(cls, ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(AbstractTypeException.class);
+        // given
+        Class<InterfaceInheritance> type = InterfaceInheritance.class;
+        Class<ClassConcrete> subtype = ClassConcrete.class;
+
+        // when
+        testObject.registerType(type, subtype, ConstructionPolicy.SINGLETON);
+
+        InterfaceInheritance result1 = testObject.resolve(type);
+        InterfaceInheritance result2 = testObject.resolve(type);
+
+        // then
+        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(subtype);
+        Assertions.assertThat(result2).isNotNull().isExactlyInstanceOf(subtype).isSameAs(result1);
+    }
+
+    @Test
+    public void registerType_resolve_WhenInterfaceRegisteredAgainWithDifferentPolicy_ThenInstanceChanged()
+    {
+        // given
+        Class<InterfaceInheritance> type = InterfaceInheritance.class;
+        Class<ClassConcrete> subtype = ClassConcrete.class;
+
+        // when 1
+        testObject.registerType(type, subtype, ConstructionPolicy.SINGLETON);
+
+        InterfaceInheritance result11 = testObject.resolve(type);
+        InterfaceInheritance result12 = testObject.resolve(type);
+
+        // then 1
+        Assertions.assertThat(result11).isNotNull().isExactlyInstanceOf(subtype);
+        Assertions.assertThat(result12).isNotNull().isExactlyInstanceOf(subtype).isSameAs(result11);
+
+        // when 2
+        testObject.registerType(type, subtype, ConstructionPolicy.CONSTRUCTION);
+
+        InterfaceInheritance result21 = testObject.resolve(type);
+        InterfaceInheritance result22 = testObject.resolve(type);
+
+        // then 2
+        Assertions.assertThat(result21).isNotNull().isExactlyInstanceOf(subtype);
+        Assertions.assertThat(result22)
+                  .isNotNull()
+                  .isExactlyInstanceOf(subtype)
+                  .isNotSameAs(result21);
+    }
+
+    @Test
+    public void registerType_resolve_WhenInterfaceChangesSubtype_ThenInstanceChanged()
+    {
+        // given
+        Class<InterfaceInheritance> type = InterfaceInheritance.class;
+        Class<ClassConcrete> subtype1 = ClassConcrete.class;
+        Class<ClassConcreteDerived> subtype2 = ClassConcreteDerived.class;
+
+        // when 1
+        testObject.registerType(type, subtype1, ConstructionPolicy.CONSTRUCTION);
+
+        InterfaceInheritance result1 = testObject.resolve(type);
+
+        // then 1
+        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(subtype1);
+
+        // when 2
+        testObject.registerType(type, subtype2, ConstructionPolicy.CONSTRUCTION);
+
+        InterfaceInheritance result3 = testObject.resolve(type);
+
+        // then 2
+        Assertions.assertThat(result3).isNotNull().isExactlyInstanceOf(subtype2);
+    }
+
+    @Test
+    public void registerType_resolve_WhenAbstractClass_ThenInstanceOfSubtype()
+    {
+        // given
+        Class<ClassAbstract> type = ClassAbstract.class;
+        Class<ClassConcreteDerived> subtype = ClassConcreteDerived.class;
+
+        // when
+        testObject.registerType(type, subtype, ConstructionPolicy.CONSTRUCTION);
+
+        ClassAbstract result = testObject.resolve(type);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(subtype);
+    }
+
+    @Test
+    public void registerType_resolve_WhenConcreteClass_ThenInstanceOfSubtype()
+    {
+        // given
+        Class<ClassConcrete> type = ClassConcrete.class;
+        Class<ClassConcreteDerived> subtype = ClassConcreteDerived.class;
+
+        // when
+        testObject.registerType(type, subtype, ConstructionPolicy.CONSTRUCTION);
+
+        ClassConcrete result = testObject.resolve(type);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(subtype);
+    }
+
+    @Test
+    public void registerType_resolve_WhenTwoAbstractTypes_ThenInstanceOfConcreteClass()
+    {
+        // given
+        Class<InterfaceInheritance> supertype = InterfaceInheritance.class;
+        Class<ClassAbstract> type = ClassAbstract.class;
+        Class<ClassConcrete> subtype = ClassConcrete.class;
+
+        // when
+        testObject.registerType(supertype, type, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(type, subtype, ConstructionPolicy.CONSTRUCTION);
+
+        InterfaceInheritance result = testObject.resolve(supertype);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(subtype);
+    }
+
+    // endregion
+    // region registerType/resolve [dependencies schemas]
+
+    @Test
+    public void registerType_resolve_WhenLinear_ThenInstance()
+    {
+        // when
+        testObject.registerType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassLinearThird.class, ConstructionPolicy.CONSTRUCTION);
+
+        ClassLinear result = testObject.resolve(ClassLinear.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getFirst()).isNotNull();
+        Assertions.assertThat(result.getFirst().getSecond()).isNotNull();
+        Assertions.assertThat(result.getFirst().getSecond().getThird()).isNotNull();
+    }
+
+    @Test
+    public void registerType_resolve_WhenCircular_ThenCircularDependenciesException()
+    {
+        // when
+        testObject.registerType(ClassCircular.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassCircularLeft.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassCircularRight.class, ConstructionPolicy.CONSTRUCTION);
+
+        // then
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassCircular.class))
+                  .isInstanceOf(CircularDependenciesException.class);
+    }
+
+    @Test
+    public void registerType_resolve_WhenDiamondWithoutSingleton_ThenInstance()
+    {
+        // when
+        testObject.registerType(ClassDiamond.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassDiamondLeft.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassDiamondRight.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassDiamondTop.class, ConstructionPolicy.CONSTRUCTION);
+
+        ClassDiamond result = testObject.resolve(ClassDiamond.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassDiamond.class);
+        Assertions.assertThat(result.getLeft())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondLeft.class);
+        Assertions.assertThat(result.getRight())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondRight.class);
+        Assertions.assertThat(result.getLeft().getTop())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondTop.class);
+        Assertions.assertThat(result.getRight().getTop())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDiamondTop.class)
+                  .isNotSameAs(result.getLeft().getTop());
+    }
+
+    @Test
+    public void registerType_resolve_WhenDiamondWithSingleton_ThenInstance()
+    {
+        // when
+        testObject.registerType(ClassDiamond.class, ConstructionPolicy.SINGLETON)
+                  .registerType(ClassDiamondLeft.class, ConstructionPolicy.SINGLETON)
+                  .registerType(ClassDiamondRight.class, ConstructionPolicy.SINGLETON)
+                  .registerType(ClassDiamondTop.class, ConstructionPolicy.SINGLETON);
+
+        ClassDiamond result = testObject.resolve(ClassDiamond.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getLeft()).isNotNull();
+        Assertions.assertThat(result.getRight()).isNotNull();
+        Assertions.assertThat(result.getLeft().getTop()).isNotNull();
+        Assertions.assertThat(result.getRight().getTop())
+                  .isNotNull()
+                  .isSameAs(result.getLeft().getTop());
+    }
+
+    @Test
+    public void registerType_resolve_WhenDependencyNotPresent_ThenMissingDependenciesException()
+    {
+        // when
+        testObject.registerType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION);
+
+        // then
+        Assertions.assertThatThrownBy(() -> testObject.resolve(ClassLinear.class))
+                  .isInstanceOf(MissingDependenciesException.class);
+    }
+
+    // endregion
+    // region registerInstance & registerInstance/resolve
+
+    @Test
+    public void registerInstance_resolve_WhenInterface_ThenInstance()
+    {
+        // given
+        Class<InterfaceInheritance> type = InterfaceInheritance.class;
+        ClassConcrete instance = new ClassConcrete();
+
+        // when
+        testObject.registerInstance(type, instance);
+
+        InterfaceInheritance result1 = testObject.resolve(type);
+        InterfaceInheritance result2 = testObject.resolve(type);
+
+        // then
+        Assertions.assertThat(result1).isNotNull().isSameAs(instance);
+        Assertions.assertThat(result2).isNotNull().isSameAs(result1);
+    }
+
+    @Test
+    public void registerInstance_resolve_WhenAbstractClass_ThenInstance()
+    {
+        // given
+        Class<ClassAbstract> type = ClassAbstract.class;
+        ClassConcreteDerived instance = new ClassConcreteDerived();
+
+        // when
+        testObject.registerInstance(type, instance);
+
+        ClassAbstract result1 = testObject.resolve(type);
+        ClassAbstract result2 = testObject.resolve(type);
+
+        // then
+        Assertions.assertThat(result1).isNotNull().isSameAs(instance);
+        Assertions.assertThat(result2).isNotNull().isSameAs(result1);
+    }
+
+    @Test
+    public void registerInstance_resolve_WhenSameConcreteClass_ThenInstance()
+    {
+        // given
+        Class<ClassConcrete> type = ClassConcrete.class;
+        ClassConcrete instance = new ClassConcrete();
+
+        // when
+        testObject.registerInstance(type, instance);
+
+        ClassAbstract result1 = testObject.resolve(type);
+        ClassAbstract result2 = testObject.resolve(type);
+
+        // then
+        Assertions.assertThat(result1).isNotNull().isSameAs(instance);
+        Assertions.assertThat(result2).isNotNull().isSameAs(result1);
+    }
+
+    @Test
+    public void registerInstance_resolve_WhenDerivedConcreteClass_ThenInstance()
+    {
+        // given
+        Class<ClassConcrete> type = ClassConcrete.class;
+        ClassConcreteDerived instance = new ClassConcreteDerived();
+
+        // when
+        testObject.registerInstance(type, instance);
+
+        ClassAbstract result1 = testObject.resolve(type);
+        ClassAbstract result2 = testObject.resolve(type);
+
+        // then
+        Assertions.assertThat(result1).isNotNull().isSameAs(instance);
+        Assertions.assertThat(result2).isNotNull().isSameAs(result1);
+    }
+
+    @Test
+    public void registerInstance_resolve_WhenPrimitiveType_ThenBoxedInstance()
+    {
+        // when
+        testObject.registerInstance(int.class, 10);
+
+        int result1 = testObject.resolve(int.class);
+        int result2 = testObject.resolve(int.class);
+
+        // then
+        Assertions.assertThat(result1).isExactlyInstanceOf(Integer.class);
+        Assertions.assertThat(result2).isExactlyInstanceOf(Integer.class).isSameAs(result1);
     }
 
     // endregion
     // region resolve [class annotation]
-
-    @ParameterizedTest
-    @ValueSource(classes = {
-            byte.class, short.class, int.class, long.class, float.class, double.class, char.class,
-            boolean.class
-    })
-    public void registerType_WhenPrimitiveType_ThenRegistrationException(Class<?> cls)
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.registerType(cls, ConstructionPolicy.CONSTRUCTION))
-                  .isInstanceOf(RegistrationException.class);
-    }
 
     @Test
     public void resolve_WhenRegisterAnnotationWithConstructionPolicy_ThenDifferentInstances()
@@ -250,45 +548,7 @@ public class YadicContainerTest
     // region resolve [constructor annotation]
 
     @Test
-    public void resolve_WhenDependencyAnnotationHasAddedTypes_ThenInstanceIsResolved()
-    {
-
-        // given
-        testObject.registerType(ClassAnnotatedConstructor.class, ConstructionPolicy.CONSTRUCTION)
-                  .registerType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION)
-                  .registerType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION)
-                  .registerType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION)
-                  .registerType(ClassLinearThird.class, ConstructionPolicy.CONSTRUCTION);
-
-        // when
-        ClassAnnotatedConstructor result = testObject.resolve(ClassAnnotatedConstructor.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getLinear()).isNotNull();
-        Assertions.assertThat(result.getDiamond()).isNull();
-    }
-
-    @Test
-    public void resolve_WhenDependencyAnnotationHasAddedInstance_ThenInstanceIsResolved()
-    {
-
-        // given
-        testObject.registerType(ClassAnnotatedConstructor.class, ConstructionPolicy.CONSTRUCTION)
-                  .registerInstance(ClassLinear.class, new ClassLinear(null));
-
-        // when
-        ClassAnnotatedConstructor result = testObject.resolve(ClassAnnotatedConstructor.class);
-
-        // then
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getLinear()).isNotNull();
-        Assertions.assertThat(result.getLinear().getFirst()).isNull();
-        Assertions.assertThat(result.getDiamond()).isNull();
-    }
-
-    @Test
-    public void resolve_WhenAnnotationHasMissingDependency_ThenMissingDependenciesException()
+    public void resolve_WhenAnnotatedConstructorHasMissingDependency_ThenMissingDependenciesException()
     {
 
         // given
@@ -302,22 +562,17 @@ public class YadicContainerTest
     }
 
     @Test
-    public void resolve_WhenAnnotationOmitsCircularDependency_ThenInstanceIsResolved()
+    public void resolve_WhenAnnotatedConstructorOmitsCircularDependency_ThenInstance()
     {
         // given
-        testObject.registerType(ClassAnnotatedConstructorOptionalCircular.class,
-                          ConstructionPolicy.CONSTRUCTION)
+        testObject.registerType(ClassAnnotatedConstructor.class, ConstructionPolicy.CONSTRUCTION)
                   .registerType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION)
                   .registerType(ClassLinearFirst.class, ConstructionPolicy.CONSTRUCTION)
                   .registerType(ClassLinearSecond.class, ConstructionPolicy.CONSTRUCTION)
-                  .registerType(ClassLinearThird.class, ConstructionPolicy.CONSTRUCTION)
-                  .registerType(ClassCircular.class, ConstructionPolicy.CONSTRUCTION)
-                  .registerType(ClassCircularLeft.class, ConstructionPolicy.CONSTRUCTION)
-                  .registerType(ClassCircularRight.class, ConstructionPolicy.CONSTRUCTION);
+                  .registerType(ClassLinearThird.class, ConstructionPolicy.CONSTRUCTION);
 
         // when
-        ClassAnnotatedConstructorOptionalCircular result =
-                testObject.resolve(ClassAnnotatedConstructorOptionalCircular.class);
+        ClassAnnotatedConstructor result = testObject.resolve(ClassAnnotatedConstructor.class);
 
         // then
         Assertions.assertThat(result).isNotNull();
@@ -405,7 +660,31 @@ public class YadicContainerTest
     // region resolve [setter annotation]
 
     @Test
-    public void resolve_WhenDependencySetterAndConstructor_ThenInstanceIsResolved()
+    public void resolve_WhenDependencySetterOnly_ThenInstance()
+    {
+        // given
+        testObject.registerType(ClassSetterOnly.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerType(InterfaceInheritance.class, ClassConcrete.class,
+                          ConstructionPolicy.CONSTRUCTION)
+                  .registerType(ClassLinear.class, ConstructionPolicy.CONSTRUCTION)
+                  .registerInstance(ClassLinearFirst.class, new ClassLinearFirst(null));
+
+        // when
+        ClassSetterOnly result = testObject.resolve(ClassSetterOnly.class);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(ClassSetterOnly.class);
+        Assertions.assertThat(result.getInheritance())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassConcrete.class);
+        Assertions.assertThat(result.getLinear())
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassLinear.class);
+        Assertions.assertThat(result.getLinear().getFirst().getSecond()).isNull();
+    }
+
+    @Test
+    public void resolve_WhenDependencySetterAndConstructor_ThenInstance()
     {
         // given
         testObject.registerType(ClassSetterWithConstructor.class, ConstructionPolicy.CONSTRUCTION)
@@ -431,286 +710,6 @@ public class YadicContainerTest
     }
 
     // endregion
-    // region registerType/resolve [subtype]
-
-    @Test
-    public void registerType_resolve_WhenInterfaceWithConstructionPolicy_ThenDifferentInstances()
-    {
-        // given
-        Class<InterfaceInheritance> type = InterfaceInheritance.class;
-        Class<ClassConcrete> subtype = ClassConcrete.class;
-
-        // when
-        testObject.registerType(type, subtype, ConstructionPolicy.CONSTRUCTION);
-
-        InterfaceInheritance result1 = testObject.resolve(type);
-        InterfaceInheritance result2 = testObject.resolve(type);
-
-        // then
-        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(subtype);
-        Assertions.assertThat(result2)
-                  .isNotNull()
-                  .isExactlyInstanceOf(subtype)
-                  .isNotSameAs(result1);
-    }
-
-    @Test
-    public void registerType_resolve_WhenInterfaceWithSingletonPolicy_ThenSameInstance()
-    {
-        // given
-        Class<InterfaceInheritance> type = InterfaceInheritance.class;
-        Class<ClassConcrete> subtype = ClassConcrete.class;
-
-        // when
-        testObject.registerType(type, subtype, ConstructionPolicy.SINGLETON);
-
-        InterfaceInheritance result1 = testObject.resolve(type);
-        InterfaceInheritance result2 = testObject.resolve(type);
-
-        // then
-        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(subtype);
-        Assertions.assertThat(result2).isNotNull().isExactlyInstanceOf(subtype).isSameAs(result1);
-    }
-
-    @Test
-    public void registerType_resolve_WhenInterfaceRegisteredWithDifferentPolicy_ThenChangesInstances()
-    {
-        // given
-        Class<InterfaceInheritance> type = InterfaceInheritance.class;
-        Class<ClassConcrete> subtype = ClassConcrete.class;
-
-        // when 1
-        testObject.registerType(type, subtype, ConstructionPolicy.SINGLETON);
-
-        InterfaceInheritance result11 = testObject.resolve(type);
-        InterfaceInheritance result12 = testObject.resolve(type);
-
-        // then 1
-        Assertions.assertThat(result11).isNotNull().isExactlyInstanceOf(subtype);
-        Assertions.assertThat(result12).isNotNull().isExactlyInstanceOf(subtype).isSameAs(result11);
-
-        // when 2
-        testObject.registerType(type, subtype, ConstructionPolicy.CONSTRUCTION);
-
-        InterfaceInheritance result21 = testObject.resolve(type);
-        InterfaceInheritance result22 = testObject.resolve(type);
-
-        // then 2
-        Assertions.assertThat(result21).isNotNull().isExactlyInstanceOf(subtype);
-        Assertions.assertThat(result22)
-                  .isNotNull()
-                  .isExactlyInstanceOf(subtype)
-                  .isNotSameAs(result21);
-    }
-
-    @Test
-    public void registerType_resolve_WhenInterfaceChangesClass_ThenChangesInstances()
-    {
-        // given
-        Class<InterfaceInheritance> type = InterfaceInheritance.class;
-        Class<ClassConcrete> subtype1 = ClassConcrete.class;
-        Class<ClassConcreteDerived> subtype2 = ClassConcreteDerived.class;
-
-        // when 1
-        testObject.registerType(type, subtype1, ConstructionPolicy.CONSTRUCTION);
-
-        InterfaceInheritance result1 = testObject.resolve(type);
-
-        // then 1
-        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(subtype1);
-
-        // when 2
-        testObject.registerType(type, subtype2, ConstructionPolicy.CONSTRUCTION);
-
-        InterfaceInheritance result3 = testObject.resolve(type);
-
-        // then 2
-        Assertions.assertThat(result3).isNotNull().isExactlyInstanceOf(subtype2);
-    }
-
-    @Test
-    public void registerType_resolve_WhenAbstractClass_ThenOfSubtype()
-    {
-        // given
-        Class<ClassAbstract> type = ClassAbstract.class;
-        Class<ClassConcreteDerived> subtype = ClassConcreteDerived.class;
-
-        // when
-        testObject.registerType(type, subtype, ConstructionPolicy.CONSTRUCTION);
-
-        ClassAbstract result = testObject.resolve(type);
-
-        // then
-        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(subtype);
-    }
-
-    @Test
-    public void registerType_resolve_WhenConcreteClass_ThenInstanceOfSubtype()
-    {
-        // given
-        Class<ClassConcrete> type = ClassConcrete.class;
-        Class<ClassConcreteDerived> subtype = ClassConcreteDerived.class;
-
-        // when
-        testObject.registerType(type, subtype, ConstructionPolicy.CONSTRUCTION);
-
-        ClassConcrete result = testObject.resolve(type);
-
-        // then
-        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(subtype);
-    }
-
-    @Test
-    public void registerType_resolve_WhenTwoAbstractTypes_ThenInstanceOfConcreteClass()
-    {
-        // given
-        Class<InterfaceInheritance> supertype = InterfaceInheritance.class;
-        Class<ClassAbstract> type = ClassAbstract.class;
-        Class<ClassConcrete> subtype = ClassConcrete.class;
-
-        // when
-        testObject.registerType(supertype, type, ConstructionPolicy.CONSTRUCTION)
-                  .registerType(type, subtype, ConstructionPolicy.CONSTRUCTION);
-
-        InterfaceInheritance result = testObject.resolve(type);
-
-        // then
-        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(subtype);
-    }
-
-    // endregion
-    // region registerInstance & registerInstance/resolve
-
-    @Test
-    public void registerInstance_resolve_WhenInterface_ThenInstance()
-    {
-        // given
-        Class<InterfaceInheritance> type = InterfaceInheritance.class;
-        ClassConcrete instance = new ClassConcrete();
-
-        // when
-        testObject.registerInstance(type, instance);
-
-        InterfaceInheritance result1 = testObject.resolve(type);
-        InterfaceInheritance result2 = testObject.resolve(type);
-
-        // then
-        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(ClassConcrete.class);
-        Assertions.assertThat(result2)
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassConcrete.class)
-                  .isSameAs(result1);
-    }
-
-    @Test
-    public void registerInstance_resolve_WhenAbstractClass_ThenInstance()
-    {
-        // given
-        Class<ClassAbstract> type = ClassAbstract.class;
-        ClassConcreteDerived instance = new ClassConcreteDerived();
-
-        // when
-        testObject.registerInstance(type, instance);
-
-        ClassAbstract result1 = testObject.resolve(type);
-        ClassAbstract result2 = testObject.resolve(type);
-
-        // then
-        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(ClassConcreteDerived.class);
-        Assertions.assertThat(result2)
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassConcreteDerived.class)
-                  .isSameAs(result1);
-    }
-
-    @Test
-    public void registerInstance_resolve_WhenSameConcreteClass_ThenInstance()
-    {
-        // given
-        Class<ClassConcrete> type = ClassConcrete.class;
-        ClassConcrete instance = new ClassConcrete();
-
-        // when
-        testObject.registerInstance(type, instance);
-
-        ClassAbstract result1 = testObject.resolve(type);
-        ClassAbstract result2 = testObject.resolve(type);
-
-        // then
-        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(ClassConcrete.class);
-        Assertions.assertThat(result2)
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassConcrete.class)
-                  .isSameAs(result1);
-    }
-
-    @Test
-    public void registerInstance_resolve_WhenDerivedConcreteClass_ThenInstance()
-    {
-        // given
-        Class<ClassConcrete> type = ClassConcrete.class;
-        ClassConcreteDerived instance = new ClassConcreteDerived();
-
-        // when
-        testObject.registerInstance(type, instance);
-
-        ClassAbstract result1 = testObject.resolve(type);
-        ClassAbstract result2 = testObject.resolve(type);
-
-        // then
-        Assertions.assertThat(result1).isNotNull().isExactlyInstanceOf(ClassConcreteDerived.class);
-        Assertions.assertThat(result2)
-                  .isNotNull()
-                  .isExactlyInstanceOf(ClassConcreteDerived.class)
-                  .isSameAs(result1);
-    }
-
-    @Test
-    public void registerInstance_resolve_WhenPrimitiveType_ThenBoxedInstance()
-    {
-        // when
-        testObject.registerInstance(int.class, 10);
-
-        int result1 = testObject.resolve(int.class);
-        int result2 = testObject.resolve(int.class);
-
-        // then
-        Assertions.assertThat(result1).isExactlyInstanceOf(Integer.class);
-        Assertions.assertThat(result2).isExactlyInstanceOf(Integer.class).isSameAs(result1);
-    }
-
-    @Test
-    public void registerInstance_WhenAnnotatedType_ThenRegistrationException()
-    {
-        Assertions.assertThatThrownBy(
-                          () -> testObject.registerInstance(ClassRegisterSelf.class, new ClassRegisterSelf()))
-                  .isInstanceOf(RegistrationException.class);
-        Assertions.assertThatThrownBy(
-                          () -> testObject.registerInstance(ClassRegister.class, new ClassRegister()))
-                  .isInstanceOf(RegistrationException.class);
-    }
-
-    @Test
-    public void registerInstance_WhenRegisteredWithType_ThenRegistrationException()
-    {
-        // given
-        testObject.registerType(ClassConcrete.class, ConstructionPolicy.CONSTRUCTION);
-
-        // then
-        Assertions.assertThatThrownBy(
-                          () -> testObject.registerInstance(ClassConcrete.class, new ClassConcrete()))
-                  .isInstanceOf(RegistrationException.class);
-    }
-
-    @ParameterizedTest
-    @ValueSource(classes = { InterfaceInheritance.class, ClassAbstract.class, ClassConcrete.class })
-    public void registerInstance_WhenInstanceIsNull_ThenNullPointerException(Class<?> cls)
-    {
-        Assertions.assertThatThrownBy(() -> testObject.registerInstance(cls, null))
-                  .isInstanceOf(NullPointerException.class);
-    }
-
-    // endregion
     // region resolveOrNull
 
     @Test
@@ -730,19 +729,6 @@ public class YadicContainerTest
     }
 
     @Test
-    public void resolveOrNull_WhenTypeCanBeResolved_ThenTypeInstance()
-    {
-        // given
-        Class<ClassDefaultConstructorOnly> type = ClassDefaultConstructorOnly.class;
-
-        // when
-        ClassDefaultConstructorOnly result = testObject.resolveOrNull(type);
-
-        // then
-        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(type);
-    }
-
-    @Test
     public void resolveOrNull_WhenInstanceRegistered_ThenThisInstance()
     {
         // given
@@ -756,6 +742,31 @@ public class YadicContainerTest
 
         // then
         Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(type).isSameAs(instance);
+    }
+
+    @Test
+    public void resolveOrNull_WhenAnnotatedType_ThenTypeInstance()
+    {
+        // when
+        ClassRegister result = testObject.resolveOrNull(ClassRegister.class);
+
+        // then
+        Assertions.assertThat(result)
+                  .isNotNull()
+                  .isExactlyInstanceOf(ClassDerivedFromRegister.class);
+    }
+
+    @Test
+    public void resolveOrNull_WhenSelfAnnotatedType_ThenTypeInstance()
+    {
+        // given
+        Class<ClassRegisterSelf> type = ClassRegisterSelf.class;
+
+        // when
+        ClassRegisterSelf result = testObject.resolveOrNull(type);
+
+        // then
+        Assertions.assertThat(result).isNotNull().isExactlyInstanceOf(type);
     }
 
     @ParameterizedTest
