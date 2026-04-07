@@ -2,6 +2,7 @@ package com.github.refhumbold.yadic.registry;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import com.github.refhumbold.yadic.ConstructionPolicy;
 import com.github.refhumbold.yadic.annotation.YadicRegister;
 import com.github.refhumbold.yadic.annotation.YadicRegisterSelf;
@@ -96,10 +97,9 @@ class TypesDictionary
     {
         TypeConstruction<?> mapping = typesMap.get(type);
 
-        if(mapping == null || mapping.policy() != ConstructionPolicy.SINGLETON)
-            return;
-
-        singletonsMap.putIfAbsent(type, Instance.of(instance));
+        if(mapping != null && Objects.equals(mapping.type(), instance.getClass())
+                && mapping.policy() == ConstructionPolicy.SINGLETON)
+            singletonsMap.putIfAbsent(type, Instance.of(instance));
     }
 
     <T> Instance<T> getSingleton(Class<T> type)

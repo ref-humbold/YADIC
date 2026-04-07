@@ -5,9 +5,8 @@ import com.github.refhumbold.yadic.annotation.YadicDependency;
 public class ClassSetterThrows
 {
     @YadicDependency
-    public void setString(String string)
-            throws Exception
+    public void setValue(int i)
     {
-        throw new Exception();
+        throw new UnsupportedOperationException();
     }
 }
